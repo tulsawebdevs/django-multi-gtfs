@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 setup(name='django-gtfs',
-      version='0.1',
+      version='0.1.1',
       description='General Transit Feed Specification (GTFS) as Django app',
       author='John Whitlock',
       author_email='John-Whitlock@ieee.org',

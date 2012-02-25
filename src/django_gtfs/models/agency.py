@@ -3,6 +3,8 @@
 Google documentation from
 https://developers.google.com/transit/gtfs/reference
 
+agency.txt is required
+
 - agency_id (optional)
 The agency_id field is an ID that uniquely identifies a transit agency. A
 transit feed may represent data from more than one agency. The agency_id
@@ -52,19 +54,20 @@ value must be a fully qualified URL that includes http:// or https://, and
 any special characters in the URL must be correctly escaped. See
   http://www.w3.org/Addressing/URL/4_URI_Recommentations.html
 for a description of how to create fully qualified URL values.
-"""    
+"""
 
 from django.db import models
+
 
 class Agency(models.Model):
     """One or more transit agencies that provide the data in this feed."""
     feed = models.ForeignKey('Feed')
     agency_id = models.CharField(
-        max_length=255, blank=True,
+        max_length=255, blank=True, db_index=True,
         help_text="Unique identifier for transit agency")
     name = models.CharField(
         max_length=255,
-        help_text="Full name of the transit agency") 
+        help_text="Full name of the transit agency")
     url = models.URLField(
         verify_exists=False, blank=True,
         help_text="URL of the transit agency")
@@ -80,8 +83,7 @@ class Agency(models.Model):
     fare_url = models.URLField(
         verify_exists=False, blank=True,
         help_text="URL for purchasing tickets online")
-    
+
     class Meta:
         db_table = 'agency'
         app_label = 'django_gtfs'
-
