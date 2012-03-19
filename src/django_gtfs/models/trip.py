@@ -94,8 +94,7 @@ class Trip(models.Model):
     #block_id = models.IntegerField(
     #    null=True,
     #    help_text="Block that this trip belongs to.")
-    # TODO: Add Shape model
-    #shape = models.ForeignKey('Shape', null=True)
+    shape = models.ForeignKey('Shape', null=True)
 
     class Meta:
         db_table = 'trip'
