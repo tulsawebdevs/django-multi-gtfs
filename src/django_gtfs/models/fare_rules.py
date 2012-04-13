@@ -87,11 +87,21 @@ class FareRules(models.Model):
 
     feed = models.ForeignKey('Feed')
     fare = models.ForeignKey('FareAttributes')
-    route = models.ForeignKey('Route', null=True)
-    # TODO: Zone model
-    # origin = models.ForeignKey('Zone', null=True)
-    # destination = models.ForeignKey('Zone', null=True)
-    # contains = models.ForeignKey('Zone', null=True)
+    route = models.ForeignKey(
+        'Route', null=True,
+        help_text="Fare class is valid for this route.")
+    origin = models.ForeignKey(
+        'Zone', null=True,
+        related_name='fare_origins',
+        help_text="Fare class is valid for travel originating in this zone.")
+    destination = models.ForeignKey(
+        'Zone', null=True,
+        related_name='fare_destinations',
+        help_text="Fare class is valid for travel ending in this zone.")
+    contains = models.ForeignKey(
+        'Zone', null=True,
+        related_name='fare_contains',
+        help_text="Fare class is valid for travel withing this zone.")
 
     class Meta:
         db_table = 'fare_rules'

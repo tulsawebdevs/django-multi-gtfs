@@ -127,10 +127,9 @@ class Stop(models.Model):
     lon = models.DecimalField('Longitude',
         max_digits=13, decimal_places=8,
         help_text='WGS 84 longtitude of stop or station')
-    # TODO: Add Zone model
-    #zone_id = models.CharField('Fare Zone',
-    #    max_length=255, blank=True,
-    #    help_text="Fare zone for a stop ID")
+    zone = models.ForeignKey(
+        'Zone', null=True,
+        help_text="Fare zone for a stop ID.")
     url = models.URLField(
         verify_exists=False, blank=True,
         help_text="URL for the stop")

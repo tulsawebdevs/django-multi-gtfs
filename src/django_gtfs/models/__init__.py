@@ -11,3 +11,6 @@ from fare_rules import FareRules
 from shape import Shape
 from frequency import Frequency
 from transfer import Transfer
+from feed_info import FeedInfo
+from zone import Zone
+from block import Block

@@ -90,10 +90,9 @@ class Trip(models.Model):
     direction_id = models.IntegerField(
         null=True, choices=((0, 'Outbound'), (1, 'Inbound')),
         help_text="Direction for bi-directional routes.")
-    # TODO: Add Block model
-    #block_id = models.IntegerField(
-    #    null=True,
-    #    help_text="Block that this trip belongs to.")
+    block_id = models.ForeignKey(
+        'Block', null=True,
+        help_text="Block of sequential trips that this trip belongs to.")
     shape = models.ForeignKey('Shape', null=True)
 
     class Meta:
