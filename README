@@ -1,6 +1,7 @@
-django-gtfs - The General Transit Feed Specification (GTFS) in Django
+django-multi-gtfs - The General Transit Feed Specification (GTFS) in Django
 
-Developed for the Tulsa Web Dev's project to get Tulsa's buses into Google Maps.
+Developed for the Tulsa Web Dev's project to get Tulsa's buses into Google Maps.  Allows storage of multiple independent GTFS feeds, for combining or
+versioning.
 
 * http://tulsawebdevs.org
 

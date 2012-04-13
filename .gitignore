@@ -1,3 +1,5 @@
 /dist/*
+/build/*
+/src/multigtfs.egg-info
 *.pyc
 .DS_Store
