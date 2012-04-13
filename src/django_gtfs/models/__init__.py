@@ -9,3 +9,5 @@ from calendar_date import CalendarDate
 from fare_attributes import FareAttributes
 from fare_rules import FareRules
 from shape import Shape
+from frequency import Frequency
+from transfer import Transfer
