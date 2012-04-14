@@ -34,7 +34,7 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(Feed.objects.count(), 1)
         self.assertEqual(FeedInfo.objects.count(), 0)
         self.assertEqual(Frequency.objects.count(), 0)
-        self.assertEqual(Route.objects.count(), 0)
+        self.assertEqual(Route.objects.count(), 5)
         self.assertEqual(Shape.objects.count(), 0)
         self.assertEqual(Stop.objects.count(), 9)
         self.assertEqual(StopTime.objects.count(), 0)

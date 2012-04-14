@@ -2,7 +2,9 @@ from collections import defaultdict
 from csv import DictReader
 from zipfile import ZipFile
 
-from models import Agency, Stop, Zone
+from multigtfs.models import (
+    Agency, Block, Calendar, CalendarDate, FareAttributes, FareRules, Feed,
+    FeedInfo, Frequency, Route, Shape, Stop, StopTime, Transfer, Trip, Zone)
 
 def import_gtfs(gtfs_file, feed):
     """Import a GTFS file as feed
@@ -59,7 +61,7 @@ def import_agency(agency_file, feed):
 
 
 def import_stops(stops_file, feed):
-    """Import stops.txt into Stop record for feed
+    """Import stops.txt into Stop records for feed
 
     Keyword arguments:
     stops_file -- A open stops.txt for reading
@@ -94,8 +96,26 @@ def import_stops(stops_file, feed):
             stop.zone = zone
             stop.save()
 
+
 def import_routes(routes_file, feed):
-    pass
+    """Import routes.txt into Route records for feed
+    
+    Keyword arguments:
+    routes_file -- A open routes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(routes_file)
+    name_map = dict(route_short_name='short_name', route_long_name='long_name', 
+                    route_desc='desc', route_type='rtype', route_url='url',
+                    route_color='color', route_text_color='text_color')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        agency_id = fields.pop('agency_id', None)
+        if agency_id:
+            agency = Agency.objects.get(feed=feed, agency_id=agency_id)
+        else:
+            agency = None
+        route = Route.objects.create(feed=feed, agency=agency, **fields)
 
 def import_trips(trips_file, feed):
     pass
