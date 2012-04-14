@@ -71,11 +71,18 @@ from django.db import models
 
 class Shape(models.Model):
     """The path the vehicle takes along the route"""
-
     feed = models.ForeignKey('Feed')
     shape_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a shape.")
+
+    class Meta:
+        db_table = 'shape'
+        app_label = 'multigtfs'
+
+class ShapePoint(models.Model):
+    """A point along the shape"""
+    shape = models.ForeignKey('Shape', related_name='points')
     lat = models.DecimalField('Latitude',
         max_digits=13, decimal_places=8,
         help_text='WGS 84 latitude of shape point')
@@ -88,5 +95,5 @@ class Shape(models.Model):
         help_text='Distance of point from start of shape')
 
     class Meta:
-        db_table = 'shape'
+        db_table = 'shape_point'
         app_label = 'multigtfs'

@@ -43,9 +43,7 @@ R1,S1,T1,Headsign,HS,0,B1,S1
             feed=feed, service_id='S1', start_date=date(2011,4,14), 
             end_date=date(2011,12,31))
         block = Block.objects.create(feed=feed, block_id='B1')
-        shape = Shape.objects.create(
-            feed=feed, shape_id='S1', lat='37.61956', lon='-122.48161',
-            sequence=0)
+        shape = Shape.objects.create(feed=feed, shape_id='S1')
         import_trips(trips_txt, feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.feed, feed)

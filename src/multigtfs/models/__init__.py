@@ -8,7 +8,7 @@ from feed import Feed
 from feed_info import FeedInfo
 from frequency import Frequency
 from route import Route
-from shape import Shape
+from shape import Shape, ShapePoint
 from stop import Stop
 from stop_time import StopTime
 from transfer import Transfer
