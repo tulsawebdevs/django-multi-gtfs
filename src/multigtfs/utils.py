@@ -119,7 +119,7 @@ def import_trips(trips_file, feed):
     """Import trips.txt into Trip records for feed
     
     Keyword arguments:
-    trips_file -- A open routes.txt for reading
+    trips_file -- A open trips.txt for reading
     feed -- the Feed to associate the records with
     """
     reader = DictReader(trips_file)
