@@ -133,8 +133,8 @@ class Stop(models.Model):
     url = models.URLField(
         verify_exists=False, blank=True,
         help_text="URL for the stop")
-    location_type = models.IntegerField(
-        null=True, choices=((0, 'Stop'), (1, 'Station')),
+    location_type = models.CharField(
+        max_length=1, blank=True, choices=(('0', 'Stop'), ('1', 'Station')),
         help_text="Is this a stop or station?")
     parent_station = models.ForeignKey('Stop', null=True,
         help_text="The station associated with the stop")
