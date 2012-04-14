@@ -37,8 +37,8 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(Route.objects.count(), 5)
         self.assertEqual(Shape.objects.count(), 0)
         self.assertEqual(Stop.objects.count(), 9)
-        self.assertEqual(StopTime.objects.count(), 0)
+        self.assertEqual(StopTime.objects.count(), 28)
         self.assertEqual(Transfer.objects.count(), 0)
-        self.assertEqual(Trip.objects.count(), 15)
+        self.assertEqual(Trip.objects.count(), 11)
         self.assertEqual(Zone.objects.count(), 0)
 

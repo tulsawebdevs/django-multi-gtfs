@@ -155,7 +155,6 @@ from django.db import models
 
 class StopTime(models.Model):
     """A specific stop on a route on a trip."""
-    feed = models.ForeignKey('Feed')
     trip = models.ForeignKey('Trip')
     stop = models.ForeignKey('Stop')
     arrival_time = models.TimeField()
@@ -164,19 +163,19 @@ class StopTime(models.Model):
     stop_headsign = models.CharField(
         max_length=255, blank=True,
         help_text="Sign text that identifies the stop for passengers")
-    pickup_type = models.IntegerField(
-        null=True,
-        choices=((0, 'Regularly scheduled pickup'),
-                 (1, 'No pickup available'),
-                 (2, 'Must phone agency to arrange pickup'),
-                 (3, 'Must coordinate with driver to arrange pickup')),
+    pickup_type = models.CharField(
+        max_length=1, blank=True,
+        choices=(('0', 'Regularly scheduled pickup'),
+                 ('1', 'No pickup available'),
+                 ('2', 'Must phone agency to arrange pickup'),
+                 ('3', 'Must coordinate with driver to arrange pickup')),
         help_text="How passengers are picked up")
-    drop_off_type = models.IntegerField(
-        null=True,
-        choices=((0, 'Regularly scheduled drop off'),
-                 (1, 'No drop off available'),
-                 (2, 'Must phone agency to arrange drop off'),
-                 (3, 'Must coordinate with driver to arrange drop off')),
+    drop_off_type = models.CharField(
+        max_length=1, blank=True,
+        choices=(('0', 'Regularly scheduled drop off'),
+                 ('1', 'No drop off available'),
+                 ('2', 'Must phone agency to arrange drop off'),
+                 ('3', 'Must coordinate with driver to arrange drop off')),
         help_text="How passengers are picked up")
     shape_dist_traveled = models.FloatField(
         null=True,

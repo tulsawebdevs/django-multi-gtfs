@@ -57,7 +57,6 @@ from django.db import models
 class CalendarDate(models.Model):
     """Dates that a route is active (a.k.a. Service)."""
 
-    feed = models.ForeignKey('Feed')
     service = models.ForeignKey('Calendar')
     date = models.DateField(
         help_text="Date that the service differs from the norm.")

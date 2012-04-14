@@ -31,9 +31,8 @@ R1,S1,T1
         
         import_trips(trips_txt, feed)
         trip = Trip.objects.get()
-        self.assertEqual(trip.feed, feed)
         self.assertEqual(trip.route, route)
-        self.assertEqual(trip.service, service)
+        self.assertEqual(list(trip.services.all()), [service])
         self.assertEqual(trip.trip_id, 'T1')
         self.assertEqual(trip.headsign, '')
         self.assertEqual(trip.short_name, '')
@@ -56,12 +55,41 @@ R1,S1,T1,Headsign,HS,0,B1,S1
         shape = Shape.objects.create(feed=feed, shape_id='S1')
         import_trips(trips_txt, feed)
         trip = Trip.objects.get()
-        self.assertEqual(trip.feed, feed)
         self.assertEqual(trip.route, route)
-        self.assertEqual(trip.service, service)
+        self.assertEqual(list(trip.services.all()), [service])
         self.assertEqual(trip.trip_id, 'T1')
         self.assertEqual(trip.headsign, 'Headsign')
         self.assertEqual(trip.short_name, 'HS')
         self.assertEqual(trip.direction, '0')
         self.assertEqual(trip.block, block)
         self.assertEqual(trip.shape, shape)
+
+
+    def test_import_trips_multiple_services(self):
+        '''If a trip is associated with several services, one is created'''
+        trips_txt = StringIO.StringIO("""\
+route_id,service_id,trip_id
+R1,S1,T1
+R1,S2,T1
+""")
+        feed = Feed.objects.create()
+        route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
+        service1 = Calendar.objects.create(
+            feed=feed, service_id='S1', start_date=date(2011,4,14), 
+            end_date=date(2011,12,31))
+        service2 = Calendar.objects.create(
+            feed=feed, service_id='S2', start_date=date(2012,1,1), 
+            end_date=date(2012,4,14))
+
+        import_trips(trips_txt, feed)
+        trip = Trip.objects.get()
+        self.assertEqual(trip.route, route)
+        self.assertEqual(trip.services.count(), 2)
+        self.assertTrue(service1 in trip.services.all())
+        self.assertTrue(service2 in trip.services.all())
+        self.assertEqual(trip.trip_id, 'T1')
+        self.assertEqual(trip.headsign, '')
+        self.assertEqual(trip.short_name, '')
+        self.assertEqual(trip.direction, '')
+        self.assertEqual(trip.block, None)
+        self.assertEqual(trip.shape, None)

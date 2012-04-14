@@ -33,7 +33,6 @@ date,service_id,exception_type
             end_date=date(2011,12,31))
         import_calendar_dates(calendar_dates_txt, feed)
         calendar_date = CalendarDate.objects.get()
-        self.assertEqual(calendar_date.feed, feed)
         self.assertEqual(calendar_date.date, date(2012,4,14))
         self.assertEqual(calendar_date.service, service)
         self.assertEqual(calendar_date.exception_type, 2)

@@ -28,7 +28,7 @@ def import_gtfs(gtfs_file, feed):
         ('calendar_dates.txt', import_calendar_dates),
         #('shapes.txt', import_shapes),
         ('trips.txt', import_trips),
-        #('stop_times.txt', import_stop_times),
+        ('stop_times.txt', import_stop_times),
         #('fare_attributes.txt', import_fare_attributes),
         #('fare_rules.txt', import_fare_attributes),
         #('frequencies.txt', import_frequencies),
@@ -142,12 +142,40 @@ def import_trips(trips_file, feed):
             shape = Shape.objects.get(feed=feed, shape_id=shape_id)
         else:
             shape = None
-        Trip.objects.create(feed=feed, route=route, service=service, 
-                            block=block, shape=shape, **fields)
+        trip_id = fields.pop('trip_id')
+        trip, created = Trip.objects.get_or_create(
+            trip_id=trip_id, route=route)
+        for k,v in fields.items():
+            if created:
+                setattr(trip, k, v)
+            else:
+                assert getattr(trip, k) == v
+        if created:
+            trip.block = block
+            trip.shape = shape
+            trip.save()
+        else:
+            assert trip.block == block
+            assert trip.shape == shape
+        trip.services.add(service)
 
 
 def import_stop_times(stop_times_file, feed):
-    raise NotImplementedError('not written')
+    """Import stop_times.txt into StopTime records for feed
+    
+    Keyword arguments:
+    stop_times_file -- A open stop_times.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(stop_times_file)
+    name_map = dict()
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        trip_id = fields.pop('trip_id')
+        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
+        stop_id = fields.pop('stop_id')
+        stop = Stop.objects.get(feed=feed, stop_id=stop_id)
+        StopTime.objects.create(trip=trip, stop=stop, **fields)
 
 
 def import_calendar(calendar_file, feed):
@@ -187,7 +215,7 @@ def import_calendar_dates(calendar_dates_file, feed):
         d = datetime.strptime(row.pop('date'), '%Y%m%d')
         service_id=row.pop('service_id')
         service = Calendar.objects.get(feed=feed, service_id=service_id)
-        CalendarDate.objects.create(feed=feed, date=d, service=service, **row)
+        CalendarDate.objects.create(date=d, service=service, **row)
 
 def import_fare_attributes(fare_attributes_file, feed):
     raise NotImplementedError('not written')

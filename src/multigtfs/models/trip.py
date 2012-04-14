@@ -75,9 +75,8 @@ from django.db import models
 class Trip(models.Model):
     """A trip along a route"""
 
-    feed = models.ForeignKey('Feed')
     route = models.ForeignKey('Route')
-    service = models.ForeignKey('Calendar')
+    services = models.ManyToManyField('Calendar')
     trip_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a trip.")
