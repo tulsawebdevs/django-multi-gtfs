@@ -81,4 +81,4 @@ class FareAttributes(models.Model):
 
     class Meta:
         db_table = 'fare_attributes'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

@@ -12,4 +12,4 @@ class Feed(models.Model):
 
     class Meta:
         db_table = 'feed'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

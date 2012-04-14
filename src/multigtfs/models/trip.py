@@ -97,4 +97,4 @@ class Trip(models.Model):
 
     class Meta:
         db_table = 'trip'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

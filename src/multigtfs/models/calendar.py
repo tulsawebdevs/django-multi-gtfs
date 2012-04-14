@@ -143,4 +143,4 @@ class Calendar(models.Model):
 
     class Meta:
         db_table = 'calendar'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

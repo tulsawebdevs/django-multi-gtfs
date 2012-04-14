@@ -89,4 +89,4 @@ class Shape(models.Model):
 
     class Meta:
         db_table = 'shape'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

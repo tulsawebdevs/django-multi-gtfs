@@ -14,4 +14,4 @@ class Block(models.Model):
 
     class Meta:
         db_table = 'block'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

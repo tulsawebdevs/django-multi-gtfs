@@ -14,4 +14,4 @@ class Zone(models.Model):
 
     class Meta:
         db_table = 'zone'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

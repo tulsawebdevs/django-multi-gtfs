@@ -85,4 +85,4 @@ class FeedInfo(models.Model):
 
     class Meta:
         db_table = 'feed_info'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

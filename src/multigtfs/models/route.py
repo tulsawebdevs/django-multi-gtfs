@@ -136,4 +136,4 @@ class Route(models.Model):
 
     class Meta:
         db_table = 'route'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

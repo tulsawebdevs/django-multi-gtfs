@@ -86,4 +86,4 @@ class Frequency(models.Model):
 
     class Meta:
         db_table = 'frequency'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

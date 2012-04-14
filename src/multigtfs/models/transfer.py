@@ -74,4 +74,4 @@ class Transfer(models.Model):
 
     class Meta:
         db_table = 'transfer'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

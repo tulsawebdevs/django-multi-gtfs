@@ -184,4 +184,4 @@ class StopTime(models.Model):
 
     class Meta:
         db_table = 'stop_time'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

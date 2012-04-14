@@ -144,4 +144,4 @@ class Stop(models.Model):
 
     class Meta:
         db_table = 'stop'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

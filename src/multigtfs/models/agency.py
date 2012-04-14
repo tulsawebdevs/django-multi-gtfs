@@ -86,4 +86,4 @@ class Agency(models.Model):
 
     class Meta:
         db_table = 'agency'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

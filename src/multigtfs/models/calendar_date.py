@@ -67,4 +67,4 @@ class CalendarDate(models.Model):
 
     class Meta:
         db_table = 'calendar_date'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'

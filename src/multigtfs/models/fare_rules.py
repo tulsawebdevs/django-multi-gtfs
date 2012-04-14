@@ -105,4 +105,4 @@ class FareRules(models.Model):
 
     class Meta:
         db_table = 'fare_rules'
-        app_label = 'django_gtfs'
+        app_label = 'multigtfs'
