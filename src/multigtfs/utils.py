@@ -26,14 +26,14 @@ def import_gtfs(gtfs_file, feed):
         ('routes.txt', import_routes),
         ('calendar.txt', import_calendar),
         ('trips.txt', import_trips),
-        ('stop_times.txt', import_stop_times),
-        ('calendar_dates.txt', import_calendar_dates),
-        ('fare_attributes.txt', import_fare_attributes),
-        ('fare_rules.txt', import_fare_attributes),
-        ('shapes.txt', import_shapes),
-        ('frequencies.txt', import_frequencies),
-        ('transfers.txt', import_transfers),
-        ('feed_info.txt', import_feed_info),
+        #('stop_times.txt', import_stop_times),
+        #('calendar_dates.txt', import_calendar_dates),
+        #('fare_attributes.txt', import_fare_attributes),
+        #('fare_rules.txt', import_fare_attributes),
+        #('shapes.txt', import_shapes),
+        #('frequencies.txt', import_frequencies),
+        #('transfers.txt', import_transfers),
+        #('feed_info.txt', import_feed_info),
     )
 
     gtfs_objects = []
@@ -147,7 +147,7 @@ def import_trips(trips_file, feed):
 
 
 def import_stop_times(stop_times_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 
 def import_calendar(calendar_file, feed):
@@ -176,19 +176,19 @@ def import_calendar(calendar_file, feed):
 
 
 def import_calendar_dates(calendar_dates_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 def import_fare_attributes(fare_attributes_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 def import_shapes(shapes_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 def import_frequencies(frequencies_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 def import_transfers(transfers_file, feed):
-    pass
+    raise NotImplementedError('not written')
 
 def import_feed_info(feed_info_file, feed):
-    pass
+    raise NotImplementedError('not written')
