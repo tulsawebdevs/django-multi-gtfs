@@ -1,5 +1,5 @@
 """
-Define Calendar model for rows in calendar.txt
+Define Service model for rows in calendar.txt
 
 Google documentation from
 https://developers.google.com/transit/gtfs/reference
@@ -110,8 +110,8 @@ The end_date field's value should be in YYYYMMDD format.
 from django.db import models
 
 
-class Calendar(models.Model):
-    """Dates that a route is active (a.k.a. Service)."""
+class Service(models.Model):
+    """Dates that a route is active."""
 
     feed = models.ForeignKey('Feed')
     service_id = models.CharField(
@@ -145,5 +145,5 @@ class Calendar(models.Model):
         return u"%d-%s" % (self.feed.id, self.service_id)
 
     class Meta:
-        db_table = 'calendar'
+        db_table = 'service'
         app_label = 'multigtfs'

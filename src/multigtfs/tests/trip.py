@@ -3,7 +3,7 @@ import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Block, Calendar, Feed, Route, Shape, Trip
+from multigtfs.models import Block, Feed, Route, Service, Shape, Trip
 from multigtfs.utils import import_trips
 
 
@@ -25,7 +25,7 @@ R1,S1,T1
 """)
         feed = Feed.objects.create()
         route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
-        service = Calendar.objects.create(
+        service = Service.objects.create(
             feed=feed, service_id='S1', start_date=date(2011,4,14), 
             end_date=date(2011,12,31))
         
@@ -48,7 +48,7 @@ R1,S1,T1,Headsign,HS,0,B1,S1
 """)
         feed = Feed.objects.create()
         route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
-        service = Calendar.objects.create(
+        service = Service.objects.create(
             feed=feed, service_id='S1', start_date=date(2011,4,14), 
             end_date=date(2011,12,31))
         block = Block.objects.create(feed=feed, block_id='B1')
@@ -74,10 +74,10 @@ R1,S2,T1
 """)
         feed = Feed.objects.create()
         route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
-        service1 = Calendar.objects.create(
+        service1 = Service.objects.create(
             feed=feed, service_id='S1', start_date=date(2011,4,14), 
             end_date=date(2011,12,31))
-        service2 = Calendar.objects.create(
+        service2 = Service.objects.create(
             feed=feed, service_id='S2', start_date=date(2012,1,1), 
             end_date=date(2012,4,14))
 

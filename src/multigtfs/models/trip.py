@@ -76,7 +76,7 @@ class Trip(models.Model):
     """A trip along a route"""
 
     route = models.ForeignKey('Route')
-    services = models.ManyToManyField('Calendar')
+    services = models.ManyToManyField('Service')
     trip_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a trip.")

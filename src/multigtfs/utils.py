@@ -4,8 +4,8 @@ from csv import DictReader
 from zipfile import ZipFile
 
 from multigtfs.models import (
-    Agency, Block, Calendar, CalendarDate, FareAttributes, FareRules, Feed,
-    FeedInfo, Frequency, Route, Shape, Stop, StopTime, Transfer, Trip, Zone)
+    Agency, Block, FareAttributes, FareRules, Feed, FeedInfo, Frequency,
+    Route, Service, ServiceDate, Shape, Stop, StopTime, Transfer, Trip, Zone)
 
 def import_gtfs(gtfs_file, feed):
     """Import a GTFS file as feed
@@ -130,7 +130,7 @@ def import_trips(trips_file, feed):
         route_id = fields.pop('route_id')
         route = Route.objects.get(feed=feed, route_id=route_id)
         service_id = fields.pop('service_id')
-        service = Calendar.objects.get(feed=feed, service_id=service_id)
+        service = Service.objects.get(feed=feed, service_id=service_id)
         block_id = fields.pop('block_id', None)
         if block_id:
             block, _c = Block.objects.get_or_create(
@@ -179,7 +179,7 @@ def import_stop_times(stop_times_file, feed):
 
 
 def import_calendar(calendar_file, feed):
-    """Import calendar.txt into Calendar records for feed
+    """Import calendar.txt into Service records for feed
     
     Keyword arguments:
     calendar_file -- A open calendar.txt for reading
@@ -197,14 +197,14 @@ def import_calendar(calendar_file, feed):
         start_date = datetime.strptime(row.pop('start_date'), '%Y%m%d')
         end_date = datetime.strptime(row.pop('end_date'), '%Y%m%d')
         
-        Calendar.objects.create(
+        Service.objects.create(
             feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
             thursday=thursday, friday=friday, saturday=saturday,
             sunday=sunday, start_date=start_date, end_date=end_date, **row)
 
 
 def import_calendar_dates(calendar_dates_file, feed):
-    """Import calendar_dates.txt into CalendarDate records for feed
+    """Import calendar_dates.txt into ServiceDate records for feed
     
     Keyword arguments:
     calendar_dates_file -- A open calendar_dates.txt for reading
@@ -214,8 +214,9 @@ def import_calendar_dates(calendar_dates_file, feed):
     for row in reader:
         d = datetime.strptime(row.pop('date'), '%Y%m%d')
         service_id=row.pop('service_id')
-        service = Calendar.objects.get(feed=feed, service_id=service_id)
-        CalendarDate.objects.create(date=d, service=service, **row)
+        service = Service.objects.get(feed=feed, service_id=service_id)
+        ServiceDate.objects.create(date=d, service=service, **row)
+
 
 def import_fare_attributes(fare_attributes_file, feed):
     raise NotImplementedError('not written')

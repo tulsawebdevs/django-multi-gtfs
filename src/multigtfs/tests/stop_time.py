@@ -3,7 +3,7 @@ import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Calendar, Feed, Route, Stop, StopTime, Trip
+from multigtfs.models import Feed, Route, Service, Stop, StopTime, Trip
 from multigtfs.utils import import_stop_times
 
 
@@ -31,7 +31,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
 """)
         feed = Feed.objects.create()
         route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
-        service = Calendar.objects.create(
+        service = Service.objects.create(
             feed=feed, service_id='S1', start_date=date(2011,4,14), 
             end_date=date(2011,12,31))
         trip = Trip.objects.create(route=route, trip_id='STBA')

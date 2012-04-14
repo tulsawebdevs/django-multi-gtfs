@@ -1,5 +1,5 @@
 """
-Define CalendarDate model for rows in calendar_dates.txt
+Define ServiceDate model for rows in calendar_dates.txt
 
 Google documentation from
 https://developers.google.com/transit/gtfs/reference
@@ -54,10 +54,10 @@ remove the holiday from the regular service_id schedule.
 from django.db import models
 
 
-class CalendarDate(models.Model):
-    """Dates that a route is active (a.k.a. Service)."""
+class ServiceDate(models.Model):
+    """Dates that a route is active."""
 
-    service = models.ForeignKey('Calendar')
+    service = models.ForeignKey('Service')
     date = models.DateField(
         help_text="Date that the service differs from the norm.")
     exception_type = models.IntegerField(
@@ -69,5 +69,5 @@ class CalendarDate(models.Model):
             self.date, 'Added' if self.exception_type == 1 else 'Removed')
 
     class Meta:
-        db_table = 'calendar_date'
+        db_table = 'service_date'
         app_label = 'multigtfs'
