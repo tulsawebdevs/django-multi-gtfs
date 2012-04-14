@@ -84,6 +84,9 @@ class Agency(models.Model):
         verify_exists=False, blank=True,
         help_text="URL for purchasing tickets online")
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.agency_id)
+
     class Meta:
         db_table = 'agency'
         app_label = 'multigtfs'

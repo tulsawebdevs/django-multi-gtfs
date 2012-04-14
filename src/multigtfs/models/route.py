@@ -134,6 +134,9 @@ class Route(models.Model):
         max_length=6, blank=True,
         help_text="Color of route text in hex")
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.route_id)
+
     class Meta:
         db_table = 'route'
         app_label = 'multigtfs'

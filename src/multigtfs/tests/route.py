@@ -5,6 +5,15 @@ from django.test import TestCase
 from multigtfs.models import Feed, Agency, Route
 from multigtfs.utils import import_routes
 
+
+class RouteModelTest(TestCase):
+    def test_string(self):
+        feed = Feed.objects.create()
+        self.assertEqual(feed.id, 1)
+        route = Route.objects.create(feed=feed, route_id='RTEST', rtype=3)
+        self.assertEqual(str(route), '1-RTEST')
+
+
 class ImportRoutesTest(TestCase):
 
     def test_import_routes_minimal(self):

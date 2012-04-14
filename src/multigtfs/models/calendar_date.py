@@ -65,6 +65,10 @@ class CalendarDate(models.Model):
         default=1, choices=((1, 'Added'), (2, 'Removed')),
         help_text="Is service added or removed on this date?")
 
+    def __unicode__(self):
+        return u"%d-%s %s %s" % (self.service.feed.id, self.service.service_id,
+            self.date, 'Added' if self.exception_type == 1 else 'Removed')
+
     class Meta:
         db_table = 'calendar_date'
         app_label = 'multigtfs'

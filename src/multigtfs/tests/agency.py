@@ -6,6 +6,14 @@ from multigtfs.models import Agency, Feed
 from multigtfs.utils import import_agency
 
 
+class AgencyModelTest(TestCase):
+    def test_string(self):
+        feed = Feed.objects.create()
+        self.assertEqual(feed.id, 1)
+        agency = Agency.objects.create(feed=feed, agency_id='TEST')
+        self.assertEqual(str(agency), '1-TEST')
+
+
 class ImportAgencyTest(TestCase):
 
     def test_import_agency_minimal(self):

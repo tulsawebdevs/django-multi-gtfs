@@ -182,6 +182,9 @@ class StopTime(models.Model):
         null=True,
         help_text='Distance of stop from start of shape')
 
+    def __unicode__(self):
+        return u"%s-%s-%s" % (self.trip, self.stop.stop_id, self.stop_sequence)
+
     class Meta:
         db_table = 'stop_time'
         app_label = 'multigtfs'

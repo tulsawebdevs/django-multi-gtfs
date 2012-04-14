@@ -10,6 +10,12 @@ class Feed(models.Model):
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add = True)
 
+    def __unicode__(self):
+        if self.name:
+            return u"%d %s" % (self.id, self.name)
+        else:
+            return u"%d" % self.id
+
     class Meta:
         db_table = 'feed'
         app_label = 'multigtfs'

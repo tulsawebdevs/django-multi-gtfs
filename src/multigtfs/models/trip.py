@@ -96,6 +96,9 @@ class Trip(models.Model):
         help_text="Block of sequential trips that this trip belongs to.")
     shape = models.ForeignKey('Shape', null=True)
 
+    def __unicode__(self):
+        return u"%s-%s" % (self.route, self.trip_id)
+
     class Meta:
         db_table = 'trip'
         app_label = 'multigtfs'

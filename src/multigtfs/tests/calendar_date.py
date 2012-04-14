@@ -6,6 +6,20 @@ from django.test import TestCase
 from multigtfs.models import Calendar, CalendarDate, Feed
 from multigtfs.utils import import_calendar_dates
 
+class CalendarDateTest(TestCase):
+    def test_string(self):
+        feed = Feed.objects.create()
+        self.assertEqual(feed.id, 1)
+        calendar = Calendar.objects.create(
+            feed=feed, service_id='S1', start_date=date(2011,4,14), 
+            end_date=date(2011,12,31))
+        calendar_date = CalendarDate.objects.create(
+            date=date(2012, 4, 14), service=calendar, exception_type=2)
+        self.assertEqual(str(calendar_date), '1-S1 2012-04-14 Removed')
+        calendar_date.exception_type = 1
+        self.assertEqual(str(calendar_date), '1-S1 2012-04-14 Added')
+
+
 class ImportCalendarDatesTest(TestCase):
 
     def test_import_calendar_dates(self):

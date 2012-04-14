@@ -141,6 +141,9 @@ class Calendar(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.service_id)
+
     class Meta:
         db_table = 'calendar'
         app_label = 'multigtfs'

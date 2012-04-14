@@ -6,6 +6,16 @@ from django.test import TestCase
 from multigtfs.models import Block, Calendar, Feed, Route, Shape, Trip
 from multigtfs.utils import import_trips
 
+
+class TripModelTest(TestCase):
+    def test_string(self):
+        feed = Feed.objects.create()
+        self.assertEqual(feed.id, 1)
+        route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
+        trip = Trip.objects.create(route=route, trip_id='T1')
+        self.assertEqual(str(trip), '1-R1-T1')
+
+
 class ImportTripsTest(TestCase):
 
     def test_import_trips_minimal(self):

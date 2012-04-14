@@ -12,6 +12,9 @@ class Block(models.Model):
         max_length=10, db_index=True,
         help_text="Unique identifier for a block.")
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.block_id)
+
     class Meta:
         db_table = 'block'
         app_label = 'multigtfs'

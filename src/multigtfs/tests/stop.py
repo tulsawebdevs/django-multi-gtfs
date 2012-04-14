@@ -5,6 +5,17 @@ from django.test import TestCase
 from multigtfs.models import Feed, Stop, Zone
 from multigtfs.utils import import_stops
 
+
+class StopModelTest(TestCase):
+    def test_string(self):
+        feed = Feed.objects.create()
+        self.assertEqual(feed.id, 1)
+        stop = Stop.objects.create(
+            feed=feed, stop_id='STEST',
+            lat="36.425288", lon="-117.133162")
+        self.assertEqual(str(stop), '1-STEST')
+
+
 class ImportStopsTest(TestCase):
 
     def test_import_stops_minimal(self):

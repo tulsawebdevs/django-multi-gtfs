@@ -142,6 +142,9 @@ class Stop(models.Model):
         max_length=255, blank=True,
         help_text="Timezone of the stop")
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.stop_id)
+
     class Meta:
         db_table = 'stop'
         app_label = 'multigtfs'

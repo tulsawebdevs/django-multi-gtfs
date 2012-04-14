@@ -1,4 +1,5 @@
 from multigtfs.tests.agency import *
+from multigtfs.tests.block import *
 from multigtfs.tests.calendar import *
 from multigtfs.tests.calendar_date import *
 #from multigtfs.tests.fare_attributes import *
