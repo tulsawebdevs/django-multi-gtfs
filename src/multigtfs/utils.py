@@ -20,6 +20,17 @@ def import_gtfs(gtfs_file, feed):
     gtfs_order = (
         ('agency.txt', import_agency),
         ('stops.txt', import_stops),
+        ('routes.txt', import_routes),
+        ('trips.txt', import_trips),
+        ('stop_times.txt', import_stop_times),
+        ('calendar.txt', import_calendar),
+        ('calendar_dates.txt', import_calendar_dates),
+        ('fare_attributes.txt', import_fare_attributes),
+        ('fare_rules.txt', import_fare_attributes),
+        ('shapes.txt', import_shapes),
+        ('frequencies.txt', import_frequencies),
+        ('transfers.txt', import_transfers),
+        ('feed_info.txt', import_feed_info),
     )
 
     gtfs_objects = []
@@ -82,3 +93,33 @@ def import_stops(stops_file, feed):
         for stop in stops:
             stop.zone = zone
             stop.save()
+
+def import_routes(routes_file, feed):
+    pass
+
+def import_trips(trips_file, feed):
+    pass
+
+def import_stop_times(stop_times_file, feed):
+    pass
+
+def import_calendar(calendar_file, feed):
+    pass
+
+def import_calendar_dates(calendar_dates_file, feed):
+    pass
+
+def import_fare_attributes(fare_attributes_file, feed):
+    pass
+
+def import_shapes(shapes_file, feed):
+    pass
+
+def import_frequencies(frequencies_file, feed):
+    pass
+
+def import_transfers(transfers_file, feed):
+    pass
+
+def import_feed_info(feed_info_file, feed):
+    pass
