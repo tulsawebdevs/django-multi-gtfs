@@ -1,5 +1,6 @@
 /dist/*
 /build/*
 /src/multigtfs.egg-info
+/src/multigtfs/GTFS_Test_Data.zip
 *.pyc
 .DS_Store
