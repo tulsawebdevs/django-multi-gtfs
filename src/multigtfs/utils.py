@@ -1,3 +1,4 @@
+from datetime import datetime, date
 from collections import defaultdict
 from csv import DictReader
 from zipfile import ZipFile
@@ -23,9 +24,9 @@ def import_gtfs(gtfs_file, feed):
         ('agency.txt', import_agency),
         ('stops.txt', import_stops),
         ('routes.txt', import_routes),
+        ('calendar.txt', import_calendar),
         ('trips.txt', import_trips),
         ('stop_times.txt', import_stop_times),
-        ('calendar.txt', import_calendar),
         ('calendar_dates.txt', import_calendar_dates),
         ('fare_attributes.txt', import_fare_attributes),
         ('fare_rules.txt', import_fare_attributes),
@@ -71,7 +72,6 @@ def import_stops(stops_file, feed):
     """
     reader = DictReader(stops_file)
     parent_of = defaultdict(list)
-    zones = defaultdict(list)
     name_map = dict(stop_code='code', stop_name='name', stop_desc='desc',
                     stop_lat='lat', stop_lon='lon', stop_url='url',
                     stop_timezone='timezone')
@@ -79,22 +79,19 @@ def import_stops(stops_file, feed):
         fields = dict((name_map.get(k, k), v) for k,v in row.items())
         parent_id = fields.pop('parent_station', None)
         zone_id = fields.pop('zone_id', None)
-        stop = Stop.objects.create(feed=feed, **fields)
+        if zone_id:
+            zone, _c =  Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
+        else:
+            zone = None
+        stop = Stop.objects.create(feed=feed, zone=zone, **fields)
         if parent_id:
             parent_of[parent_id].append(stop)
-        if zone_id:
-            zones[zone_id].append(stop)
 
     for parent_id, children in parent_of.items():
         parent = Stop.objects.get(feed=feed, stop_id=parent_id)
         for child in children:
             child.parent_station = parent
             child.save()
-    for zone_id, stops in zones.items():
-        zone, _c= Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
-        for stop in stops:
-            stop.zone = zone
-            stop.save()
 
 
 def import_routes(routes_file, feed):
@@ -115,16 +112,68 @@ def import_routes(routes_file, feed):
             agency = Agency.objects.get(feed=feed, agency_id=agency_id)
         else:
             agency = None
-        route = Route.objects.create(feed=feed, agency=agency, **fields)
+        Route.objects.create(feed=feed, agency=agency, **fields)
+
 
 def import_trips(trips_file, feed):
-    pass
+    """Import trips.txt into Trip records for feed
+    
+    Keyword arguments:
+    trips_file -- A open routes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(trips_file)
+    name_map = dict(trip_headsign='headsign', trip_short_name='short_name',
+                    direction_id='direction')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        route_id = fields.pop('route_id')
+        route = Route.objects.get(feed=feed, route_id=route_id)
+        service_id = fields.pop('service_id')
+        service = Calendar.objects.get(feed=feed, service_id=service_id)
+        block_id = fields.pop('block_id', None)
+        if block_id:
+            block, _c = Block.objects.get_or_create(
+                feed=feed, block_id=block_id)
+        else:
+            block = None
+        shape_id = fields.pop('shape_id', None)
+        if shape_id:
+            shape = Shape.objects.get(feed=feed, shape_id=shape_id)
+        else:
+            shape = None
+        Trip.objects.create(feed=feed, route=route, service=service, 
+                            block=block, shape=shape, **fields)
+
 
 def import_stop_times(stop_times_file, feed):
     pass
 
+
 def import_calendar(calendar_file, feed):
-    pass
+    """Import calendar.txt into Calendar records for feed
+    
+    Keyword arguments:
+    calendar_file -- A open calendar.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(calendar_file)
+    for row in reader:
+        monday = row.pop('monday') == '1'
+        tuesday = row.pop('tuesday') == '1'
+        wednesday = row.pop('wednesday') == '1'
+        thursday = row.pop('thursday') == '1'
+        friday = row.pop('friday') == '1'
+        saturday = row.pop('saturday') == '1'
+        sunday = row.pop('sunday') == '1'
+        start_date = datetime.strptime(row.pop('start_date'), '%Y%m%d')
+        end_date = datetime.strptime(row.pop('end_date'), '%Y%m%d')
+        
+        Calendar.objects.create(
+            feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
+            thursday=thursday, friday=friday, saturday=saturday,
+            sunday=sunday, start_date=start_date, end_date=end_date, **row)
+
 
 def import_calendar_dates(calendar_dates_file, feed):
     pass

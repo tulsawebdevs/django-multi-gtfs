@@ -65,3 +65,20 @@ http://example.com/fcr,0,FUR_CREEK_STA,
         self.assertEqual(stop.location_type, '0')
         self.assertEqual(stop.parent_station, station)
         self.assertEqual(stop.timezone, '')
+
+    def test_import_stops_stop_before_station(self):
+        '''parent_station is set when the stop comes first'''
+        stops_txt = StringIO.StringIO("""\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,parent_station,stop_timezone
+FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
+http://example.com/fcr,0,FUR_CREEK_STA,
+FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
+http://example.com,1,,America/Los_Angeles
+""")
+        feed = Feed.objects.create()
+        import_stops(stops_txt, feed)
+        self.assertEqual(Stop.objects.count(), 2)
+        station = Stop.objects.get(stop_id='FUR_CREEK_STA')
+        stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
+        self.assertEqual(stop.parent_station, station)

@@ -26,8 +26,8 @@ class ImportGTFSTest(TestCase):
             import_gtfs(zip_file, feed)
         
         self.assertEqual(Agency.objects.count(), 1)
-        self.assertEqual(Block.objects.count(), 0)
-        self.assertEqual(Calendar.objects.count(), 0)
+        self.assertEqual(Block.objects.count(), 6)
+        self.assertEqual(Calendar.objects.count(), 3)
         self.assertEqual(CalendarDate.objects.count(), 0)
         self.assertEqual(FareAttributes.objects.count(), 0)
         self.assertEqual(FareRules.objects.count(), 0)
@@ -39,6 +39,6 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(Stop.objects.count(), 9)
         self.assertEqual(StopTime.objects.count(), 0)
         self.assertEqual(Transfer.objects.count(), 0)
-        self.assertEqual(Trip.objects.count(), 0)
+        self.assertEqual(Trip.objects.count(), 15)
         self.assertEqual(Zone.objects.count(), 0)
 

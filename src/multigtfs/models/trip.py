@@ -87,10 +87,11 @@ class Trip(models.Model):
     short_name = models.CharField(
         max_length=10,
         help_text="Short name used in schedules and signboards.")
-    direction_id = models.IntegerField(
-        null=True, choices=((0, 'Outbound'), (1, 'Inbound')),
+    direction = models.CharField(
+        max_length=1, blank=True,
+        choices=(('0', 'Outbound'), ('1', 'Inbound')),
         help_text="Direction for bi-directional routes.")
-    block_id = models.ForeignKey(
+    block = models.ForeignKey(
         'Block', null=True,
         help_text="Block of sequential trips that this trip belongs to.")
     shape = models.ForeignKey('Shape', null=True)
