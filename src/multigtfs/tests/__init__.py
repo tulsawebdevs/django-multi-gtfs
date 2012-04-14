@@ -1,6 +1,6 @@
 from multigtfs.tests.agency import *
 from multigtfs.tests.calendar import *
-#from multigtfs.tests.calendar_date import *
+from multigtfs.tests.calendar_date import *
 #from multigtfs.tests.fare_attributes import *
 #from multigtfs.tests.fare_rules import *
 #from multigtfs.tests.feed import *

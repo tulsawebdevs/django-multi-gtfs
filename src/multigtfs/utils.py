@@ -25,12 +25,12 @@ def import_gtfs(gtfs_file, feed):
         ('stops.txt', import_stops),
         ('routes.txt', import_routes),
         ('calendar.txt', import_calendar),
+        ('calendar_dates.txt', import_calendar_dates),
+        #('shapes.txt', import_shapes),
         ('trips.txt', import_trips),
         #('stop_times.txt', import_stop_times),
-        #('calendar_dates.txt', import_calendar_dates),
         #('fare_attributes.txt', import_fare_attributes),
         #('fare_rules.txt', import_fare_attributes),
-        #('shapes.txt', import_shapes),
         #('frequencies.txt', import_frequencies),
         #('transfers.txt', import_transfers),
         #('feed_info.txt', import_feed_info),
@@ -176,7 +176,18 @@ def import_calendar(calendar_file, feed):
 
 
 def import_calendar_dates(calendar_dates_file, feed):
-    raise NotImplementedError('not written')
+    """Import calendar_dates.txt into CalendarDate records for feed
+    
+    Keyword arguments:
+    calendar_dates_file -- A open calendar_dates.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(calendar_dates_file)
+    for row in reader:
+        d = datetime.strptime(row.pop('date'), '%Y%m%d')
+        service_id=row.pop('service_id')
+        service = Calendar.objects.get(feed=feed, service_id=service_id)
+        CalendarDate.objects.create(feed=feed, date=d, service=service, **row)
 
 def import_fare_attributes(fare_attributes_file, feed):
     raise NotImplementedError('not written')
