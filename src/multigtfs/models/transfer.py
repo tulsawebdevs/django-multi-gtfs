@@ -48,17 +48,21 @@ The min_transfer_time value must be entered in seconds, and must be a
 non-negative integer.
 """
 
+from csv import DictReader
+
 from django.db import models
+
+from multigtfs.models.stop import Stop
 
 
 class Transfer(models.Model):
     """Create additional rules for transfers between ambiguous stops"""
     from_stop = models.ForeignKey(
-        'Stop',
+        Stop,
         related_name='transfer_from_stop',
         help_text='Stop where a connection between routes begins.')
     to_stop = models.ForeignKey(
-        'Stop',
+        Stop,
         related_name='transfer_to_stop',
         help_text='Stop where a connection between routes ends.')
     transfer_type =  models.IntegerField(
@@ -78,3 +82,24 @@ class Transfer(models.Model):
     class Meta:
         db_table = 'transfer'
         app_label = 'multigtfs'
+
+
+def import_transfers_txt(transfers_file, feed):
+    """Import transfers.txt into Transfer records for feed
+    
+    Keyword arguments:
+    transfers_file -- A open transfers.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(transfers_file)
+    for row in reader:
+        from_stop_id = row.pop('from_stop_id')
+        from_stop = Stop.objects.get(feed=feed, stop_id=from_stop_id)
+        to_stop_id = row.pop('to_stop_id')
+        to_stop = Stop.objects.get(feed=feed, stop_id=to_stop_id)
+        # Force empty strings to 0, None
+        transfer_type = row.pop('transfer_type', None)
+        row['transfer_type'] = transfer_type or 0
+        min_transfer_time = row.pop('min_transfer_time', None)
+        row['min_transfer_time'] = min_transfer_time or None
+        Transfer.objects.create(from_stop=from_stop, to_stop=to_stop, **row)

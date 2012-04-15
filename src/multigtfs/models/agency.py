@@ -56,6 +56,8 @@ any special characters in the URL must be correctly escaped. See
 for a description of how to create fully qualified URL values.
 """
 
+from csv import DictReader
+
 from django.db import models
 
 
@@ -91,3 +93,19 @@ class Agency(models.Model):
         db_table = 'agency'
         app_label = 'multigtfs'
         verbose_name_plural = "agencies"
+
+
+def import_agency_txt(agency_file, feed):
+    """Import agency.txt into Agency records for feed.
+
+    Keyword arguments:
+    agency_file -- A open agency.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(agency_file)
+    name_map = dict(agency_url='url', agency_name='name',
+                    agency_phone='phone', agency_fare_url='fare_url',
+                    agency_timezone='timezone', agency_lang='lang')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        Agency.objects.create(feed=feed, **fields)

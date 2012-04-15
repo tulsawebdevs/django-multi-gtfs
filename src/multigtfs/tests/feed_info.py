@@ -4,7 +4,7 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, FeedInfo
-from multigtfs.utils import import_feed_info
+from multigtfs.models.feed_info import import_feed_info_txt
 
 class FeedInfoTests(TestCase):
     def setUp(self):
@@ -16,13 +16,13 @@ class FeedInfoTests(TestCase):
             publisher_url='http://example.com', lang='en')
         self.assertEqual(str(feed_info), '1-PTEST')
 
-    def test_import_feed_info_maximal(self):
+    def test_import_feed_info_txt_maximal(self):
         feed_info_txt = StringIO.StringIO("""\
 feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,\
 feed_end_date,feed_version
 PTEST,http://example.com,en,20120414,20121231,FOO1
 """)
-        import_feed_info(feed_info_txt, feed=self.feed)
+        import_feed_info_txt(feed_info_txt, feed=self.feed)
         feed_info = FeedInfo.objects.get()
         self.assertEqual(feed_info.publisher_name, 'PTEST')
         self.assertEqual(feed_info.publisher_url, 'http://example.com')
@@ -31,12 +31,12 @@ PTEST,http://example.com,en,20120414,20121231,FOO1
         self.assertEqual(feed_info.end_date, date(2012,12,31))
         self.assertEqual(feed_info.version, 'FOO1')
 
-    def test_import_feed_info_minimal(self):
+    def test_import_feed_info_txt_minimal(self):
         feed_info_txt = StringIO.StringIO("""\
 feed_publisher_name,feed_publisher_url
 PTEST,http://example.com
 """)
-        import_feed_info(feed_info_txt, feed=self.feed)
+        import_feed_info_txt(feed_info_txt, feed=self.feed)
         feed_info = FeedInfo.objects.get()
         self.assertEqual(feed_info.publisher_name, 'PTEST')
         self.assertEqual(feed_info.publisher_url, 'http://example.com')

@@ -66,6 +66,8 @@ like this:
     A_shp,37.65863,-122.30839,11,15.8765
 """
 
+from csv import DictReader
+
 from django.db import models
 
 
@@ -103,3 +105,24 @@ class ShapePoint(models.Model):
     class Meta:
         db_table = 'shape_point'
         app_label = 'multigtfs'
+
+
+def import_shapes_txt(shapes_file, feed):
+    """Import shapes.txt into Shape records for feed
+    
+    Keyword arguments:
+    shapes_file -- A open shapes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(shapes_file)
+    name_map = dict(shape_pt_lat='lat', shape_pt_lon='lon',
+                    shape_pt_sequence='sequence',
+                    shape_dist_traveled='traveled')
+    for row in reader:
+        shape_id = row.pop('shape_id')
+        shape, _c = Shape.objects.get_or_create(feed=feed, shape_id=shape_id)
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        # Force empty strings to None
+        traveled = fields.get('traveled', None)
+        fields['traveled'] = traveled or None
+        ShapePoint.objects.create(shape=shape, **fields)

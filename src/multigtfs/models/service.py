@@ -107,6 +107,9 @@ The end_date field contains the end date for the service. This date is included 
 The end_date field's value should be in YYYYMMDD format.
 """
 
+from csv import DictReader
+from datetime import datetime
+
 from django.db import models
 
 
@@ -147,3 +150,28 @@ class Service(models.Model):
     class Meta:
         db_table = 'service'
         app_label = 'multigtfs'
+
+
+def import_calendar_txt(calendar_file, feed):
+    """Import calendar.txt into Service records for feed
+    
+    Keyword arguments:
+    calendar_file -- A open calendar.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(calendar_file)
+    for row in reader:
+        monday = row.pop('monday') == '1'
+        tuesday = row.pop('tuesday') == '1'
+        wednesday = row.pop('wednesday') == '1'
+        thursday = row.pop('thursday') == '1'
+        friday = row.pop('friday') == '1'
+        saturday = row.pop('saturday') == '1'
+        sunday = row.pop('sunday') == '1'
+        start_date = datetime.strptime(row.pop('start_date'), '%Y%m%d')
+        end_date = datetime.strptime(row.pop('end_date'), '%Y%m%d')
+        
+        Service.objects.create(
+            feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
+            thursday=thursday, friday=friday, saturday=saturday,
+            sunday=sunday, start_date=start_date, end_date=end_date, **row)

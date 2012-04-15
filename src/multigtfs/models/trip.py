@@ -69,14 +69,21 @@ is referenced from the shapes.txt file. The shapes.txt file allows you to
 define how a line should be drawn on the map to represent a trip.
 """
 
+from csv import DictReader
+
 from django.db import models
+
+from multigtfs.models.block import Block
+from multigtfs.models.route import Route
+from multigtfs.models.service import Service
+from multigtfs.models.shape import Shape
 
 
 class Trip(models.Model):
     """A trip along a route"""
 
-    route = models.ForeignKey('Route')
-    services = models.ManyToManyField('Service')
+    route = models.ForeignKey(Route)
+    services = models.ManyToManyField(Service)
     trip_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a trip.")
@@ -91,9 +98,9 @@ class Trip(models.Model):
         choices=(('0', 'Outbound'), ('1', 'Inbound')),
         help_text="Direction for bi-directional routes.")
     block = models.ForeignKey(
-        'Block', null=True,
+        Block, null=True,
         help_text="Block of sequential trips that this trip belongs to.")
-    shape = models.ForeignKey('Shape', null=True)
+    shape = models.ForeignKey(Shape, null=True)
 
     def __unicode__(self):
         return u"%s-%s" % (self.route, self.trip_id)
@@ -101,3 +108,48 @@ class Trip(models.Model):
     class Meta:
         db_table = 'trip'
         app_label = 'multigtfs'
+
+
+def import_trips_txt(trips_file, feed):
+    """Import trips.txt into Trip records for feed
+    
+    Keyword arguments:
+    trips_file -- A open trips.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(trips_file)
+    name_map = dict(trip_headsign='headsign', trip_short_name='short_name',
+                    direction_id='direction')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        route_id = fields.pop('route_id')
+        route = Route.objects.get(feed=feed, route_id=route_id)
+        service_id = fields.pop('service_id')
+        service = Service.objects.get(feed=feed, service_id=service_id)
+        block_id = fields.pop('block_id', None)
+        if block_id:
+            block, _c = Block.objects.get_or_create(
+                feed=feed, block_id=block_id)
+        else:
+            block = None
+        shape_id = fields.pop('shape_id', None)
+        if shape_id:
+            shape = Shape.objects.get(feed=feed, shape_id=shape_id)
+        else:
+            shape = None
+        trip_id = fields.pop('trip_id')
+        trip, created = Trip.objects.get_or_create(
+            trip_id=trip_id, route=route)
+        for k,v in fields.items():
+            if created:
+                setattr(trip, k, v)
+            else:
+                assert getattr(trip, k) == v
+        if created:
+            trip.block = block
+            trip.shape = shape
+            trip.save()
+        else:
+            assert trip.block == block
+            assert trip.shape == shape
+        trip.services.add(service)

@@ -93,7 +93,11 @@ The color difference between route_color and route_text_color should provide
 sufficient contrast when viewed on a black and white screen.
 """
 
+from csv import DictReader
+
 from django.db import models
+
+from multigtfs.models import Agency
 
 
 class Route(models.Model):
@@ -140,3 +144,24 @@ class Route(models.Model):
     class Meta:
         db_table = 'route'
         app_label = 'multigtfs'
+
+
+def import_routes_txt(routes_file, feed):
+    """Import routes.txt into Route records for feed
+
+    Keyword arguments:
+    routes_file -- A open routes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(routes_file)
+    name_map = dict(route_short_name='short_name', route_long_name='long_name', 
+                    route_desc='desc', route_type='rtype', route_url='url',
+                    route_color='color', route_text_color='text_color')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        agency_id = fields.pop('agency_id', None)
+        if agency_id:
+            agency = Agency.objects.get(feed=feed, agency_id=agency_id)
+        else:
+            agency = None
+        Route.objects.create(feed=feed, agency=agency, **fields)

@@ -58,6 +58,9 @@ feed publishers determine whether the latest version of their feed has been
 incorporated.
 """
 
+from csv import DictReader
+from datetime import datetime
+
 from django.db import models
 
 
@@ -90,3 +93,32 @@ class FeedInfo(models.Model):
         db_table = 'feed_info'
         app_label = 'multigtfs'
         verbose_name_plural = "feed info"
+
+
+def import_feed_info_txt(feed_info_file, feed):
+    """Import feed_info.txt into a FeedInfo record for feed
+    
+    Keyword arguments:
+    feed_info_file -- A open transfers.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(feed_info_file)
+    name_map = dict(feed_publisher_name='publisher_name',
+                    feed_publisher_url='publisher_url', feed_lang='lang',
+                    feed_start_date='start_date', feed_end_date='end_date',
+                    feed_version='version')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        start_date_raw = fields.pop('start_date', None)
+        if start_date_raw:
+            start_date = datetime.strptime(start_date_raw, '%Y%m%d')
+        else:
+            start_date = None
+        end_date_raw = fields.pop('end_date', None)
+        if end_date_raw:
+            end_date = datetime.strptime(end_date_raw, '%Y%m%d')
+        else:
+            end_date = None
+        
+        FeedInfo.objects.create(feed=feed, start_date=start_date,
+            end_date=end_date, **fields)

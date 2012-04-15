@@ -79,12 +79,17 @@ project wiki:
   http://code.google.com/p/googletransitdatafeed/wiki/FareExamples
 """
 
+from csv import DictReader
+
 from django.db import models
 
+from multigtfs.models.fare import Fare
+from multigtfs.models.route import Route
+from multigtfs.models.zone import Zone
 
 class FareRule(models.Model):
     """Associate a Fare with a Route and/or Zones"""
-    fare = models.ForeignKey('Fare')
+    fare = models.ForeignKey(Fare)
     route = models.ForeignKey(
         'Route', null=True,
         help_text="Fare class is valid for this route.")
@@ -110,3 +115,39 @@ class FareRule(models.Model):
     class Meta:
         db_table = 'fare_rules'
         app_label = 'multigtfs'
+
+
+def import_fare_rules_txt(fare_rules_file, feed):
+    """Import fare_rules.txt into FareRules records for feed
+    
+    Keyword arguments:
+    fare_rules_file -- A open fare_rules.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(fare_rules_file)
+    for row in reader:
+        fare_id = row.pop('fare_id')
+        fare = Fare.objects.get(feed=feed, fare_id=fare_id)
+        route_id = row.pop('route_id', None)
+        if route_id:
+            route = Route.objects.get(feed=feed, route_id=route_id)
+        else:
+            route = None
+        zone_origin_id = row.pop('origin_id', None)
+        if zone_origin_id:
+            zone_origin = Zone.objects.get(feed=feed, zone_id=zone_origin_id)
+        else:
+            zone_origin = None
+        zone_dest_id = row.pop('destination_id', None)
+        if zone_dest_id:
+            zone_dest = Zone.objects.get(feed=feed, zone_id=zone_dest_id)
+        else:
+            zone_dest = None
+        zone_cont_id = row.pop('contains_id', None)
+        if zone_cont_id:
+            zone_cont = Zone.objects.get(feed=feed, zone_id=zone_cont_id)
+        else:
+            zone_cont = None
+        FareRule.objects.create(
+            fare=fare, route=route, origin=zone_origin, destination=zone_dest,
+            contains=zone_cont, **row)

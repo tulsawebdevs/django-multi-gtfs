@@ -150,13 +150,19 @@ The units used for shape_dist_traveled in the stop_times.txt file must match
 the units that are used for this field in the shapes.txt file.
 """
 
+from csv import DictReader
+
 from django.db import models
+
+from multigtfs.models.stop import Stop
+from multigtfs.models.trip import Trip
+from multigtfs.utils import parse_time
 
 
 class StopTime(models.Model):
     """A specific stop on a route on a trip."""
-    trip = models.ForeignKey('Trip')
-    stop = models.ForeignKey('Stop')
+    trip = models.ForeignKey(Trip)
+    stop = models.ForeignKey(Stop)
     arrival_time = models.TimeField(
         null=True,
         help_text="Arrival time. Must be set for end stops of trip.")
@@ -197,3 +203,36 @@ class StopTime(models.Model):
     class Meta:
         db_table = 'stop_time'
         app_label = 'multigtfs'
+
+
+def import_stop_times_txt(stop_times_file, feed):
+    """Import stop_times.txt into StopTime records for feed
+    
+    Keyword arguments:
+    stop_times_file -- A open stop_times.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(stop_times_file)
+    name_map = dict(drop_off_time='drop_off_type')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        trip_id = fields.pop('trip_id')
+        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
+        stop_id = fields.pop('stop_id')
+        stop = Stop.objects.get(feed=feed, stop_id=stop_id)
+        # Turn None into blanks
+        stop_headsign = fields.get('stop_headsign', '')
+        fields['stop_headsign'] = stop_headsign or ''
+        pickup_type = fields.get('pickup_type', '')
+        fields['pickup_type'] = pickup_type or ''
+        drop_off_type = fields.get('drop_off_type', '')
+        fields['drop_off_type'] = drop_off_type or ''
+        # Convert times
+        atime, aday = parse_time(fields.pop('arrival_time', None))
+        dtime, dday = parse_time(fields.pop('departure_time', None))
+        # Set empty strings to None
+        shape_dist_traveled = fields.get('shape_dist_traveled', None)
+        fields['shape_dist_traveled'] = shape_dist_traveled or None
+        StopTime.objects.create(trip=trip, stop=stop, arrival_time=atime,
+            arrival_day=aday, departure_time=dtime, departure_day=dday,
+            **fields)

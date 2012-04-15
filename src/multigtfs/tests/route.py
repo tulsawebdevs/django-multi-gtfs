@@ -3,7 +3,7 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Agency, Route
-from multigtfs.utils import import_routes
+from multigtfs.models.route import import_routes_txt
 
 
 class RouteTest(TestCase):
@@ -14,12 +14,12 @@ class RouteTest(TestCase):
         route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
         self.assertEqual(str(route), '1-RTEST')
 
-    def test_import_routes_minimal(self):
+    def test_import_routes_txt_minimal(self):
         routes_txt = StringIO.StringIO("""\
 route_id,route_short_name,route_long_name,route_type
 AB,10,Airport - Bullfrog,3
 """)
-        import_routes(routes_txt, self.feed)
+        import_routes_txt(routes_txt, self.feed)
         route = Route.objects.get()
         self.assertEqual(route.feed, self.feed)
         self.assertEqual(route.route_id, 'AB')
@@ -32,7 +32,7 @@ AB,10,Airport - Bullfrog,3
         self.assertEqual(route.color, '')
         self.assertEqual(route.text_color, '')
 
-    def test_import_routes_maximal(self):
+    def test_import_routes_txt_maximal(self):
         routes_txt = StringIO.StringIO("""\
 route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,\
 route_url,route_color,route_text_color
@@ -40,7 +40,7 @@ AB,DTA,10,Airport - Bullfrog,"Our Airport Route", 3,http://example.com,\
 00FFFF,000000
 """)
         agency = Agency.objects.create(feed=self.feed, agency_id='DTA')
-        import_routes(routes_txt, self.feed)
+        import_routes_txt(routes_txt, self.feed)
         route = Route.objects.get()
         self.assertEqual(route.feed, self.feed)
         self.assertEqual(route.route_id, 'AB')

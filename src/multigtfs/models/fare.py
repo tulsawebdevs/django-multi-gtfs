@@ -47,6 +47,8 @@ you intend to use this field to indicate ticket validity, transfer_duration
 should be omitted or empty when transfers is set to 0.
 """
 
+from csv import DictReader
+
 from django.db import models
 
 
@@ -86,3 +88,18 @@ class Fare(models.Model):
     class Meta:
         db_table = 'fare'
         app_label = 'multigtfs'
+
+
+def import_fare_attributes_txt(fare_attributes_file, feed):
+    """Import fare_attributes.txt into FareAttributes records for feed
+    
+    Keyword arguments:
+    fare_attributes_file -- A open fare_attributes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(fare_attributes_file)
+    for row in reader:
+        transfer_duration = row.get('transfer_duration', None)
+        row['transfer_duration'] = transfer_duration or None
+        Fare.objects.create(feed=feed, **row)
+

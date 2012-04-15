@@ -3,7 +3,7 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Shape, ShapePoint
-from multigtfs.utils import import_shapes
+from multigtfs.models.shape import import_shapes_txt
 
 
 class ShapeTest(TestCase):
@@ -22,7 +22,7 @@ class ShapeTest(TestCase):
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
 """)
-        import_shapes(shape_txt, self.feed)
+        import_shapes_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
@@ -38,7 +38,7 @@ S1,36.425288,-117.133162,1
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,0
 """)
-        import_shapes(shape_txt, self.feed)
+        import_shapes_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
@@ -54,7 +54,7 @@ S1,36.425288,-117.133162,1,0
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,
 """)
-        import_shapes(shape_txt, self.feed)
+        import_shapes_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')

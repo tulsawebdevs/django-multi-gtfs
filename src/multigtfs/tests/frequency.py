@@ -6,7 +6,7 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Frequency, Route, Service, Trip
-from multigtfs.utils import import_frequencies
+from multigtfs.models.frequency import import_frequencies_txt
 
 
 class FrequencyTests(TestCase):
@@ -26,12 +26,12 @@ class FrequencyTests(TestCase):
             headway_secs=1800)
         self.assertEqual(str(frequency), '1-R1-STBA')
 
-    def test_import_frequencies_minimal(self):
+    def test_import_frequencies_txt_minimal(self):
         frequencies_txt = StringIO.StringIO("""\
 trip_id,start_time,end_time,headway_secs
 STBA,6:00:00,22:00:00,1800
 """)
-        import_frequencies(frequencies_txt, self.feed)
+        import_frequencies_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
         self.assertEqual(frequency.start_time, time(6))
@@ -39,12 +39,12 @@ STBA,6:00:00,22:00:00,1800
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
 
-    def test_import_frequencies_maximal(self):
+    def test_import_frequencies_txt_maximal(self):
         frequencies_txt = StringIO.StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
 STBA,6:00:00,22:00:00,1800,1
 """)
-        import_frequencies(frequencies_txt, self.feed)
+        import_frequencies_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
         self.assertEqual(frequency.start_time, time(6))
@@ -52,12 +52,12 @@ STBA,6:00:00,22:00:00,1800,1
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '1')
 
-    def test_import_frequencies_maximal(self):
+    def test_import_frequencies_txt_maximal(self):
         frequencies_txt = StringIO.StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
 STBA,00:50:00,24:10:00,1800,1
 """)
-        import_frequencies(frequencies_txt, self.feed)
+        import_frequencies_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.start_time, time(0, 50))
         self.assertEqual(frequency.start_day, 0)

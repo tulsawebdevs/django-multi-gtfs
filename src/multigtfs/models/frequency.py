@@ -65,12 +65,17 @@ be taken to choose an end_time value that is greater than the last desired trip
 start time but less than the last desired trip start time + headway_secs.
 """
 
+from csv import DictReader
+
 from django.db import models
+
+from multigtfs.models.trip import Trip
+from multigtfs.utils import parse_time
 
 
 class Frequency(models.Model):
     """Description of a trip that repeats without fixed stop times"""
-    trip = models.ForeignKey('Trip')
+    trip = models.ForeignKey(Trip)
     start_time = models.TimeField(
         help_text="Time that the service begins at the specified frequency")
     start_day = models.IntegerField(
@@ -96,3 +101,22 @@ class Frequency(models.Model):
         db_table = 'frequency'
         app_label = 'multigtfs'
         verbose_name_plural = "frequencies"
+
+
+def import_frequencies_txt(frequencies_file, feed):
+    """Import frequencies.txt into Frequency records for feed
+    
+    Keyword arguments:
+    frequencies_file -- A open frequencies.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(frequencies_file)
+    for row in reader:
+        trip_id = row.pop('trip_id')
+        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
+        # Convert times
+        stime, sday = parse_time(row.pop('start_time', None))
+        etime, eday = parse_time(row.pop('end_time', None))
+        Frequency.objects.create(
+            trip=trip, start_time=stime, start_day=sday, end_time=etime,
+            end_day=eday, **row)

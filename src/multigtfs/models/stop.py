@@ -103,8 +103,12 @@ values in a trip always increase over the course of a trip, regardless of which
 timezones the trip crosses.
 """
 
+from csv import DictReader
+from collections import defaultdict
+
 from django.db import models
 
+from multigtfs.models.zone import Zone
 
 class Stop(models.Model):
     """A stop or station"""
@@ -148,3 +152,36 @@ class Stop(models.Model):
     class Meta:
         db_table = 'stop'
         app_label = 'multigtfs'
+
+
+def import_stops_txt(stops_file, feed):
+    """Import stops.txt into Stop records for feed
+
+    Keyword arguments:
+    stops_file -- A open stops.txt for reading
+    feed -- the Feed to associate the records with
+
+    Zone objects may also be created, if referenced in the stops
+    """
+    reader = DictReader(stops_file)
+    parent_of = defaultdict(list)
+    name_map = dict(stop_code='code', stop_name='name', stop_desc='desc',
+                    stop_lat='lat', stop_lon='lon', stop_url='url',
+                    stop_timezone='timezone')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        parent_id = fields.pop('parent_station', None)
+        zone_id = fields.pop('zone_id', None)
+        if zone_id:
+            zone, _c =  Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
+        else:
+            zone = None
+        stop = Stop.objects.create(feed=feed, zone=zone, **fields)
+        if parent_id:
+            parent_of[parent_id].append(stop)
+
+    for parent_id, children in parent_of.items():
+        parent = Stop.objects.get(feed=feed, stop_id=parent_id)
+        for child in children:
+            child.parent_station = parent
+            child.save()
