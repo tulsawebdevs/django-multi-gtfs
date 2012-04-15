@@ -30,7 +30,7 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(FareRules.objects.count(), 0)
         self.assertEqual(Feed.objects.count(), 1)
         self.assertEqual(FeedInfo.objects.count(), 0)
-        self.assertEqual(Frequency.objects.count(), 0)
+        self.assertEqual(Frequency.objects.count(), 11)
         self.assertEqual(Route.objects.count(), 5)
         self.assertEqual(Service.objects.count(), 3)
         self.assertEqual(ServiceDate.objects.count(), 1)

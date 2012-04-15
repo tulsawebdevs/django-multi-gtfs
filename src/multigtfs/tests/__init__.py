@@ -4,7 +4,7 @@ from multigtfs.tests.block import *
 #from multigtfs.tests.fare_rules import *
 #from multigtfs.tests.feed import *
 #from multigtfs.tests.feed_info import *
-#from multigtfs.tests.frequency import *
+from multigtfs.tests.frequency import *
 from multigtfs.tests.route import *
 from multigtfs.tests.service import *
 from multigtfs.tests.service_date import *

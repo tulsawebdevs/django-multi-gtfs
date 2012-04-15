@@ -70,7 +70,6 @@ from django.db import models
 
 class Frequency(models.Model):
     """Description of a trip that repeats without fixed stop times"""
-    feed = models.ForeignKey('Feed')
     trip = models.ForeignKey('Trip')
     start_time = models.TimeField(
         help_text="Time that the service begins at the specified frequency")
@@ -78,11 +77,14 @@ class Frequency(models.Model):
         help_text="Time that the service ends at the specified frequency")
     headway_secs = models.IntegerField(
         help_text="Time in seconds before returning to same stop")
-    exact_times =  models.IntegerField(
-        null=True,
+    exact_times =  models.CharField(
+        max_length=1, blank=True,
         choices=((0, 'Trips are not exactly scheduled'),
                  (1, 'Trips are exactly scheduled from start time')),
         help_text="Should frequency-based trips be exactly scheduled?")
+
+    def __unicode__(self):
+        return unicode(self.trip)
 
     class Meta:
         db_table = 'frequency'

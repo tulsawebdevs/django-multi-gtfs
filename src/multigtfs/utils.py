@@ -29,9 +29,9 @@ def import_gtfs(gtfs_file, feed):
         #('shapes.txt', import_shapes),
         ('trips.txt', import_trips),
         ('stop_times.txt', import_stop_times),
+        ('frequencies.txt', import_frequencies),
         #('fare_attributes.txt', import_fare_attributes),
         #('fare_rules.txt', import_fare_attributes),
-        #('frequencies.txt', import_frequencies),
         #('transfers.txt', import_transfers),
         #('feed_info.txt', import_feed_info),
     )
@@ -218,17 +218,31 @@ def import_calendar_dates(calendar_dates_file, feed):
         ServiceDate.objects.create(date=d, service=service, **row)
 
 
+def import_frequencies(frequencies_file, feed):
+    """Import frequencies.txt into Frequency records for feed
+    
+    Keyword arguments:
+    frequencies_file -- A open frequencies.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(frequencies_file)
+    for row in reader:
+        trip_id = row.pop('trip_id')
+        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
+        Frequency.objects.create(trip=trip, **row)
+
+
 def import_fare_attributes(fare_attributes_file, feed):
     raise NotImplementedError('not written')
+
 
 def import_shapes(shapes_file, feed):
     raise NotImplementedError('not written')
 
-def import_frequencies(frequencies_file, feed):
-    raise NotImplementedError('not written')
 
 def import_transfers(transfers_file, feed):
     raise NotImplementedError('not written')
+
 
 def import_feed_info(feed_info_file, feed):
     raise NotImplementedError('not written')
