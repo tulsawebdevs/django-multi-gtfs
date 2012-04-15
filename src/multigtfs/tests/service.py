@@ -23,10 +23,9 @@ service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,\
 start_date,end_date
 W,1,0,1,0,1,0,1,20120414,20121231
 """)
-        feed = Feed.objects.create()
-        import_calendar(calendar_txt, feed)
+        import_calendar(calendar_txt, self.feed)
         service = Service.objects.get()
-        self.assertEqual(service.feed, feed)
+        self.assertEqual(service.feed, self.feed)
         self.assertEqual(service.service_id, 'W')
         self.assertTrue(service.monday)
         self.assertFalse(service.tuesday)
