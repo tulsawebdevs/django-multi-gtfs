@@ -68,20 +68,23 @@ class FeedInfo(models.Model):
         max_length=255,
         help_text="Full name of organization that publishes the feed.")
     publisher_url = models.URLField(
-        verify_exists=False, blank=True,
+        verify_exists=False,
         help_text="URL of the feed publisher's organization.")
     lang = models.CharField(
-        max_length=20, blank=True,
+        max_length=20,
         help_text="IETF BCP 47 language code for text in field.")
     start_date = models.DateField(
-        blank=True,
+        null=True,
         help_text="Date that feed starts providing reliable data.")
     end_date = models.DateField(
-        blank=True,
+        null=True,
         help_text="Date that feed stops providing reliable data.")
     version = models.CharField(
         max_length=20, blank=True,
         help_text="Version of feed.")
+
+    def __unicode__(self):
+        return u'%s-%s' % (self.feed.id, self.publisher_name)
 
     class Meta:
         db_table = 'feed_info'

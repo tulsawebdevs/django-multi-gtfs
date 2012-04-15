@@ -314,7 +314,7 @@ def import_shapes(shapes_file, feed):
 
 
 def import_transfers(transfers_file, feed):
-    """Import transfers.txt into Rransfer records for feed
+    """Import transfers.txt into Transfer records for feed
     
     Keyword arguments:
     transfers_file -- A open transfers.txt for reading
@@ -326,7 +326,7 @@ def import_transfers(transfers_file, feed):
         from_stop = Stop.objects.get(feed=feed, stop_id=from_stop_id)
         to_stop_id = row.pop('to_stop_id')
         to_stop = Stop.objects.get(feed=feed, stop_id=to_stop_id)
-        # Force empty strings to None
+        # Force empty strings to 0, None
         transfer_type = row.pop('transfer_type', None)
         row['transfer_type'] = transfer_type or 0
         min_transfer_time = row.pop('min_transfer_time', None)
@@ -335,4 +335,29 @@ def import_transfers(transfers_file, feed):
 
 
 def import_feed_info(feed_info_file, feed):
-    raise NotImplementedError('not written')
+    """Import feed_info.txt into a FeedInfo record for feed
+    
+    Keyword arguments:
+    feed_info_file -- A open transfers.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(feed_info_file)
+    name_map = dict(feed_publisher_name='publisher_name',
+                    feed_publisher_url='publisher_url', feed_lang='lang',
+                    feed_start_date='start_date', feed_end_date='end_date',
+                    feed_version='version')
+    for row in reader:
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        start_date_raw = fields.pop('start_date', None)
+        if start_date_raw:
+            start_date = datetime.strptime(start_date_raw, '%Y%m%d')
+        else:
+            start_date = None
+        end_date_raw = fields.pop('end_date', None)
+        if end_date_raw:
+            end_date = datetime.strptime(end_date_raw, '%Y%m%d')
+        else:
+            end_date = None
+        
+        FeedInfo.objects.create(feed=feed, start_date=start_date,
+            end_date=end_date, **fields)
