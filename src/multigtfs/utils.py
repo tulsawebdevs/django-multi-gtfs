@@ -182,6 +182,10 @@ def import_stop_times(stop_times_file, feed):
         drop_off_type = fields.get('drop_off_type', '')
         fields['drop_off_type'] = drop_off_type or ''
         # Turn blanks into None
+        arrival_time = fields.get('arrival_time', None)
+        fields['arrival_time'] = arrival_time or None
+        departure_time = fields.get('departure_time', None)
+        fields['departure_time'] = departure_time or None
         shape_dist_traveled = fields.get('shape_dist_traveled', None)
         fields['shape_dist_traveled'] = shape_dist_traveled or None
         

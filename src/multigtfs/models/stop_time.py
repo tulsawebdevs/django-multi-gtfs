@@ -157,8 +157,12 @@ class StopTime(models.Model):
     """A specific stop on a route on a trip."""
     trip = models.ForeignKey('Trip')
     stop = models.ForeignKey('Stop')
-    arrival_time = models.TimeField()
-    departure_time = models.TimeField()
+    arrival_time = models.TimeField(
+        null=True,
+        help_text="Arrival time.  Must be set for end stops of trip.")
+    departure_time = models.TimeField(
+        null=True,
+        help_text='Departure time.  Must be set for end stops of trip.')
     stop_sequence = models.IntegerField()
     stop_headsign = models.CharField(
         max_length=255, blank=True,

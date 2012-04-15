@@ -74,3 +74,27 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
         self.assertEqual(stoptime.pickup_type, '')
         self.assertEqual(stoptime.drop_off_type, '')
         self.assertEqual(stoptime.shape_dist_traveled, None)
+
+    def test_import_stop_times_middle_times_optional(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence
+STBA,6:00:00,6:00:00,STAGECOACH,1
+STBA,,,STAGECOACH2,2
+STBA,12:00:00,12:00:00,STAGECOACH3,3
+""")
+        stop2 = Stop.objects.create(
+            feed=self.feed, stop_id='STAGECOACH2', lat="36.425288",
+            lon="-117.133162")
+        stop3 = Stop.objects.create(
+            feed=self.feed, stop_id='STAGECOACH3', lat="36.425288",
+            lon="-117.133162")
+        import_stop_times(stop_times_txt, self.feed)
+        stoptime1 = StopTime.objects.get(stop=self.stop)
+        self.assertEqual(stoptime1.arrival_time, time(6))
+        self.assertEqual(stoptime1.departure_time, time(6))
+        stoptime2 = StopTime.objects.get(stop=stop2)
+        self.assertEqual(stoptime2.arrival_time, None)
+        self.assertEqual(stoptime2.departure_time, None)
+        stoptime3 = StopTime.objects.get(stop=stop3)
+        self.assertEqual(stoptime3.arrival_time, time(12))
+        self.assertEqual(stoptime3.departure_time, time(12))
