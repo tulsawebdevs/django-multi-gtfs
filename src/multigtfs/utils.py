@@ -30,7 +30,7 @@ def import_gtfs(gtfs_file, feed):
         ('trips.txt', import_trips),
         ('stop_times.txt', import_stop_times),
         ('frequencies.txt', import_frequencies),
-        #('fare_attributes.txt', import_fare_attributes),
+        ('fare_attributes.txt', import_fare_attributes),
         #('fare_rules.txt', import_fare_attributes),
         #('transfers.txt', import_transfers),
         #('feed_info.txt', import_feed_info),
@@ -244,7 +244,11 @@ def import_frequencies(frequencies_file, feed):
 
 
 def import_fare_attributes(fare_attributes_file, feed):
-    raise NotImplementedError('not written')
+    reader = DictReader(fare_attributes_file)
+    for row in reader:
+        transfer_duration = row.get('transfer_duration', None)
+        row['transfer_duration'] = transfer_duration or None
+        FareAttributes.objects.create(feed=feed, **row)
 
 
 def import_shapes(shapes_file, feed):

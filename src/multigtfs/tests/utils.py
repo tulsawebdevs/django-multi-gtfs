@@ -57,7 +57,7 @@ class ImportGTFSTest(TestCase):
 
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Block.objects.count(), 2)
-        self.assertEqual(FareAttributes.objects.count(), 0)
+        self.assertEqual(FareAttributes.objects.count(), 2)
         self.assertEqual(FareRules.objects.count(), 0)
         self.assertEqual(Feed.objects.count(), 1)
         self.assertEqual(FeedInfo.objects.count(), 0)

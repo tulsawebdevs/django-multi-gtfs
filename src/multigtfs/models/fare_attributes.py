@@ -79,6 +79,10 @@ class FareAttributes(models.Model):
         null=True,
         help_text="Time in seconds until a ticket or transfer expires")
 
+    def __unicode__(self):
+        return u"%d-%s(%s %s)" % (
+            self.feed.id, self.fare_id, self.price, self.currency_type)
+
     class Meta:
         db_table = 'fare_attributes'
         app_label = 'multigtfs'

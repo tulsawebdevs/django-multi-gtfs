@@ -1,6 +1,6 @@
 from multigtfs.tests.agency import *
 from multigtfs.tests.block import *
-#from multigtfs.tests.fare_attributes import *
+from multigtfs.tests.fare_attributes import *
 #from multigtfs.tests.fare_rules import *
 #from multigtfs.tests.feed import *
 #from multigtfs.tests.feed_info import *
