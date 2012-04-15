@@ -90,3 +90,4 @@ class Agency(models.Model):
     class Meta:
         db_table = 'agency'
         app_label = 'multigtfs'
+        verbose_name_plural = "agencies"

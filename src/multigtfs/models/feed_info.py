@@ -89,3 +89,4 @@ class FeedInfo(models.Model):
     class Meta:
         db_table = 'feed_info'
         app_label = 'multigtfs'
+        verbose_name_plural = "feed info"

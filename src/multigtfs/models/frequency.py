@@ -89,3 +89,4 @@ class Frequency(models.Model):
     class Meta:
         db_table = 'frequency'
         app_label = 'multigtfs'
+        verbose_name_plural = "frequencies"
