@@ -314,7 +314,24 @@ def import_shapes(shapes_file, feed):
 
 
 def import_transfers(transfers_file, feed):
-    raise NotImplementedError('not written')
+    """Import transfers.txt into Rransfer records for feed
+    
+    Keyword arguments:
+    transfers_file -- A open transfers.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(transfers_file)
+    for row in reader:
+        from_stop_id = row.pop('from_stop_id')
+        from_stop = Stop.objects.get(feed=feed, stop_id=from_stop_id)
+        to_stop_id = row.pop('to_stop_id')
+        to_stop = Stop.objects.get(feed=feed, stop_id=to_stop_id)
+        # Force empty strings to None
+        transfer_type = row.pop('transfer_type', None)
+        row['transfer_type'] = transfer_type or 0
+        min_transfer_time = row.pop('min_transfer_time', None)
+        row['min_transfer_time'] = min_transfer_time or None
+        Transfer.objects.create(from_stop=from_stop, to_stop=to_stop, **row)
 
 
 def import_feed_info(feed_info_file, feed):

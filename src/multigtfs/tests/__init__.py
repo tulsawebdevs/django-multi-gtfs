@@ -11,6 +11,6 @@ from multigtfs.tests.service_date import *
 from multigtfs.tests.shape import *
 from multigtfs.tests.stop import *
 from multigtfs.tests.stop_time import *
-#from multigtfs.tests.transfer import *
+from multigtfs.tests.transfer import *
 from multigtfs.tests.trip import *
 from multigtfs.tests.utils import *

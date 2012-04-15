@@ -53,7 +53,6 @@ from django.db import models
 
 class Transfer(models.Model):
     """Create additional rules for transfers between ambiguous stops"""
-    feed = models.ForeignKey('Feed')
     from_stop = models.ForeignKey(
         'Stop',
         related_name='transfer_from_stop',
@@ -63,6 +62,7 @@ class Transfer(models.Model):
         related_name='transfer_to_stop',
         help_text='Stop where a connection between routes ends.')
     transfer_type =  models.IntegerField(
+        default=0,
         choices=((0, 'Recommended transfer point'),
                  (1, 'Timed transfer point (vehicle will wait)'),
                  (2, 'min_transfer_time needed to successfully transfer'),
@@ -71,6 +71,9 @@ class Transfer(models.Model):
     min_transfer_time = models.IntegerField(
         null=True,
         help_text="How many seconds are required to transfer?")
+
+    def __unicode__(self):
+        return u"%s-%s" % (self.from_stop, self.to_stop.stop_id)
 
     class Meta:
         db_table = 'transfer'
