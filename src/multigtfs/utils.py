@@ -168,13 +168,24 @@ def import_stop_times(stop_times_file, feed):
     feed -- the Feed to associate the records with
     """
     reader = DictReader(stop_times_file)
-    name_map = dict()
+    name_map = dict(drop_off_time='drop_off_type')
     for row in reader:
         fields = dict((name_map.get(k, k), v) for k,v in row.items())
         trip_id = fields.pop('trip_id')
         trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
         stop_id = fields.pop('stop_id')
         stop = Stop.objects.get(feed=feed, stop_id=stop_id)
+        # Turn None into blanks
+        stop_headsign = fields.get('stop_headsign', '')
+        fields['stop_headsign'] = stop_headsign or ''
+        pickup_type = fields.get('pickup_type', '')
+        fields['pickup_type'] = pickup_type or ''
+        drop_off_type = fields.get('drop_off_type', '')
+        fields['drop_off_type'] = drop_off_type or ''
+        # Turn blanks into None
+        shape_dist_traveled = fields.get('shape_dist_traveled', None)
+        fields['shape_dist_traveled'] = shape_dist_traveled or None
+        
         StopTime.objects.create(trip=trip, stop=stop, **fields)
 
 

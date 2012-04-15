@@ -45,3 +45,31 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(Trip.objects.count(), 11)
         self.assertEqual(Zone.objects.count(), 0)
 
+    def test_import_gtfs_test2(self):
+        '''Try importing test2.zip
+
+        test2.zip was downloaded from
+        https://developers.google.com/transit/gtfs/examples/sample-feed.zip
+        on April 14th, 2012
+        '''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
+        feed = Feed.objects.create()
+        with open(test_path, 'rb') as zip_file:
+            import_gtfs(zip_file, feed)
+
+        self.assertEqual(Agency.objects.count(), 1)
+        self.assertEqual(Block.objects.count(), 2)
+        self.assertEqual(FareAttributes.objects.count(), 0)
+        self.assertEqual(FareRules.objects.count(), 0)
+        self.assertEqual(Feed.objects.count(), 1)
+        self.assertEqual(FeedInfo.objects.count(), 0)
+        self.assertEqual(Frequency.objects.count(), 11)
+        self.assertEqual(Route.objects.count(), 5)
+        self.assertEqual(Service.objects.count(), 2)
+        self.assertEqual(ServiceDate.objects.count(), 1)
+        self.assertEqual(Shape.objects.count(), 0)
+        self.assertEqual(Stop.objects.count(), 9)
+        self.assertEqual(StopTime.objects.count(), 28)
+        self.assertEqual(Transfer.objects.count(), 0)
+        self.assertEqual(Trip.objects.count(), 11)
+        self.assertEqual(Zone.objects.count(), 0)

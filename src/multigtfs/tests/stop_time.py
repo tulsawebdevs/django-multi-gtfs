@@ -50,3 +50,57 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
         self.assertEqual(stoptime.pickup_type, '')
         self.assertEqual(stoptime.drop_off_type, '')
         self.assertEqual(stoptime.shape_dist_traveled, None)
+
+    def test_import_stop_times_maximal(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_type,shape_dist_traveled
+STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
+""")
+        feed = Feed.objects.create()
+        route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
+        service = Service.objects.create(
+            feed=feed, service_id='S1', start_date=date(2011,4,14), 
+            end_date=date(2011,12,31))
+        trip = Trip.objects.create(route=route, trip_id='STBA')
+        trip.services.add(service)
+        stop = Stop.objects.create(
+            feed=feed, stop_id='STAGECOACH', lat="36.425288",
+            lon="-117.133162")
+        import_stop_times(stop_times_txt, feed)
+        stoptime = StopTime.objects.get()
+        self.assertEqual(stoptime.trip, trip)
+        self.assertEqual(stoptime.arrival_time, time(6))
+        self.assertEqual(stoptime.departure_time, time(6))
+        self.assertEqual(stoptime.stop, stop)
+        self.assertEqual(stoptime.stop_sequence, 1)
+        self.assertEqual(stoptime.stop_headsign, 'SC')
+        self.assertEqual(stoptime.pickup_type, '2')
+        self.assertEqual(stoptime.drop_off_type, '1')
+        self.assertEqual(stoptime.shape_dist_traveled, 5.25)
+
+    def test_import_stop_times_empty_optional(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_type,shape_dist_traveled
+STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
+""")
+        feed = Feed.objects.create()
+        route = Route.objects.create(feed=feed, route_id='R1', rtype=3)
+        service = Service.objects.create(
+            feed=feed, service_id='S1', start_date=date(2011,4,14), 
+            end_date=date(2011,12,31))
+        trip = Trip.objects.create(route=route, trip_id='STBA')
+        trip.services.add(service)
+        stop = Stop.objects.create(
+            feed=feed, stop_id='STAGECOACH', lat="36.425288",
+            lon="-117.133162")
+        import_stop_times(stop_times_txt, feed)
+        stoptime = StopTime.objects.get()
+        self.assertEqual(stoptime.trip, trip)
+        self.assertEqual(stoptime.arrival_time, time(6))
+        self.assertEqual(stoptime.departure_time, time(6))
+        self.assertEqual(stoptime.stop, stop)
+        self.assertEqual(stoptime.stop_sequence, 1)
+        self.assertEqual(stoptime.stop_headsign, '')
+        self.assertEqual(stoptime.pickup_type, '')
+        self.assertEqual(stoptime.drop_off_type, '')
+        self.assertEqual(stoptime.shape_dist_traveled, None)
