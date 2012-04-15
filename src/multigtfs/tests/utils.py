@@ -1,3 +1,4 @@
+from datetime import time
 import os.path
 import StringIO
 import urllib
@@ -7,7 +8,7 @@ from django.test import TestCase
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
     Route, Service, ServiceDate, Shape, Stop, StopTime, Transfer, Trip, Zone)
-from multigtfs.utils import import_gtfs
+from multigtfs.utils import import_gtfs, parse_time
 
 my_dir = os.path.dirname(__file__)
 fixtures_dir = os.path.join(my_dir, 'fixtures')
@@ -77,3 +78,25 @@ class ImportGTFSTest(TestCase):
         self.assertEqual(Transfer.objects.count(), 0)
         self.assertEqual(Trip.objects.count(), 11)
         self.assertEqual(Zone.objects.count(), 0)
+
+
+class ParseTimeTest(TestCase):
+    def test_null(self):
+        t, d = parse_time(None)
+        self.assertEqual(t, None)
+        self.assertEqual(d, None)
+
+    def test_blank(self):
+        t, d = parse_time('')
+        self.assertEqual(t, None)
+        self.assertEqual(d, None)
+
+    def test_standard(self):
+        t, d = parse_time('08:30:14')
+        self.assertEqual(t, time(8,30,14))
+        self.assertEqual(d, 0)
+
+    def test_next_day(self):
+        t, d = parse_time('24:30:14')
+        self.assertEqual(t, time(0,30,14))
+        self.assertEqual(d, 1)

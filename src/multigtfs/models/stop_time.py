@@ -159,10 +159,16 @@ class StopTime(models.Model):
     stop = models.ForeignKey('Stop')
     arrival_time = models.TimeField(
         null=True,
-        help_text="Arrival time.  Must be set for end stops of trip.")
+        help_text="Arrival time. Must be set for end stops of trip.")
+    arrival_day = models.IntegerField(
+        default=None, null=True,
+        help_text="Arrival day. 1 if after midnight")
     departure_time = models.TimeField(
         null=True,
-        help_text='Departure time.  Must be set for end stops of trip.')
+        help_text='Departure time. Must be set for end stops of trip.')
+    departure_day = models.IntegerField(
+        default=None, null=True,
+        help_text="Departure day. 1 if after midnight")
     stop_sequence = models.IntegerField()
     stop_headsign = models.CharField(
         max_length=255, blank=True,

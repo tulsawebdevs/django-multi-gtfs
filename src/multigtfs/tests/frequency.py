@@ -51,3 +51,17 @@ STBA,6:00:00,22:00:00,1800,1
         self.assertEqual(frequency.end_time, time(22))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '1')
+
+    def test_import_frequencies_maximal(self):
+        frequencies_txt = StringIO.StringIO("""\
+trip_id,start_time,end_time,headway_secs,exact_times
+STBA,00:50:00,24:10:00,1800,1
+""")
+        import_frequencies(frequencies_txt, self.feed)
+        frequency = Frequency.objects.get()
+        self.assertEqual(frequency.start_time, time(0, 50))
+        self.assertEqual(frequency.start_day, 0)
+        self.assertEqual(frequency.end_time, time(0, 10))
+        self.assertEqual(frequency.end_day, 1)
+        self.assertEqual(frequency.headway_secs, 1800)
+        self.assertEqual(frequency.exact_times, '1')

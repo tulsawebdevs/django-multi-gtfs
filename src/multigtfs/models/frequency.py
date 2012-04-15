@@ -73,8 +73,14 @@ class Frequency(models.Model):
     trip = models.ForeignKey('Trip')
     start_time = models.TimeField(
         help_text="Time that the service begins at the specified frequency")
+    start_day = models.IntegerField(
+        default=None, null=True,
+        help_text="Start day. 1 if after midnight")
     end_time = models.TimeField(
         help_text="Time that the service ends at the specified frequency")
+    end_day = models.IntegerField(
+        default=None, null=True,
+        help_text="End day. 1 if after midnight")
     headway_secs = models.IntegerField(
         help_text="Time in seconds before returning to same stop")
     exact_times =  models.CharField(

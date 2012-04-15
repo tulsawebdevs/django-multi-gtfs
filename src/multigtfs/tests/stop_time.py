@@ -98,3 +98,22 @@ STBA,12:00:00,12:00:00,STAGECOACH3,3
         stoptime3 = StopTime.objects.get(stop=stop3)
         self.assertEqual(stoptime3.arrival_time, time(12))
         self.assertEqual(stoptime3.departure_time, time(12))
+
+    def test_import_stop_times_tomorrow(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence
+STBA,23:59:00,24:01:00,STAGECOACH,1
+""")
+        import_stop_times(stop_times_txt, self.feed)
+        stoptime = StopTime.objects.get()
+        self.assertEqual(stoptime.trip, self.trip)
+        self.assertEqual(stoptime.arrival_time, time(23,59))
+        self.assertEqual(stoptime.arrival_day, 0)
+        self.assertEqual(stoptime.departure_time, time(0,1))
+        self.assertEqual(stoptime.departure_day, 1)
+        self.assertEqual(stoptime.stop, self.stop)
+        self.assertEqual(stoptime.stop_sequence, 1)
+        self.assertEqual(stoptime.stop_headsign, '')
+        self.assertEqual(stoptime.pickup_type, '')
+        self.assertEqual(stoptime.drop_off_type, '')
+        self.assertEqual(stoptime.shape_dist_traveled, None)

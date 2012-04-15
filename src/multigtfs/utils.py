@@ -1,4 +1,4 @@
-from datetime import datetime, date
+from datetime import datetime, date, time
 from collections import defaultdict
 from csv import DictReader
 from zipfile import ZipFile
@@ -42,6 +42,28 @@ def import_gtfs(gtfs_file, feed):
                 table = z.open(f)
                 importer(table, feed)
     return gtfs_objects
+
+
+def parse_time(time_string):
+    """Parse a GTFS-formatted time into a time and day
+
+    Keyword Arguments:
+    time_string -- A 'HH:MM:SS' formatted time
+
+    Return is a tuple:
+    time -- a datetime.time
+    day -- 0 if the entered time was under 24 hours, 1 if over
+    
+    If time_string is falsy, (None, None) is returned
+    """
+    if time_string:
+        hour, minute, second = [int(p) for p in time_string.split(':')]
+        day = 0
+        while hour > 23:
+            hour -= 24
+            day += 1
+        return time(hour, minute, second), day
+    return None, None
 
 
 def import_agency(agency_file, feed):
@@ -181,15 +203,15 @@ def import_stop_times(stop_times_file, feed):
         fields['pickup_type'] = pickup_type or ''
         drop_off_type = fields.get('drop_off_type', '')
         fields['drop_off_type'] = drop_off_type or ''
-        # Turn blanks into None
-        arrival_time = fields.get('arrival_time', None)
-        fields['arrival_time'] = arrival_time or None
-        departure_time = fields.get('departure_time', None)
-        fields['departure_time'] = departure_time or None
+        # Convert times
+        atime, aday = parse_time(fields.pop('arrival_time', None))
+        dtime, dday = parse_time(fields.pop('departure_time', None))
+        # Set empty strings to None
         shape_dist_traveled = fields.get('shape_dist_traveled', None)
         fields['shape_dist_traveled'] = shape_dist_traveled or None
-        
-        StopTime.objects.create(trip=trip, stop=stop, **fields)
+        StopTime.objects.create(trip=trip, stop=stop, arrival_time=atime,
+            arrival_day=aday, departure_time=dtime, departure_day=dday,
+            **fields)
 
 
 def import_calendar(calendar_file, feed):
@@ -243,7 +265,12 @@ def import_frequencies(frequencies_file, feed):
     for row in reader:
         trip_id = row.pop('trip_id')
         trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
-        Frequency.objects.create(trip=trip, **row)
+        # Convert times
+        stime, sday = parse_time(row.pop('start_time', None))
+        etime, eday = parse_time(row.pop('end_time', None))
+        Frequency.objects.create(
+            trip=trip, start_time=stime, start_day=sday, end_time=etime,
+            end_day=eday, **row)
 
 
 def import_fare_attributes(fare_attributes_file, feed):
