@@ -1,16 +1,28 @@
-from multigtfs.tests.agency import *
-from multigtfs.tests.block import *
-from multigtfs.tests.fare import *
-from multigtfs.tests.fare_rule import *
-from multigtfs.tests.feed import *
-from multigtfs.tests.feed_info import *
-from multigtfs.tests.frequency import *
-from multigtfs.tests.route import *
-from multigtfs.tests.service import *
-from multigtfs.tests.service_date import *
-from multigtfs.tests.shape import *
-from multigtfs.tests.stop import *
-from multigtfs.tests.stop_time import *
-from multigtfs.tests.transfer import *
-from multigtfs.tests.trip import *
-from multigtfs.tests.utils import *
+__all__ = (
+    'agency', 'block', 'fare', 'fare_rule', 'feed', 'feed_info', 'frequency',
+    'route', 'service', 'service_date', 'shape', 'stop', 'stop_time',
+    'transfer', 'trip', 'utils')
+
+from multigtfs.tests.agency import AgencyTest
+from multigtfs.tests.block import BlockTest
+from multigtfs.tests.fare import FareTest
+from multigtfs.tests.fare_rule import FareRuleTest
+from multigtfs.tests.feed import FeedTest
+from multigtfs.tests.feed_info import FeedInfoTest
+from multigtfs.tests.frequency import FrequencyTest
+from multigtfs.tests.route import RouteTest
+from multigtfs.tests.service import ServiceTest
+from multigtfs.tests.service_date import ServiceDateTest
+from multigtfs.tests.shape import ShapeTest
+from multigtfs.tests.stop import StopTest
+from multigtfs.tests.stop_time import StopTimeTest
+from multigtfs.tests.transfer import TransferTest
+from multigtfs.tests.trip import TripTest
+from multigtfs.tests.utils import ParseTimeTest
+
+# Be quiet pyflakes
+__tests = (
+    AgencyTest, BlockTest, FareTest, FareRuleTest, FeedTest, FeedInfoTest,
+    FrequencyTest, RouteTest, ServiceTest, ServiceDateTest, ShapeTest,
+    ServiceDateTest, ShapeTest, StopTest, StopTimeTest, TransferTest,
+    TripTest, ParseTimeTest)

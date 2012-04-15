@@ -110,6 +110,7 @@ from django.db import models
 
 from multigtfs.models.zone import Zone
 
+
 class Stop(models.Model):
     """A stop or station"""
     feed = models.ForeignKey('Feed')
@@ -169,11 +170,11 @@ def import_stops_txt(stops_file, feed):
                     stop_lat='lat', stop_lon='lon', stop_url='url',
                     stop_timezone='timezone')
     for row in reader:
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         parent_id = fields.pop('parent_station', None)
         zone_id = fields.pop('zone_id', None)
         if zone_id:
-            zone, _c =  Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
+            zone, _c = Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
         else:
             zone = None
         stop = Stop.objects.create(feed=feed, zone=zone, **fields)

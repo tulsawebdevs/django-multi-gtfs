@@ -207,7 +207,7 @@ class StopTime(models.Model):
 
 def import_stop_times_txt(stop_times_file, feed):
     """Import stop_times.txt into StopTime records for feed
-    
+
     Keyword arguments:
     stop_times_file -- A open stop_times.txt for reading
     feed -- the Feed to associate the records with
@@ -215,7 +215,7 @@ def import_stop_times_txt(stop_times_file, feed):
     reader = DictReader(stop_times_file)
     name_map = dict(drop_off_time='drop_off_type')
     for row in reader:
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         trip_id = fields.pop('trip_id')
         trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
         stop_id = fields.pop('stop_id')

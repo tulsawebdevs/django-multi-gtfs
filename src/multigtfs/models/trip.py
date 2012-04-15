@@ -112,7 +112,7 @@ class Trip(models.Model):
 
 def import_trips_txt(trips_file, feed):
     """Import trips.txt into Trip records for feed
-    
+
     Keyword arguments:
     trips_file -- A open trips.txt for reading
     feed -- the Feed to associate the records with
@@ -121,7 +121,7 @@ def import_trips_txt(trips_file, feed):
     name_map = dict(trip_headsign='headsign', trip_short_name='short_name',
                     direction_id='direction')
     for row in reader:
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         route_id = fields.pop('route_id')
         route = Route.objects.get(feed=feed, route_id=route_id)
         service_id = fields.pop('service_id')
@@ -140,7 +140,7 @@ def import_trips_txt(trips_file, feed):
         trip_id = fields.pop('trip_id')
         trip, created = Trip.objects.get_or_create(
             trip_id=trip_id, route=route)
-        for k,v in fields.items():
+        for k, v in fields.items():
             if created:
                 setattr(trip, k, v)
             else:

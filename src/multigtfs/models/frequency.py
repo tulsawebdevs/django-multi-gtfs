@@ -88,7 +88,7 @@ class Frequency(models.Model):
         help_text="End day. 1 if after midnight")
     headway_secs = models.IntegerField(
         help_text="Time in seconds before returning to same stop")
-    exact_times =  models.CharField(
+    exact_times = models.CharField(
         max_length=1, blank=True,
         choices=((0, 'Trips are not exactly scheduled'),
                  (1, 'Trips are exactly scheduled from start time')),
@@ -105,7 +105,7 @@ class Frequency(models.Model):
 
 def import_frequencies_txt(frequencies_file, feed):
     """Import frequencies.txt into Frequency records for feed
-    
+
     Keyword arguments:
     frequencies_file -- A open frequencies.txt for reading
     feed -- the Feed to associate the records with

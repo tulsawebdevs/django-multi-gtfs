@@ -85,6 +85,7 @@ class Shape(models.Model):
         db_table = 'shape'
         app_label = 'multigtfs'
 
+
 class ShapePoint(models.Model):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
@@ -109,7 +110,7 @@ class ShapePoint(models.Model):
 
 def import_shapes_txt(shapes_file, feed):
     """Import shapes.txt into Shape records for feed
-    
+
     Keyword arguments:
     shapes_file -- A open shapes.txt for reading
     feed -- the Feed to associate the records with
@@ -121,7 +122,7 @@ def import_shapes_txt(shapes_file, feed):
     for row in reader:
         shape_id = row.pop('shape_id')
         shape, _c = Shape.objects.get_or_create(feed=feed, shape_id=shape_id)
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         # Force empty strings to None
         traveled = fields.get('traveled', None)
         fields['traveled'] = traveled or None

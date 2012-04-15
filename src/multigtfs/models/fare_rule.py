@@ -87,6 +87,7 @@ from multigtfs.models.fare import Fare
 from multigtfs.models.route import Route
 from multigtfs.models.zone import Zone
 
+
 class FareRule(models.Model):
     """Associate a Fare with a Route and/or Zones"""
     fare = models.ForeignKey(Fare)
@@ -119,7 +120,7 @@ class FareRule(models.Model):
 
 def import_fare_rules_txt(fare_rules_file, feed):
     """Import fare_rules.txt into FareRules records for feed
-    
+
     Keyword arguments:
     fare_rules_file -- A open fare_rules.txt for reading
     feed -- the Feed to associate the records with

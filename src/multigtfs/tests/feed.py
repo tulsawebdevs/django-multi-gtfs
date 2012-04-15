@@ -1,5 +1,4 @@
 import os
-import StringIO
 
 from django.test import TestCase
 

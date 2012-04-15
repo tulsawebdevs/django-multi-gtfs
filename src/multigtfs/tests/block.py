@@ -1,11 +1,9 @@
-import StringIO
-
 from django.test import TestCase
 
 from multigtfs.models import Block, Feed
 
 
-class BlockModelTest(TestCase):
+class BlockTest(TestCase):
     def test_string(self):
         feed = Feed.objects.create()
         self.assertEqual(feed.id, 1)

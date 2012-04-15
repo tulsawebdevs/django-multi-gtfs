@@ -13,7 +13,8 @@ at most once in a calendar.txt file. This value is dataset unique. It is
 referenced by the trips.txt file.
 
 - monday (required)
-The monday field contains a binary value that indicates whether the service is valid for all Mondays.
+The monday field contains a binary value that indicates whether the service is
+valid for all Mondays.
 
     * A value of 1 indicates that service is available for all Mondays in the
       date range. (The date range is specified using the start_date and
@@ -25,7 +26,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - tuesday (required)
-The tuesday field contains a binary value that indicates whether the service is valid for all Tuesdays.
+The tuesday field contains a binary value that indicates whether the service is
+valid for all Tuesdays.
 
     * A value of 1 indicates that service is available for all Tuesdays in the
       date range. (The date range is specified using the start_date and
@@ -37,7 +39,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - wednesday (required)
-The wednesday field contains a binary value that indicates whether the service is valid for all Wednesdays.
+The wednesday field contains a binary value that indicates whether the service
+is valid for all Wednesdays.
 
     * A value of 1 indicates that service is available for all Wednesdays in
       the date range. (The date range is specified using the start_date and
@@ -49,7 +52,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - thursday (required)
-The thursday field contains a binary value that indicates whether the service is valid for all Thursdays.
+The thursday field contains a binary value that indicates whether the service
+is valid for all Thursdays.
 
     * A value of 1 indicates that service is available for all Thursdays in the
       date range. (The date range is specified using the start_date and
@@ -61,7 +65,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - friday (required)
-The friday field contains a binary value that indicates whether the service is valid for all Fridays.
+The friday field contains a binary value that indicates whether the service is
+valid for all Fridays.
 
     * A value of 1 indicates that service is available for all Fridays in the
       date range. (The date range is specified using the start_date and
@@ -73,7 +78,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - saturday (required)
-The saturday field contains a binary value that indicates whether the service is valid for all Saturdays.
+The saturday field contains a binary value that indicates whether the service
+is valid for all Saturdays.
 
     * A value of 1 indicates that service is available for all Saturdays in the
       date range. (The date range is specified using the start_date and
@@ -85,7 +91,8 @@ Note: You may list exceptions for particular dates, such as holidays, in the
 calendar_dates.txt file.
 
 - sunday (required)
-The sunday field contains a binary value that indicates whether the service is valid for all Sundays.
+The sunday field contains a binary value that indicates whether the service is
+valid for all Sundays.
 
     * A value of 1 indicates that service is available for all Sundays in the
       date range. (The date range is specified using the start_date and
@@ -102,7 +109,8 @@ The start_date field contains the start date for the service.
 The start_date field's value should be in YYYYMMDD format.
 
 - end_date (required)
-The end_date field contains the end date for the service. This date is included in the service interval.
+The end_date field contains the end date for the service. This date is
+included in the service interval.
 
 The end_date field's value should be in YYYYMMDD format.
 """
@@ -154,7 +162,7 @@ class Service(models.Model):
 
 def import_calendar_txt(calendar_file, feed):
     """Import calendar.txt into Service records for feed
-    
+
     Keyword arguments:
     calendar_file -- A open calendar.txt for reading
     feed -- the Feed to associate the records with
@@ -170,7 +178,7 @@ def import_calendar_txt(calendar_file, feed):
         sunday = row.pop('sunday') == '1'
         start_date = datetime.strptime(row.pop('start_date'), '%Y%m%d')
         end_date = datetime.strptime(row.pop('end_date'), '%Y%m%d')
-        
+
         Service.objects.create(
             feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
             thursday=thursday, friday=friday, saturday=saturday,

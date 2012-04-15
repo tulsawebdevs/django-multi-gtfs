@@ -80,7 +80,7 @@ class ServiceDate(models.Model):
 
 def import_calendar_dates_txt(calendar_dates_file, feed):
     """Import calendar_dates.txt into ServiceDate records for feed
-    
+
     Keyword arguments:
     calendar_dates_file -- A open calendar_dates.txt for reading
     feed -- the Feed to associate the records with
@@ -88,6 +88,6 @@ def import_calendar_dates_txt(calendar_dates_file, feed):
     reader = DictReader(calendar_dates_file)
     for row in reader:
         d = datetime.strptime(row.pop('date'), '%Y%m%d')
-        service_id=row.pop('service_id')
+        service_id = row.pop('service_id')
         service = Service.objects.get(feed=feed, service_id=service_id)
         ServiceDate.objects.create(date=d, service=service, **row)

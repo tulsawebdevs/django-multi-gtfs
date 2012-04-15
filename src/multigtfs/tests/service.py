@@ -13,8 +13,8 @@ class ServiceTest(TestCase):
 
     def test_string(self):
         service = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
-            end_date=date(2011,12,31))
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
         self.assertEqual(str(service), '1-S1')
 
     def test_import_calendar_txt(self):
@@ -34,5 +34,5 @@ W,1,0,1,0,1,0,1,20120414,20121231
         self.assertTrue(service.friday)
         self.assertFalse(service.saturday)
         self.assertTrue(service.sunday)
-        self.assertEqual(service.start_date, date(2012,4,14))
-        self.assertEqual(service.end_date, date(2012,12,31))
+        self.assertEqual(service.start_date, date(2012, 4, 14))
+        self.assertEqual(service.end_date, date(2012, 12, 31))

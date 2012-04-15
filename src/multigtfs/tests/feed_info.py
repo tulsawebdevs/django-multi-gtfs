@@ -6,7 +6,8 @@ from django.test import TestCase
 from multigtfs.models import Feed, FeedInfo
 from multigtfs.models.feed_info import import_feed_info_txt
 
-class FeedInfoTests(TestCase):
+
+class FeedInfoTest(TestCase):
     def setUp(self):
         self.feed = Feed.objects.create()
 
@@ -27,8 +28,8 @@ PTEST,http://example.com,en,20120414,20121231,FOO1
         self.assertEqual(feed_info.publisher_name, 'PTEST')
         self.assertEqual(feed_info.publisher_url, 'http://example.com')
         self.assertEqual(feed_info.lang, 'en')
-        self.assertEqual(feed_info.start_date, date(2012,4,14))
-        self.assertEqual(feed_info.end_date, date(2012,12,31))
+        self.assertEqual(feed_info.start_date, date(2012, 4, 14))
+        self.assertEqual(feed_info.end_date, date(2012, 12, 31))
         self.assertEqual(feed_info.version, 'FOO1')
 
     def test_import_feed_info_txt_minimal(self):
@@ -44,4 +45,3 @@ PTEST,http://example.com
         self.assertEqual(feed_info.start_date, None)
         self.assertEqual(feed_info.end_date, None)
         self.assertEqual(feed_info.version, '')
-

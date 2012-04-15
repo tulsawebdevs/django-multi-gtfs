@@ -6,12 +6,13 @@ from django.test import TestCase
 from multigtfs.models import Feed, Service, ServiceDate
 from multigtfs.models.service_date import import_calendar_dates_txt
 
+
 class ServiceDateTest(TestCase):
     def setUp(self):
         self.feed = Feed.objects.create()
         self.service = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
-            end_date=date(2011,12,31))
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
 
     def test_string(self):
         service_date = ServiceDate.objects.create(
@@ -27,6 +28,6 @@ date,service_id,exception_type
 """)
         import_calendar_dates_txt(calendar_dates_txt, self.feed)
         service_date = ServiceDate.objects.get()
-        self.assertEqual(service_date.date, date(2012,4,14))
+        self.assertEqual(service_date.date, date(2012, 4, 14))
         self.assertEqual(service_date.service, self.service)
         self.assertEqual(service_date.exception_type, 2)

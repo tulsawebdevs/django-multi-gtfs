@@ -1,13 +1,13 @@
-from datetime import date, time
+from datetime import time
 import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Feed, Route, Service, Stop, StopTime, Trip
+from multigtfs.models import Feed, Route, Stop, StopTime, Trip
 from multigtfs.models.stop_time import import_stop_times_txt
 
 
-class StopTimesTest(TestCase):
+class StopTimeTest(TestCase):
 
     def setUp(self):
         self.feed = Feed.objects.create()
@@ -43,7 +43,8 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
 
     def test_import_stop_times_txt_maximal(self):
         stop_times_txt = StringIO.StringIO("""\
-trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_type,shape_dist_traveled
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
+pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
 """)
         import_stop_times_txt(stop_times_txt, self.feed)
@@ -60,7 +61,8 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
 
     def test_import_stop_times_txt_empty_optional(self):
         stop_times_txt = StringIO.StringIO("""\
-trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,pickup_type,drop_off_type,shape_dist_traveled
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
+pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
 """)
         import_stop_times_txt(stop_times_txt, self.feed)
@@ -107,9 +109,9 @@ STBA,23:59:00,24:01:00,STAGECOACH,1
         import_stop_times_txt(stop_times_txt, self.feed)
         stoptime = StopTime.objects.get()
         self.assertEqual(stoptime.trip, self.trip)
-        self.assertEqual(stoptime.arrival_time, time(23,59))
+        self.assertEqual(stoptime.arrival_time, time(23, 59))
         self.assertEqual(stoptime.arrival_day, 0)
-        self.assertEqual(stoptime.departure_time, time(0,1))
+        self.assertEqual(stoptime.departure_time, time(0, 1))
         self.assertEqual(stoptime.departure_day, 1)
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)

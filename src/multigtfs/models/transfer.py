@@ -65,7 +65,7 @@ class Transfer(models.Model):
         Stop,
         related_name='transfer_to_stop',
         help_text='Stop where a connection between routes ends.')
-    transfer_type =  models.IntegerField(
+    transfer_type = models.IntegerField(
         default=0,
         choices=((0, 'Recommended transfer point'),
                  (1, 'Timed transfer point (vehicle will wait)'),
@@ -86,7 +86,7 @@ class Transfer(models.Model):
 
 def import_transfers_txt(transfers_file, feed):
     """Import transfers.txt into Transfer records for feed
-    
+
     Keyword arguments:
     transfers_file -- A open transfers.txt for reading
     feed -- the Feed to associate the records with

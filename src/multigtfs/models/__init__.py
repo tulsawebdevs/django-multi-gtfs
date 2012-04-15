@@ -14,3 +14,8 @@ from stop_time import StopTime
 from transfer import Transfer
 from trip import Trip
 from zone import Zone
+
+#pyflakes be quiet
+__models = (
+    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency, Route, Service,
+    ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer, Trip, Zone)

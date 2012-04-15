@@ -23,8 +23,8 @@ route_id,service_id,trip_id
 R1,S1,T1
 """)
         service = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
-            end_date=date(2011,12,31))
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
         import_trips_txt(trips_txt, self.feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.route, self.route)
@@ -43,8 +43,8 @@ block_id,shape_id
 R1,S1,T1,Headsign,HS,0,B1,S1
 """)
         service = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
-            end_date=date(2011,12,31))
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
         block = Block.objects.create(feed=self.feed, block_id='B1')
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
         import_trips_txt(trips_txt, self.feed)
@@ -66,11 +66,11 @@ R1,S1,T1
 R1,S2,T1
 """)
         service1 = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
-            end_date=date(2011,12,31))
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
         service2 = Service.objects.create(
-            feed=self.feed, service_id='S2', start_date=date(2012,1,1),
-            end_date=date(2012,4,14))
+            feed=self.feed, service_id='S2', start_date=date(2012, 1, 1),
+            end_date=date(2012, 4, 14))
 
         import_trips_txt(trips_txt, self.feed)
         trip = Trip.objects.get()

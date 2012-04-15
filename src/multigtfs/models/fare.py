@@ -92,7 +92,7 @@ class Fare(models.Model):
 
 def import_fare_attributes_txt(fare_attributes_file, feed):
     """Import fare_attributes.txt into FareAttributes records for feed
-    
+
     Keyword arguments:
     fare_attributes_file -- A open fare_attributes.txt for reading
     feed -- the Feed to associate the records with
@@ -102,4 +102,3 @@ def import_fare_attributes_txt(fare_attributes_file, feed):
         transfer_duration = row.get('transfer_duration', None)
         row['transfer_duration'] = transfer_duration or None
         Fare.objects.create(feed=feed, **row)
-

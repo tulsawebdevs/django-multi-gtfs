@@ -10,7 +10,7 @@ def parse_time(time_string):
     Return is a tuple:
     time -- a datetime.time
     day -- 0 if the entered time was under 24 hours, 1 if over
-    
+
     If time_string is falsy, (None, None) is returned
     """
     if time_string:

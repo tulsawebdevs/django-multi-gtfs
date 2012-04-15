@@ -6,7 +6,7 @@ from multigtfs.models import Agency, Feed
 from multigtfs.models.agency import import_agency_txt
 
 
-class AgencyTests(TestCase):
+class AgencyTest(TestCase):
     def setUp(self):
         self.feed = Feed.objects.create()
 

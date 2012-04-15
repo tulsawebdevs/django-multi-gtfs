@@ -24,7 +24,7 @@ class Feed(models.Model):
     used to allow storage of several GTFS feeds in the same database.
     """
     name = models.CharField(max_length=255)
-    created = models.DateTimeField(auto_now_add = True)
+    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'feed'
@@ -41,7 +41,7 @@ class Feed(models.Model):
 
         Keyword arguments:
         gtfs_file - A path or file-like object for the GTFS feed
-        
+
         Returns is a list of objects imported
         """
         z = ZipFile(gtfs_file, 'r')
@@ -68,5 +68,3 @@ class Feed(models.Model):
                 if f.endswith(table_name):
                     table = z.open(f)
                     importer(table, self)
-
-

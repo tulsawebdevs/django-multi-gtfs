@@ -26,7 +26,10 @@ See a Google Maps screenshot highlighting the route_short_name:
   http://bit.ly/yIS1sa
 
 - route_long_name (required)
-The route_long_name contains the full name of a route. This name is generally more descriptive than the route_short_name and will often include the route's destination or stop. If the route does not have a long name, please specify a route_short_name and use an empty string as the value for this field.
+The route_long_name contains the full name of a route. This name is generally
+more descriptive than the route_short_name and will often include the route's
+destination or stop. If the route does not have a long name, please specify a
+route_short_name and use an empty string as the value for this field.
 
 See a Google Maps screenshot highlighting the route_long_name:
   http://bit.ly/wZw5yH
@@ -154,11 +157,11 @@ def import_routes_txt(routes_file, feed):
     feed -- the Feed to associate the records with
     """
     reader = DictReader(routes_file)
-    name_map = dict(route_short_name='short_name', route_long_name='long_name', 
+    name_map = dict(route_short_name='short_name', route_long_name='long_name',
                     route_desc='desc', route_type='rtype', route_url='url',
                     route_color='color', route_text_color='text_color')
     for row in reader:
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         agency_id = fields.pop('agency_id', None)
         if agency_id:
             agency = Agency.objects.get(feed=feed, agency_id=agency_id)

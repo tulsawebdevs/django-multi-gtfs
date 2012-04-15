@@ -107,5 +107,5 @@ def import_agency_txt(agency_file, feed):
                     agency_phone='phone', agency_fare_url='fare_url',
                     agency_timezone='timezone', agency_lang='lang')
     for row in reader:
-        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        fields = dict((name_map.get(k, k), v) for k, v in row.items())
         Agency.objects.create(feed=feed, **fields)
