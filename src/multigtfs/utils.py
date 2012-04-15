@@ -4,8 +4,8 @@ from csv import DictReader
 from zipfile import ZipFile
 
 from multigtfs.models import (
-    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
-    Route, Service, ServiceDate, Shape, Stop, StopTime, Transfer, Trip, Zone)
+    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency, Route, Service,
+    ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer, Trip, Zone)
 
 def import_gtfs(gtfs_file, feed):
     """Import a GTFS file as feed
@@ -18,7 +18,6 @@ def import_gtfs(gtfs_file, feed):
     """
     z = ZipFile(gtfs_file, 'r')
     files = z.namelist()
-    print files
 
     gtfs_order = (
         ('agency.txt', import_agency),
@@ -26,14 +25,14 @@ def import_gtfs(gtfs_file, feed):
         ('routes.txt', import_routes),
         ('calendar.txt', import_calendar),
         ('calendar_dates.txt', import_calendar_dates),
-        #('shapes.txt', import_shapes),
+        ('shapes.txt', import_shapes),
         ('trips.txt', import_trips),
         ('stop_times.txt', import_stop_times),
         ('frequencies.txt', import_frequencies),
         ('fare_attributes.txt', import_fare_attributes),
         ('fare_rules.txt', import_fare_rules),
-        #('transfers.txt', import_transfers),
-        #('feed_info.txt', import_feed_info),
+        ('transfers.txt', import_transfers),
+        ('feed_info.txt', import_feed_info),
     )
 
     gtfs_objects = []
@@ -294,7 +293,24 @@ def import_fare_rules(fare_rules_file, feed):
 
 
 def import_shapes(shapes_file, feed):
-    raise NotImplementedError('not written')
+    """Import shapes.txt into Shape records for feed
+    
+    Keyword arguments:
+    shapes_file -- A open shapes.txt for reading
+    feed -- the Feed to associate the records with
+    """
+    reader = DictReader(shapes_file)
+    name_map = dict(shape_pt_lat='lat', shape_pt_lon='lon',
+                    shape_pt_sequence='sequence',
+                    shape_dist_traveled='traveled')
+    for row in reader:
+        shape_id = row.pop('shape_id')
+        shape, _c = Shape.objects.get_or_create(feed=feed, shape_id=shape_id)
+        fields = dict((name_map.get(k, k), v) for k,v in row.items())
+        # Force empty strings to None
+        traveled = fields.get('traveled', None)
+        fields['traveled'] = traveled or None
+        ShapePoint.objects.create(shape=shape, **fields)
 
 
 def import_transfers(transfers_file, feed):

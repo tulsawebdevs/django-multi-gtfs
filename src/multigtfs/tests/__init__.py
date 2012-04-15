@@ -8,7 +8,7 @@ from multigtfs.tests.frequency import *
 from multigtfs.tests.route import *
 from multigtfs.tests.service import *
 from multigtfs.tests.service_date import *
-#from multigtfs.tests.shape import *
+from multigtfs.tests.shape import *
 from multigtfs.tests.stop import *
 from multigtfs.tests.stop_time import *
 #from multigtfs.tests.transfer import *

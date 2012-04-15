@@ -76,6 +76,9 @@ class Shape(models.Model):
         max_length=255, db_index=True,
         help_text="Unique identifier for a shape.")
 
+    def __unicode__(self):
+        return u"%d-%s" % (self.feed.id, self.shape_id)
+
     class Meta:
         db_table = 'shape'
         app_label = 'multigtfs'
@@ -93,6 +96,9 @@ class ShapePoint(models.Model):
     traveled = models.FloatField(
         null=True,
         help_text='Distance of point from start of shape')
+
+    def __unicode__(self):
+        return u"%s-%d" % (self.shape, self.sequence)
 
     class Meta:
         db_table = 'shape_point'
