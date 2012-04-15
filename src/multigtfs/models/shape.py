@@ -38,7 +38,7 @@ The shape_pt_sequence field associates the latitude and longitude of a shape
 point with its sequence order along the shape. The values for shape_pt_sequence
 must be non-negative integers, and they must increase along the trip.
 
-For example, if the shape "A_shp" has three points in its definition, the 
+For example, if the shape "A_shp" has three points in its definition, the
 shapes.txt file might contain these rows to define the shape:
 
     A_shp,37.61956,-122.48161,0

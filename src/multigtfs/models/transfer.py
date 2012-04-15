@@ -7,8 +7,8 @@ https://developers.google.com/transit/gtfs/reference
 transfer.txt is optional.
 
 Trip planners normally calculate transfer points based on the relative
-proximity of stops in each route. For potentially ambiguous stop pairs, or 
-transfers where you want to specify a particular choice, use transfers.txt to 
+proximity of stops in each route. For potentially ambiguous stop pairs, or
+transfers where you want to specify a particular choice, use transfers.txt to
 define additional rules for making connections between routes.
 
 - from_stop_id (required)
@@ -44,7 +44,7 @@ at these stops. The min_transfer_time must be sufficient to permit a typical
 rider to move between the two stops, including buffer time to allow for
 schedule variance on each route.
 
-The min_transfer_time value must be entered in seconds, and must be a 
+The min_transfer_time value must be entered in seconds, and must be a
 non-negative integer.
 """
 
@@ -55,11 +55,11 @@ class Transfer(models.Model):
     """Create additional rules for transfers between ambiguous stops"""
     feed = models.ForeignKey('Feed')
     from_stop = models.ForeignKey(
-        'Stop', 
+        'Stop',
         related_name='transfer_from_stop',
         help_text='Stop where a connection between routes begins.')
     to_stop = models.ForeignKey(
-        'Stop', 
+        'Stop',
         related_name='transfer_to_stop',
         help_text='Stop where a connection between routes ends.')
     transfer_type =  models.IntegerField(

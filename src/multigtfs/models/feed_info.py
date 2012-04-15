@@ -32,7 +32,7 @@ for a description of how to create fully qualified URL values.
 The feed_lang field contains a IETF BCP 47 language code specifying the default
 language used for the text in this feed. This setting helps GTFS consumers
 choose capitalization rules and other language-specific settings for the feed.
-For an introduction to IETF BCP 47, please refer to: 
+For an introduction to IETF BCP 47, please refer to:
   http://www.rfc-editor.org/rfc/bcp/bcp47.txt
   http://www.w3.org/International/articles/language-tags/
 

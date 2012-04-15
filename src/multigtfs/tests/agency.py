@@ -6,24 +6,22 @@ from multigtfs.models import Agency, Feed
 from multigtfs.utils import import_agency
 
 
-class AgencyModelTest(TestCase):
+class AgencyTests(TestCase):
+    def setUp(self):
+        self.feed = Feed.objects.create()
+
     def test_string(self):
-        feed = Feed.objects.create()
-        self.assertEqual(feed.id, 1)
-        agency = Agency.objects.create(feed=feed, agency_id='TEST')
+        self.assertEqual(self.feed.id, 1)
+        agency = Agency.objects.create(feed=self.feed, agency_id='TEST')
         self.assertEqual(str(agency), '1-TEST')
-
-
-class ImportAgencyTest(TestCase):
 
     def test_import_agency_minimal(self):
         agency_txt = StringIO.StringIO("""\
 agency_id,agency_name,agency_url,agency_timezone
 DTA,Demo Transit Authority,http://google.com,America/Los_Angeles
 """)
-        feed = Feed.objects.create()
-        import_agency(agency_txt, feed)
-        agency = Agency.objects.get(feed=feed)
+        import_agency(agency_txt, self.feed)
+        agency = Agency.objects.get()
         self.assertEqual(agency.agency_id, 'DTA')
         self.assertEqual(agency.name, 'Demo Transit Authority')
         self.assertEqual(agency.url, 'http://google.com')
@@ -39,9 +37,8 @@ agency_fare_url
 DTA,"Demo Transit Authority",http://google.com,America/Los_Angeles,en,\
 555-555-TEST,http://google.com
 """)
-        feed = Feed.objects.create()
-        import_agency(agency_txt, feed)
-        agency = Agency.objects.get(feed=feed)
+        import_agency(agency_txt, self.feed)
+        agency = Agency.objects.get()
         self.assertEqual(agency.agency_id, 'DTA')
         self.assertEqual(agency.name, 'Demo Transit Authority')
         self.assertEqual(agency.url, 'http://google.com')

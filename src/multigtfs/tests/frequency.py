@@ -10,13 +10,12 @@ from multigtfs.utils import import_frequencies
 
 
 class FrequencyTests(TestCase):
-
     def setUp(self):
         self.feed = Feed.objects.create()
         self.route = Route.objects.create(
             feed=self.feed, route_id='R1', rtype=3)
         self.service = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011,4,14), 
+            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
             end_date=date(2011,12,31))
         self.trip = Trip.objects.create(route=self.route, trip_id='STBA')
         self.trip.services.add(self.service)

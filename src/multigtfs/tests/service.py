@@ -7,17 +7,15 @@ from multigtfs.models import Feed, Service
 from multigtfs.utils import import_calendar
 
 
-class ServiceModelTest(TestCase):
+class ServiceTest(TestCase):
+    def setUp(self):
+        self.feed = Feed.objects.create()
+
     def test_string(self):
-        feed = Feed.objects.create()
-        self.assertEqual(feed.id, 1)
         service = Service.objects.create(
-            feed=feed, service_id='S1', start_date=date(2011,4,14), 
+            feed=self.feed, service_id='S1', start_date=date(2011,4,14),
             end_date=date(2011,12,31))
         self.assertEqual(str(service), '1-S1')
-
-
-class ImportCalendarTest(TestCase):
 
     def test_import_calendar(self):
         calendar_txt = StringIO.StringIO("""\

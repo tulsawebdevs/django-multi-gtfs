@@ -6,27 +6,24 @@ from multigtfs.models import Feed, Stop, Zone
 from multigtfs.utils import import_stops
 
 
-class StopModelTest(TestCase):
+class StopTest(TestCase):
+    def setUp(self):
+        self.feed = Feed.objects.create()
+
     def test_string(self):
-        feed = Feed.objects.create()
-        self.assertEqual(feed.id, 1)
         stop = Stop.objects.create(
-            feed=feed, stop_id='STEST',
+            feed=self.feed, stop_id='STEST',
             lat="36.425288", lon="-117.133162")
         self.assertEqual(str(stop), '1-STEST')
-
-
-class ImportStopsTest(TestCase):
 
     def test_import_stops_minimal(self):
         stops_txt = StringIO.StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
 FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
 """)
-        feed = Feed.objects.create()
-        import_stops(stops_txt, feed)
+        import_stops(stops_txt, self.feed)
         stop = Stop.objects.get()
-        self.assertEqual(stop.feed, feed)
+        self.assertEqual(stop.feed, self.feed)
         self.assertEqual(stop.stop_id, 'FUR_CREEK_RES')
         self.assertEqual(stop.code, '')
         self.assertEqual(stop.name, 'Furnace Creek Resort (Demo)')
@@ -48,12 +45,11 @@ http://example.com,1,,America/Los_Angeles
 FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
 http://example.com/fcr,0,FUR_CREEK_STA,
 """)
-        feed = Feed.objects.create()
-        import_stops(stops_txt, feed)
+        import_stops(stops_txt, self.feed)
         self.assertEqual(Stop.objects.count(), 2)
 
         station = Stop.objects.get(stop_id='FUR_CREEK_STA')
-        zone = Zone.objects.get(feed=feed, zone_id='A')
+        zone = Zone.objects.get(feed=self.feed, zone_id='A')
         self.assertEqual(station.code, '')
         self.assertEqual(station.name, 'Furnace Creek Station')
         self.assertEqual(station.desc, 'Our Station')
@@ -87,8 +83,7 @@ http://example.com/fcr,0,FUR_CREEK_STA,
 FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
 http://example.com,1,,America/Los_Angeles
 """)
-        feed = Feed.objects.create()
-        import_stops(stops_txt, feed)
+        import_stops(stops_txt, self.feed)
         self.assertEqual(Stop.objects.count(), 2)
         station = Stop.objects.get(stop_id='FUR_CREEK_STA')
         stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
