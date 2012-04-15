@@ -11,15 +11,19 @@ from multigtfs.models import (
 
 from multigtfs.utils import import_gtfs
 
-# Test GTFS data downloaded from
-# http://timetablepublisher.googlecode.com/files/GTFS%20Test%20Data.zip
 my_dir = os.path.dirname(__file__)
-fix_dir = os.path.join(my_dir, 'fixtures')
-test_path = os.path.abspath(os.path.join(fix_dir, 'GTFS_Test_Data.zip'))
+fixtures_dir = os.path.join(my_dir, 'fixtures')
 
 class ImportGTFSTest(TestCase):
 
-    def test_import_gtfs(self):
+    def test_import_gtfs_test1(self):
+        '''Try importing test1.zip
+        
+        test1.zip was downloaded from
+        http://timetablepublisher.googlecode.com/files/GTFS%20Test%20Data.zip
+        on April 14th, 2012
+        '''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
         feed = Feed.objects.create()
         with open(test_path, 'rb') as zip_file:
             import_gtfs(zip_file, feed)
