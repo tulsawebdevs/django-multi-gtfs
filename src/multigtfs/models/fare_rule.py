@@ -1,5 +1,5 @@
 """
-Define FareRules model for rows in fare_rules.txt
+Define FareRule model for rows in fare_rules.txt
 
 Google documentation from
 https://developers.google.com/transit/gtfs/reference
@@ -82,11 +82,9 @@ project wiki:
 from django.db import models
 
 
-class FareRules(models.Model):
-    """Associate a Fare with a Route"""
-
-    feed = models.ForeignKey('Feed')
-    fare = models.ForeignKey('FareAttributes')
+class FareRule(models.Model):
+    """Associate a Fare with a Route and/or Zones"""
+    fare = models.ForeignKey('Fare')
     route = models.ForeignKey(
         'Route', null=True,
         help_text="Fare class is valid for this route.")
@@ -102,6 +100,12 @@ class FareRules(models.Model):
         'Zone', null=True,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
+
+    def __unicode__(self):
+        u = u"%d-%s" % (self.fare.feed.id, self.fare.fare_id)
+        if self.route:
+            u += '-%s' % self.route.route_id
+        return u
 
     class Meta:
         db_table = 'fare_rules'

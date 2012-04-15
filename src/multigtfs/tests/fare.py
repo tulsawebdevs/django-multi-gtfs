@@ -1,18 +1,17 @@
-from datetime import date
 import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Feed, FareAttributes
+from multigtfs.models import Feed, Fare
 from multigtfs.utils import import_fare_attributes
 
 
-class FareAttributesTest(TestCase):
+class FareTest(TestCase):
     def setUp(self):
         self.feed = Feed.objects.create()
 
     def test_string(self):
-        fa = FareAttributes.objects.create(
+        fa = Fare.objects.create(
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0)
         self.assertEqual(str(fa), '1-p(1.25 USD)')
@@ -23,7 +22,7 @@ fare_id,price,currency_type,payment_method,transfers
 p,1.25,USD,0,0
 """)
         import_fare_attributes(fare_attributes_txt, self.feed)
-        fa = FareAttributes.objects.get()
+        fa = Fare.objects.get()
         self.assertEqual(fa.feed, self.feed)
         self.assertEqual(fa.fare_id, 'p')
         self.assertEqual(str(fa.price), '1.25')
@@ -38,7 +37,7 @@ fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0,60
 """)
         import_fare_attributes(fare_attributes_txt, self.feed)
-        fa = FareAttributes.objects.get()
+        fa = Fare.objects.get()
         self.assertEqual(fa.transfer_duration, 60)
 
     def test_import_fare_attributes_omitted(self):
@@ -47,6 +46,6 @@ fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0
 """)
         import_fare_attributes(fare_attributes_txt, self.feed)
-        fa = FareAttributes.objects.get()
+        fa = Fare.objects.get()
         self.assertEqual(fa.fare_id, 'p')
         self.assertEqual(fa.transfer_duration, None)

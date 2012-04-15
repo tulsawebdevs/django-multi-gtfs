@@ -1,5 +1,5 @@
 """
-Define FareAttributes model for rows in fare_attributes.txt
+Define Fare model for rows in fare_attributes.txt
 
 Google documentation from
 https://developers.google.com/transit/gtfs/reference
@@ -50,7 +50,7 @@ should be omitted or empty when transfers is set to 0.
 from django.db import models
 
 
-class FareAttributes(models.Model):
+class Fare(models.Model):
     """A fare class"""
 
     feed = models.ForeignKey('Feed')
@@ -84,5 +84,5 @@ class FareAttributes(models.Model):
             self.feed.id, self.fare_id, self.price, self.currency_type)
 
     class Meta:
-        db_table = 'fare_attributes'
+        db_table = 'fare'
         app_label = 'multigtfs'

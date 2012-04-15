@@ -5,7 +5,7 @@ import urllib
 from django.test import TestCase
 
 from multigtfs.models import (
-    Agency, Block, FareAttributes, FareRules, Feed, FeedInfo, Frequency,
+    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
     Route, Service, ServiceDate, Shape, Stop, StopTime, Transfer, Trip, Zone)
 from multigtfs.utils import import_gtfs
 
@@ -28,8 +28,8 @@ class ImportGTFSTest(TestCase):
 
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Block.objects.count(), 6)
-        self.assertEqual(FareAttributes.objects.count(), 0)
-        self.assertEqual(FareRules.objects.count(), 0)
+        self.assertEqual(Fare.objects.count(), 0)
+        self.assertEqual(FareRule.objects.count(), 0)
         self.assertEqual(Feed.objects.count(), 1)
         self.assertEqual(FeedInfo.objects.count(), 0)
         self.assertEqual(Frequency.objects.count(), 11)
@@ -57,8 +57,8 @@ class ImportGTFSTest(TestCase):
 
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Block.objects.count(), 2)
-        self.assertEqual(FareAttributes.objects.count(), 2)
-        self.assertEqual(FareRules.objects.count(), 0)
+        self.assertEqual(Fare.objects.count(), 2)
+        self.assertEqual(FareRule.objects.count(), 4)
         self.assertEqual(Feed.objects.count(), 1)
         self.assertEqual(FeedInfo.objects.count(), 0)
         self.assertEqual(Frequency.objects.count(), 11)
