@@ -1,4 +1,6 @@
+from csv import writer
 from datetime import time
+from StringIO import StringIO
 
 
 def parse_time(time_string):
@@ -21,3 +23,21 @@ def parse_time(time_string):
             day += 1
         return time(hour, minute, second), day
     return None, None
+
+
+def create_csv(queryset, csv_names):
+    """Turn a queryset into a CSV export
+    
+    Keyword Arguments:
+    queryset -- A queryset with at least one record
+    csv_names -- A sequnce of (csv column, field name) pairs
+    """
+    rows = [[csv_name for csv_name, field_name in csv_names]]    
+    for item in queryset:
+        row = []
+        for csv_name, field_name in csv_names:
+            row.append(getattr(item, field_name))
+        rows.append(row)
+    out = StringIO()
+    writer(out, lineterminator='\n').writerows(rows)
+    return out.getvalue()
