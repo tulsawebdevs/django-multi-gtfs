@@ -3,10 +3,12 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Agency, Feed
-from multigtfs.models.agency import import_agency_txt
+from multigtfs.models.agency import (
+    import_agency_txt, export_agency_txt)
 
 
 class AgencyTest(TestCase):
+
     def setUp(self):
         self.feed = Feed.objects.create()
 
@@ -17,12 +19,12 @@ class AgencyTest(TestCase):
 
     def test_import_agency_minimal(self):
         agency_txt = StringIO.StringIO("""\
-agency_id,agency_name,agency_url,agency_timezone
-DTA,Demo Transit Authority,http://google.com,America/Los_Angeles
+agency_name,agency_url,agency_timezone
+Demo Transit Authority,http://google.com,America/Los_Angeles
 """)
         import_agency_txt(agency_txt, self.feed)
         agency = Agency.objects.get()
-        self.assertEqual(agency.agency_id, 'DTA')
+        self.assertEqual(agency.agency_id, '')
         self.assertEqual(agency.name, 'Demo Transit Authority')
         self.assertEqual(agency.url, 'http://google.com')
         self.assertEqual(agency.timezone, 'America/Los_Angeles')
@@ -46,3 +48,30 @@ DTA,"Demo Transit Authority",http://google.com,America/Los_Angeles,en,\
         self.assertEqual(agency.lang, 'en')
         self.assertEqual(agency.phone, '555-555-TEST')
         self.assertEqual(agency.fare_url, 'http://google.com')
+
+    def test_export_agency_none(self):
+        agency_txt = export_agency_txt(self.feed)
+        self.assertFalse(agency_txt)
+
+    def test_export_agency_minimal(self):
+        Agency.objects.create(
+            feed=self.feed, name='Demo Transit Authority',
+            url='http://google.com', timezone='America/Los_Angeles')
+        agency_txt = export_agency_txt(self.feed)
+        self.assertEqual(agency_txt, """\
+agency_name,agency_url,agency_timezone
+Demo Transit Authority,http://google.com,America/Los_Angeles
+""")
+
+    def test_export_agency_maximal(self):
+        Agency.objects.create(
+            feed=self.feed, agency_id='DTA', name='Demo Transit Authority',
+            url='http://google.com', timezone='America/Los_Angeles',
+            lang='en', phone='555-555-TEST', fare_url='http://google.com')
+        agency_txt = export_agency_txt(self.feed)
+        self.assertEqual(agency_txt, """\
+agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,\
+agency_fare_url
+DTA,Demo Transit Authority,http://google.com,America/Los_Angeles,en,\
+555-555-TEST,http://google.com
+""")

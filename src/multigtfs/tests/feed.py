@@ -1,4 +1,6 @@
 import os
+import tempfile
+import zipfile
 
 from django.test import TestCase
 
@@ -11,6 +13,14 @@ fixtures_dir = os.path.join(my_dir, 'fixtures')
 
 
 class FeedTest(TestCase):
+    
+    def setUp(self):
+        self.temp_path = None
+
+    def tearDown(self):
+        if self.temp_path:
+            os.unlink(self.temp_path)
+    
     def test_string(self):
         feed = Feed.objects.create()
         self.assertEqual(feed.id, 1)
@@ -78,3 +88,33 @@ class FeedTest(TestCase):
         self.assertEqual(Transfer.objects.count(), 0)
         self.assertEqual(Trip.objects.count(), 11)
         self.assertEqual(Zone.objects.count(), 0)
+
+    def test_export_gtfs_test1(self):
+        '''Try exporting test1.zip'''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        file_id, self.temp_path = tempfile.mkstemp()
+        os.close(file_id)
+        feed.export_gtfs(self.temp_path)
+        z_in = zipfile.ZipFile(test_path, 'r')
+        z_out = zipfile.ZipFile(self.temp_path, 'r')
+        
+        agency_in = z_in.read('dv/agency.txt')
+        agency_out = z_out.read('feed/agency.txt')
+        self.assertEqual(agency_in, agency_out.strip())
+
+    def test_export_gtfs_test2(self):
+        '''Try exporting test2.zip'''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        file_id, self.temp_path = tempfile.mkstemp()
+        os.close(file_id)
+        feed.export_gtfs(self.temp_path)
+        z_in = zipfile.ZipFile(test_path, 'r')
+        z_out = zipfile.ZipFile(self.temp_path, 'r')
+        
+        agency_in = z_in.read('agency.txt')
+        agency_out = z_out.read('feed/agency.txt')
+        self.assertEqual(agency_in, agency_out.strip())

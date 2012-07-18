@@ -2,7 +2,8 @@ from zipfile import ZipFile
 
 from django.db import models
 
-from multigtfs.models.agency import import_agency_txt
+from multigtfs.models.agency import (
+    import_agency_txt, export_agency_txt)
 from multigtfs.models.fare import import_fare_attributes_txt
 from multigtfs.models.fare_rule import import_fare_rules_txt
 from multigtfs.models.feed_info import import_feed_info_txt
@@ -68,3 +69,36 @@ class Feed(models.Model):
                 if f.endswith(table_name):
                     table = z.open(f)
                     importer(table, self)
+
+    def export_gtfs(self, gtfs_file):
+        """Export a GTFS file as feed
+        
+        Keyword arguments:
+        gtfs_file - A path or file-like object for the GTFS feed
+        
+        This function will close the file in order to finalize it.
+        """
+        z = ZipFile(gtfs_file, 'w')
+
+        gtfs_order = (
+            ('agency.txt', export_agency_txt),
+            # ('calendar.txt', export_calendar_txt),
+            # ('calendar_dates.txt', export_calendar_dates_txt),
+            # ('fare_attributes.txt', export_fare_attributes_txt),
+            # ('fare_rules.txt', export_fare_rules_txt),
+            # ('feed_info.txt', export_feed_info_txt),
+            # ('frequencies.txt', export_frequencies_txt),
+            # ('routes.txt', export_routes_txt),
+            # ('shapes.txt', export_shapes_txt),
+            # ('stop_times.txt', export_stop_times_txt),
+            # ('stops.txt', export_stops_txt),
+            # ('transfers.txt', export_transfers_txt),
+            # ('trips.txt', export_trips_txt),
+        )
+
+        for filename, exporter in gtfs_order:
+            path = 'feed/%s' % filename
+            content = exporter(self)
+            if content:
+                z.writestr(path, content)
+        z.close()

@@ -56,7 +56,8 @@ any special characters in the URL must be correctly escaped. See
 for a description of how to create fully qualified URL values.
 """
 
-from csv import DictReader
+from csv import DictReader, writer
+from StringIO import StringIO
 
 from django.db import models
 
@@ -109,3 +110,37 @@ def import_agency_txt(agency_file, feed):
     for row in reader:
         fields = dict((name_map.get(k, k), v) for k, v in row.items())
         Agency.objects.create(feed=feed, **fields)
+
+
+def export_agency_txt(feed):
+    """Export Agency records in to agency.txt format for feed.
+    
+    Keyword arguments:
+    feed -- the Feed associated with the agency
+    """
+    if not feed.agency_set.exists():
+        return
+    
+    data = []
+    if feed.agency_set.exclude(agency_id='').exists():
+        data.append(('agency_id', 'agency_id'))
+    data.append(('agency_name', 'name'))
+    data.append(('agency_url', 'url'))
+    data.append(('agency_timezone', 'timezone'))
+    if feed.agency_set.exclude(lang='').exists():
+        data.append(('agency_lang', 'lang'))
+    if feed.agency_set.exclude(phone='').exists():
+        data.append(('agency_phone', 'phone'))
+    if feed.agency_set.exclude(fare_url='').exists():
+        data.append(('agency_fare_url', 'fare_url'))
+    header = ','.join(csv_name for csv_name, field_name in data)
+
+    rows = [[csv_name for csv_name, field_name in data]]    
+    for item in feed.agency_set.order_by('agency_id'):
+        row = []
+        for csv_name, field_name in data:
+            row.append(getattr(item, field_name))
+        rows.append(row)
+    out = StringIO()
+    writer(out, lineterminator='\n').writerows(rows)
+    return out.getvalue()
