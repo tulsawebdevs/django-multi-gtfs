@@ -4,7 +4,8 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Service
-from multigtfs.models.service import import_calendar_txt
+from multigtfs.models.service import (
+    import_calendar_txt, export_calendar_txt)
 
 
 class ServiceTest(TestCase):
@@ -36,3 +37,16 @@ W,1,0,1,0,1,0,1,20120414,20121231
         self.assertTrue(service.sunday)
         self.assertEqual(service.start_date, date(2012, 4, 14))
         self.assertEqual(service.end_date, date(2012, 12, 31))
+
+    def test_export_calendar_txt(self):
+        service = Service.objects.create(
+            feed=self.feed, service_id='W', monday=True, tuesday=False,
+            wednesday=True, thursday=False, friday=True, saturday=False,
+            sunday=True, start_date=date(2012, 7, 17),
+            end_date=date(2013, 7, 17))
+        calendar_txt = export_calendar_txt(self.feed)
+        self.assertEqual(calendar_txt, """\
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,\
+start_date,end_date
+W,1,0,1,0,1,0,1,20120717,20130717
+""")

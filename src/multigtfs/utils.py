@@ -1,5 +1,5 @@
 from csv import writer
-from datetime import time
+from datetime import time, date
 from StringIO import StringIO
 
 
@@ -36,7 +36,13 @@ def create_csv(queryset, csv_names):
     for item in queryset:
         row = []
         for csv_name, field_name in csv_names:
-            row.append(getattr(item, field_name))
+            field = getattr(item, field_name)
+            if isinstance(field, date):
+                row.append(field.strftime('%Y%m%d'))
+            elif isinstance(field, bool):
+                row.append(1 if field else 0)
+            else:
+                row.append(str(field))
         rows.append(row)
     out = StringIO()
     writer(out, lineterminator='\n').writerows(rows)

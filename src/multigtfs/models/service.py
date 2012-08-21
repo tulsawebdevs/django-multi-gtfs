@@ -120,6 +120,8 @@ from datetime import datetime
 
 from django.db import models
 
+from multigtfs.utils import create_csv
+
 
 class Service(models.Model):
     """Dates that a route is active."""
@@ -183,3 +185,24 @@ def import_calendar_txt(calendar_file, feed):
             feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
             thursday=thursday, friday=friday, saturday=saturday,
             sunday=sunday, start_date=start_date, end_date=end_date, **row)
+
+def export_calendar_txt(feed):
+    """Export Service records in to calendar.txt format for feed.
+    
+    Keyword arguments:
+    feed -- the Feed associated with the services
+    """
+    if not feed.service_set.exists():
+        return
+    csv_names = (
+        ('service_id', 'service_id'),
+        ('monday', 'monday'),
+        ('tuesday', 'tuesday'),
+        ('wednesday', 'wednesday'),
+        ('thursday', 'thursday'),
+        ('friday', 'friday'),
+        ('saturday', 'saturday'),
+        ('sunday', 'sunday'),
+        ('start_date', 'start_date'),
+        ('end_date', 'end_date'))
+    return create_csv(feed.service_set.order_by('service_id'), csv_names)

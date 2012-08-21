@@ -20,7 +20,15 @@ class FeedTest(TestCase):
     def tearDown(self):
         if self.temp_path:
             os.unlink(self.temp_path)
-    
+
+    def normalize(self, feed):
+        '''Normalize a feed - line seperators, etc.'''
+        feed = feed.replace('\r\n','\n').strip()
+        lines = feed.split('\n')
+        header = lines.pop(0)
+        lines.sort()
+        return header + '\n' + '\n'.join(lines) + '\n'
+
     def test_string(self):
         feed = Feed.objects.create()
         self.assertEqual(feed.id, 1)
@@ -100,9 +108,13 @@ class FeedTest(TestCase):
         z_in = zipfile.ZipFile(test_path, 'r')
         z_out = zipfile.ZipFile(self.temp_path, 'r')
         
-        agency_in = z_in.read('dv/agency.txt')
-        agency_out = z_out.read('feed/agency.txt')
-        self.assertEqual(agency_in, agency_out.strip())
+        agency_in = self.normalize(z_in.read('dv/agency.txt'))
+        agency_out = self.normalize(z_out.read('feed/agency.txt'))
+        self.assertEqual(agency_in, agency_out)
+        
+        calendar_in = self.normalize(z_in.read('dv/calendar.txt'))
+        calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
+        self.assertEqual(calendar_in, calendar_out)
 
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
@@ -115,6 +127,10 @@ class FeedTest(TestCase):
         z_in = zipfile.ZipFile(test_path, 'r')
         z_out = zipfile.ZipFile(self.temp_path, 'r')
         
-        agency_in = z_in.read('agency.txt')
-        agency_out = z_out.read('feed/agency.txt')
-        self.assertEqual(agency_in, agency_out.strip())
+        agency_in = self.normalize(z_in.read('agency.txt'))
+        agency_out = self.normalize(z_out.read('feed/agency.txt'))
+        self.assertEqual(agency_in, agency_out)
+        
+        calendar_in = self.normalize(z_in.read('calendar.txt'))
+        calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
+        self.assertEqual(calendar_in, calendar_out)

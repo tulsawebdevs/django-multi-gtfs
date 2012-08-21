@@ -60,7 +60,7 @@ from csv import DictReader
 
 from django.db import models
 
-from ..utils import create_csv
+from multigtfs.utils import create_csv
 
 
 class Agency(models.Model):
