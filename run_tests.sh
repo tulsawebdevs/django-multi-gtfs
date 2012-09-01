@@ -4,5 +4,5 @@ export PYTHONPATH
 echo $PYTHONPATH
 
 echo "Running django-multi-gtfs tests..."
-django-admin.py test multigtfs --settings=multigtfs.tests.settings
+django-admin.py test multigtfs --settings=multigtfs.tests.settings $@
 
