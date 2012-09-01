@@ -31,12 +31,18 @@ def create_csv(queryset, csv_names):
     Keyword Arguments:
     queryset -- A queryset with at least one record
     csv_names -- A sequnce of (csv column, field name) pairs
+    
+    A field name can follow relations, such as 'field1.subfield2'
     """
     rows = [[csv_name for csv_name, field_name in csv_names]]    
     for item in queryset:
         row = []
         for csv_name, field_name in csv_names:
-            field = getattr(item, field_name)
+            obj = item
+            while '.' in field_name:
+                parent_field, field_name = field_name.split('.', 1)
+                obj = getattr(obj, parent_field)
+            field = getattr(obj, field_name)
             if isinstance(field, date):
                 row.append(field.strftime('%Y%m%d'))
             elif isinstance(field, bool):

@@ -57,6 +57,7 @@ from datetime import datetime
 from django.db import models
 
 from multigtfs.models.service import Service
+from multigtfs.utils import create_csv
 
 
 class ServiceDate(models.Model):
@@ -91,3 +92,20 @@ def import_calendar_dates_txt(calendar_dates_file, feed):
         service_id = row.pop('service_id')
         service = Service.objects.get(feed=feed, service_id=service_id)
         ServiceDate.objects.create(date=d, service=service, **row)
+
+
+def export_calendar_dates_txt(feed):
+    """Export Service records in to calendar.txt format for feed.
+    
+    Keyword arguments:
+    feed -- the Feed associated with the services
+    """
+    service_dates = ServiceDate.objects.filter(service__feed=feed)
+    if not service_dates.exists():
+        return
+    csv_names = (
+        ('service_id', 'service.service_id'),
+        ('date', 'date'),
+        ('exception_type', 'exception_type'))
+    return create_csv(
+        service_dates.order_by('date', 'service__service_id'), csv_names)

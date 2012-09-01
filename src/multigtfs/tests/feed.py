@@ -115,6 +115,10 @@ class FeedTest(TestCase):
         calendar_in = self.normalize(z_in.read('dv/calendar.txt'))
         calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
         self.assertEqual(calendar_in, calendar_out)
+        
+        cdates_in = self.normalize(z_in.read('dv/calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
+        self.assertEqual(cdates_in, cdates_out)
 
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
@@ -134,3 +138,7 @@ class FeedTest(TestCase):
         calendar_in = self.normalize(z_in.read('calendar.txt'))
         calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
         self.assertEqual(calendar_in, calendar_out)
+
+        cdates_in = self.normalize(z_in.read('calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
+        self.assertEqual(cdates_in, cdates_out)
