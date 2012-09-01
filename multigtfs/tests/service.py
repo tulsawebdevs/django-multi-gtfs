@@ -38,6 +38,10 @@ W,1,0,1,0,1,0,1,20120414,20121231
         self.assertEqual(service.start_date, date(2012, 4, 14))
         self.assertEqual(service.end_date, date(2012, 12, 31))
 
+    def test_export_calendar_txt_none(self):
+        calendar_txt = export_calendar_txt(self.feed)
+        self.assertFalse(calendar_txt)
+
     def test_export_calendar_txt(self):
         service = Service.objects.create(
             feed=self.feed, service_id='W', monday=True, tuesday=False,

@@ -22,7 +22,7 @@ class ServiceDateTest(TestCase):
         service_date.exception_type = 1
         self.assertEqual(str(service_date), '1-S1 2012-04-14 Added')
 
-    def test_import_service_dates(self):
+    def test_import_calendar_dates_txt(self):
         calendar_dates_txt = StringIO.StringIO("""\
 service_id,date,exception_type
 S1,20120414,2
@@ -33,7 +33,11 @@ S1,20120414,2
         self.assertEqual(service_date.service, self.service)
         self.assertEqual(service_date.exception_type, 2)
 
-    def test_export_service_dates(self):
+    def test_export_calendar_dates_txt_none(self):
+        calendar_dates_txt = export_calendar_dates_txt(self.feed)
+        self.assertFalse(calendar_dates_txt)
+
+    def test_export_calendar_dates_txt(self):
         service_date1 = ServiceDate.objects.create(
             date=date(2012, 8, 31), service=self.service, exception_type=2)
         service_date2 = ServiceDate.objects.create(
