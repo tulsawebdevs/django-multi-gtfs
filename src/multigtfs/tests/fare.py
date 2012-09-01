@@ -3,7 +3,8 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Fare
-from multigtfs.models.fare import import_fare_attributes_txt
+from multigtfs.models.fare import (
+    import_fare_attributes_txt, export_fare_attributes_txt)
 
 
 class FareTest(TestCase):
@@ -49,3 +50,23 @@ p,1.25,USD,0,0
         fa = Fare.objects.get()
         self.assertEqual(fa.fare_id, 'p')
         self.assertEqual(fa.transfer_duration, None)
+
+    def test_export_fare_attributes_minimal(self):
+        Fare.objects.create(
+            feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
+            payment_method=0, transfers=0)
+        fare_txt = export_fare_attributes_txt(self.feed)
+        self.assertEqual(fare_txt, """\
+fare_id,price,currency_type,payment_method,transfers
+p,1.25,USD,0,0
+""")
+
+    def test_export_fare_attributes_maximal(self):
+        Fare.objects.create(
+            feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
+            payment_method=0, transfers=0, transfer_duration=3600)
+        fare_txt = export_fare_attributes_txt(self.feed)
+        self.assertEqual(fare_txt, """\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+p,1.25,USD,0,0,3600
+""")

@@ -120,6 +120,9 @@ class FeedTest(TestCase):
         cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
         self.assertEqual(cdates_in, cdates_out)
 
+        self.assertTrue('dv/fare_attributes.txt' not in z_in.namelist())
+        self.assertTrue('feed/fare_attributes.txt' not in z_out.namelist())
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -142,3 +145,17 @@ class FeedTest(TestCase):
         cdates_in = self.normalize(z_in.read('calendar_dates.txt'))
         cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
         self.assertEqual(cdates_in, cdates_out)
+
+        # source fare_attributes.txt has unneeded transfer_duration column
+        fare_in = self.normalize(z_in.read('fare_attributes.txt'))
+        self.assertEqual(fare_in, '''\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+a,5.25,USD,0,0,
+p,1.25,USD,0,0,
+''')
+        fare_out = z_out.read('feed/fare_attributes.txt')
+        self.assertEqual(fare_out, '''\
+fare_id,price,currency_type,payment_method,transfers
+a,5.25,USD,0,0
+p,1.25,USD,0,0
+''')

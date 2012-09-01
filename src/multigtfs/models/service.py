@@ -187,7 +187,7 @@ def import_calendar_txt(calendar_file, feed):
             sunday=sunday, start_date=start_date, end_date=end_date, **row)
 
 def export_calendar_txt(feed):
-    """Export Service records in to calendar.txt format for feed.
+    """Export Service records into calendar.txt format for feed.
     
     Keyword arguments:
     feed -- the Feed associated with the services

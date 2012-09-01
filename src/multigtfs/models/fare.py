@@ -51,6 +51,8 @@ from csv import DictReader
 
 from django.db import models
 
+from multigtfs.utils import create_csv
+
 
 class Fare(models.Model):
     """A fare class"""
@@ -102,3 +104,22 @@ def import_fare_attributes_txt(fare_attributes_file, feed):
         transfer_duration = row.get('transfer_duration', None)
         row['transfer_duration'] = transfer_duration or None
         Fare.objects.create(feed=feed, **row)
+
+def export_fare_attributes_txt(feed):
+    """Export FareAttributes records for feed into fare_attributes.txt format
+
+    Keyword arguments:
+    feed -- the Feed with the FareAttributes records
+    """
+    fares = feed.fare_set
+    if not fares.exists():
+        return
+    csv_names = [
+        ('fare_id', 'fare_id'),
+        ('price', 'price'),
+        ('currency_type', 'currency_type'),
+        ('payment_method', 'payment_method'),
+        ('transfers', 'transfers')]
+    if fares.exclude(transfer_duration=None).exists():
+        csv_names.append(('transfer_duration', 'transfer_duration'))
+    return create_csv(fares.order_by('fare_id'), csv_names)

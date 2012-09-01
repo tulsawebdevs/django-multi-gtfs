@@ -3,7 +3,8 @@ from zipfile import ZipFile
 from django.db import models
 
 from multigtfs.models.agency import import_agency_txt, export_agency_txt
-from multigtfs.models.fare import import_fare_attributes_txt
+from multigtfs.models.fare import (
+    import_fare_attributes_txt, export_fare_attributes_txt)
 from multigtfs.models.fare_rule import import_fare_rules_txt
 from multigtfs.models.feed_info import import_feed_info_txt
 from multigtfs.models.frequency import import_frequencies_txt
@@ -84,7 +85,7 @@ class Feed(models.Model):
             ('agency.txt', export_agency_txt),
             ('calendar.txt', export_calendar_txt),
             ('calendar_dates.txt', export_calendar_dates_txt),
-            # ('fare_attributes.txt', export_fare_attributes_txt),
+            ('fare_attributes.txt', export_fare_attributes_txt),
             # ('fare_rules.txt', export_fare_rules_txt),
             # ('feed_info.txt', export_feed_info_txt),
             # ('frequencies.txt', export_frequencies_txt),
