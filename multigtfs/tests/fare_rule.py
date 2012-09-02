@@ -68,6 +68,15 @@ p,AB,1,2,12
     def test_export_fare_rules_empty(self):
         fare_rules_txt = export_fare_rules_txt(self.feed)
         self.assertFalse(fare_rules_txt)
+
+    def test_export_fare_rules_degraded(self):
+        # This is possible, but pointless
+        FareRule.objects.create(fare=self.fare)
+        fare_rules_txt = export_fare_rules_txt(self.feed)
+        self.assertEqual(fare_rules_txt, '''\
+fare_id
+p
+''')
     
     def test_export_fare_rules_route_id(self):
         route = Route.objects.create(feed=self.feed, route_id='AB', rtype=3)
