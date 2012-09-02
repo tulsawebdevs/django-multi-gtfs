@@ -35,6 +35,7 @@ choose capitalization rules and other language-specific settings for the feed.
 For an introduction to IETF BCP 47, please refer to:
   http://www.rfc-editor.org/rfc/bcp/bcp47.txt
   http://www.w3.org/International/articles/language-tags/
+* DEV NOTE * - some historical feeds omit this parameter
 
 - feed_start_date (optional)
 - feed_end_date (optional)
@@ -62,6 +63,8 @@ from csv import DictReader
 from datetime import datetime
 
 from django.db import models
+
+from multigtfs.utils import create_csv
 
 
 class FeedInfo(models.Model):
@@ -99,7 +102,7 @@ def import_feed_info_txt(feed_info_file, feed):
     """Import feed_info.txt into a FeedInfo record for feed
 
     Keyword arguments:
-    feed_info_file -- A open transfers.txt for reading
+    feed_info_file -- A open feed_info.txt for reading
     feed -- the Feed to associate the records with
     """
     reader = DictReader(feed_info_file)
@@ -122,3 +125,29 @@ def import_feed_info_txt(feed_info_file, feed):
 
         FeedInfo.objects.create(feed=feed, start_date=start_date,
             end_date=end_date, **fields)
+
+
+def export_feed_info_txt(feed):
+    """Export FeedInfo records into feed_info.txt format for feed.
+
+    Keyword arguments:
+    feed -- the Feed associated with the FeedInfo
+    """
+    to_output = feed.feedinfo_set
+    if not to_output.exists():
+        return
+    csv_names = [
+        ('feed_publisher_name', 'publisher_name'),
+        ('feed_publisher_url', 'publisher_url'),
+        ('feed_lang', 'lang')
+    ]
+    has_start = to_output.exclude(start_date=None).exists()
+    has_end = to_output.exclude(end_date=None).exists()
+    has_version = to_output.exclude(version='').exists()
+    if has_start or has_end or has_version:
+        csv_names.append(('feed_start_date', 'start_date'))
+    if has_end or has_version:
+        csv_names.append(('feed_end_date', 'end_date'))
+    if has_version:
+        csv_names.append(('feed_version', 'version'))
+    return create_csv(to_output, csv_names)

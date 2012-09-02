@@ -120,11 +120,14 @@ class FeedTest(TestCase):
         cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
         self.assertEqual(cdates_in, cdates_out)
 
-        self.assertTrue('dv/fare_attributes.txt' not in z_in.namelist())
-        self.assertTrue('feed/fare_attributes.txt' not in z_out.namelist())
+        self.assertFalse('dv/fare_attributes.txt' in z_in.namelist())
+        self.assertFalse('feed/fare_attributes.txt' in z_out.namelist())
 
-        self.assertTrue('dv/fare_rules.txt' not in z_in.namelist())
-        self.assertTrue('feed/fare_rules.txt' not in z_out.namelist())
+        self.assertFalse('dv/fare_rules.txt' in z_in.namelist())
+        self.assertFalse('feed/fare_rules.txt' in z_out.namelist())
+
+        self.assertFalse('dv/feed_info.txt' in z_in.namelist())
+        self.assertFalse('feed/feed_info.txt' in z_out.namelist())
 
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
@@ -180,3 +183,7 @@ p,AB
 p,BFC
 p,STBA
 ''')
+
+        self.assertFalse('feed/feed_info.txt' in z_in.namelist())
+        self.assertFalse('feed/feed_info.txt' in z_out.namelist())
+        

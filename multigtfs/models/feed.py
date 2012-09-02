@@ -7,7 +7,8 @@ from multigtfs.models.fare import (
     import_fare_attributes_txt, export_fare_attributes_txt)
 from multigtfs.models.fare_rule import (
     import_fare_rules_txt, export_fare_rules_txt)
-from multigtfs.models.feed_info import import_feed_info_txt
+from multigtfs.models.feed_info import (
+    import_feed_info_txt, export_feed_info_txt)
 from multigtfs.models.frequency import import_frequencies_txt
 from multigtfs.models.route import import_routes_txt
 from multigtfs.models.service import import_calendar_txt, export_calendar_txt
@@ -88,7 +89,7 @@ class Feed(models.Model):
             ('calendar_dates.txt', export_calendar_dates_txt),
             ('fare_attributes.txt', export_fare_attributes_txt),
             ('fare_rules.txt', export_fare_rules_txt),
-            # ('feed_info.txt', export_feed_info_txt),
+            ('feed_info.txt', export_feed_info_txt),
             # ('frequencies.txt', export_frequencies_txt),
             # ('routes.txt', export_routes_txt),
             # ('shapes.txt', export_shapes_txt),
