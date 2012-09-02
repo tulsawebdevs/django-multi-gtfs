@@ -32,15 +32,16 @@ def create_csv(queryset, csv_names):
     queryset -- A queryset with at least one record
     csv_names -- A sequnce of (csv column, field name) pairs
     
-    A field name can follow relations, such as 'field1.subfield2'
+    A field name can follow relations, such as 'field1__subfield2'
     """
-    rows = [[csv_name for csv_name, field_name in csv_names]]    
-    for item in queryset:
+    columns, fields = zip(*csv_names)
+    rows = [columns]
+    for item in queryset.order_by(*fields):
         row = []
         for csv_name, field_name in csv_names:
             obj = item
-            while obj and '.' in field_name:
-                parent_field, field_name = field_name.split('.', 1)
+            while obj and '__' in field_name:
+                parent_field, field_name = field_name.split('__', 1)
                 obj = getattr(obj, parent_field)
             field = getattr(obj, field_name) if obj else ''
             if isinstance(field, date):

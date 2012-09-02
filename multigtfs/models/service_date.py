@@ -104,8 +104,7 @@ def export_calendar_dates_txt(feed):
     if not service_dates.exists():
         return
     csv_names = (
-        ('service_id', 'service.service_id'),
+        ('service_id', 'service__service_id'),
         ('date', 'date'),
         ('exception_type', 'exception_type'))
-    return create_csv(
-        service_dates.order_by('date', 'service__service_id'), csv_names)
+    return create_csv(service_dates, csv_names)

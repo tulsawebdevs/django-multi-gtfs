@@ -168,14 +168,13 @@ def export_fare_rules_txt(feed):
     has_origins = fare_rules.exclude(origin=None).exists()
     has_dests = fare_rules.exclude(destination=None).exists()
     has_contains = fare_rules.exclude(contains=None).exists()
-    csv_names = [('fare_id', 'fare.fare_id')]
+    csv_names = [('fare_id', 'fare__fare_id')]
     if has_routes or has_origins or has_dests or has_contains:
-        csv_names.append(('route_id', 'route.route_id'))
+        csv_names.append(('route_id', 'route__route_id'))
     if has_origins or has_dests or has_contains:
-        csv_names.append(('origin_id', 'origin.zone_id'))
+        csv_names.append(('origin_id', 'origin__zone_id'))
     if has_dests or has_contains:
-        csv_names.append(('destination_id', 'destination.zone_id'))
+        csv_names.append(('destination_id', 'destination__zone_id'))
     if has_contains:
-        csv_names.append(('contains_id', 'contains.zone_id'))
-    return create_csv(
-        fare_rules.order_by('fare__fare_id', 'route__route_id'), csv_names)
+        csv_names.append(('contains_id', 'contains__zone_id'))
+    return create_csv(fare_rules, csv_names)
