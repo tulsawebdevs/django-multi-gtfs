@@ -39,10 +39,10 @@ def create_csv(queryset, csv_names):
         row = []
         for csv_name, field_name in csv_names:
             obj = item
-            while '.' in field_name:
+            while obj and '.' in field_name:
                 parent_field, field_name = field_name.split('.', 1)
                 obj = getattr(obj, parent_field)
-            field = getattr(obj, field_name)
+            field = getattr(obj, field_name) if obj else ''
             if isinstance(field, date):
                 row.append(field.strftime('%Y%m%d'))
             elif isinstance(field, bool):

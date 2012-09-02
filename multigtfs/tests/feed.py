@@ -123,6 +123,9 @@ class FeedTest(TestCase):
         self.assertTrue('dv/fare_attributes.txt' not in z_in.namelist())
         self.assertTrue('feed/fare_attributes.txt' not in z_out.namelist())
 
+        self.assertTrue('dv/fare_rules.txt' not in z_in.namelist())
+        self.assertTrue('feed/fare_rules.txt' not in z_out.namelist())
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -158,4 +161,22 @@ p,1.25,USD,0,0,
 fare_id,price,currency_type,payment_method,transfers
 a,5.25,USD,0,0
 p,1.25,USD,0,0
+''')
+
+        # source fare_rules.txt has unneeded columns
+        fare_rules_in = self.normalize(z_in.read('fare_rules.txt'))
+        self.assertEqual(fare_rules_in, '''\
+fare_id,route_id,origin_id,destination_id,contains_id
+a,AAMV,,,
+p,AB,,,
+p,BFC,,,
+p,STBA,,,
+''')
+        fare_rules_out = self.normalize(z_out.read('feed/fare_rules.txt'))
+        self.assertEqual(fare_rules_out, '''\
+fare_id,route_id
+a,AAMV
+p,AB
+p,BFC
+p,STBA
 ''')
