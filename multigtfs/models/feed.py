@@ -75,10 +75,10 @@ class Feed(models.Model):
 
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed
-        
+
         Keyword arguments:
         gtfs_file - A path or file-like object for the GTFS feed
-        
+
         This function will close the file in order to finalize it.
         """
         z = ZipFile(gtfs_file, 'w')

@@ -13,8 +13,8 @@ class ShapeTest(TestCase):
     def test_string(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
         self.assertEqual(str(shape), '1-S1')
-        shape_pt = ShapePoint.objects.create(shape=shape,
-            lat='36.425288', lon='-117.133162', sequence=1)
+        shape_pt = ShapePoint.objects.create(
+            shape=shape, lat='36.425288', lon='-117.133162', sequence=1)
         self.assertEqual(str(shape_pt), '1-S1-1')
 
     def test_import_shape_minimal(self):

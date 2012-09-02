@@ -106,10 +106,11 @@ def import_feed_info_txt(feed_info_file, feed):
     feed -- the Feed to associate the records with
     """
     reader = DictReader(feed_info_file)
-    name_map = dict(feed_publisher_name='publisher_name',
-                    feed_publisher_url='publisher_url', feed_lang='lang',
-                    feed_start_date='start_date', feed_end_date='end_date',
-                    feed_version='version')
+    name_map = dict(
+        feed_publisher_name='publisher_name',
+        feed_publisher_url='publisher_url', feed_lang='lang',
+        feed_start_date='start_date', feed_end_date='end_date',
+        feed_version='version')
     for row in reader:
         fields = dict((name_map.get(k, k), v) for k, v in row.items())
         start_date_raw = fields.pop('start_date', None)
@@ -123,8 +124,8 @@ def import_feed_info_txt(feed_info_file, feed):
         else:
             end_date = None
 
-        FeedInfo.objects.create(feed=feed, start_date=start_date,
-            end_date=end_date, **fields)
+        FeedInfo.objects.create(
+            feed=feed, start_date=start_date, end_date=end_date, **fields)
 
 
 def export_feed_info_txt(feed):

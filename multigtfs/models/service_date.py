@@ -71,8 +71,10 @@ class ServiceDate(models.Model):
         help_text="Is service added or removed on this date?")
 
     def __unicode__(self):
-        return u"%d-%s %s %s" % (self.service.feed.id, self.service.service_id,
-            self.date, 'Added' if self.exception_type == 1 else 'Removed')
+        return (
+            u"%d-%s %s %s" % (
+                self.service.feed.id, self.service.service_id, self.date,
+                'Added' if self.exception_type == 1 else 'Removed'))
 
     class Meta:
         db_table = 'service_date'
@@ -96,7 +98,7 @@ def import_calendar_dates_txt(calendar_dates_file, feed):
 
 def export_calendar_dates_txt(feed):
     """Export Service records in to calendar.txt format for feed.
-    
+
     Keyword arguments:
     feed -- the Feed associated with the services
     """

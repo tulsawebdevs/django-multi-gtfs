@@ -110,8 +110,8 @@ class Route(models.Model):
     route_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for route.")
-    agency = models.ForeignKey('Agency', null=True,
-        help_text="Agency for this route.")
+    agency = models.ForeignKey(
+        'Agency', null=True, help_text="Agency for this route.")
     short_name = models.CharField(
         max_length=10,
         help_text="Short name of the route")

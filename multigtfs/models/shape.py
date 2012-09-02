@@ -89,11 +89,11 @@ class Shape(models.Model):
 class ShapePoint(models.Model):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
-    lat = models.DecimalField('Latitude',
-        max_digits=13, decimal_places=8,
+    lat = models.DecimalField(
+        'Latitude', max_digits=13, decimal_places=8,
         help_text='WGS 84 latitude of shape point')
-    lon = models.DecimalField('Longitude',
-        max_digits=13, decimal_places=8,
+    lon = models.DecimalField(
+        'Longitude', max_digits=13, decimal_places=8,
         help_text='WGS 84 longtitude of shape point')
     sequence = models.IntegerField()
     traveled = models.FloatField(

@@ -233,6 +233,6 @@ def import_stop_times_txt(stop_times_file, feed):
         # Set empty strings to None
         shape_dist_traveled = fields.get('shape_dist_traveled', None)
         fields['shape_dist_traveled'] = shape_dist_traveled or None
-        StopTime.objects.create(trip=trip, stop=stop, arrival_time=atime,
-            arrival_day=aday, departure_time=dtime, departure_day=dday,
-            **fields)
+        StopTime.objects.create(
+            trip=trip, stop=stop, arrival_time=atime, arrival_day=aday,
+            departure_time=dtime, departure_day=dday, **fields)

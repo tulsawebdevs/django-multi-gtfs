@@ -77,7 +77,7 @@ p,AB,1,2,12
 fare_id
 p
 ''')
-    
+
     def test_export_fare_rules_route_id(self):
         route = Route.objects.create(feed=self.feed, route_id='AB', rtype=3)
         FareRule.objects.create(fare=self.fare, route=route)

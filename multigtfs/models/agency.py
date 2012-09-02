@@ -105,9 +105,10 @@ def import_agency_txt(agency_file, feed):
     feed -- the Feed to associate the records with
     """
     reader = DictReader(agency_file)
-    name_map = dict(agency_url='url', agency_name='name',
-                    agency_phone='phone', agency_fare_url='fare_url',
-                    agency_timezone='timezone', agency_lang='lang')
+    name_map = dict(
+        agency_url='url', agency_name='name', agency_phone='phone',
+        agency_fare_url='fare_url', agency_timezone='timezone',
+        agency_lang='lang')
     for row in reader:
         fields = dict((name_map.get(k, k), v) for k, v in row.items())
         Agency.objects.create(feed=feed, **fields)
@@ -115,7 +116,7 @@ def import_agency_txt(agency_file, feed):
 
 def export_agency_txt(feed):
     """Export Agency records in to agency.txt format for feed.
-    
+
     Keyword arguments:
     feed -- the Feed associated with the agency
     """

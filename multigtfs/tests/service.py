@@ -43,7 +43,7 @@ W,1,0,1,0,1,0,1,20120414,20121231
         self.assertFalse(calendar_txt)
 
     def test_export_calendar_txt(self):
-        service = Service.objects.create(
+        Service.objects.create(
             feed=self.feed, service_id='W', monday=True, tuesday=False,
             wednesday=True, thursday=False, friday=True, saturday=False,
             sunday=True, start_date=date(2012, 7, 17),

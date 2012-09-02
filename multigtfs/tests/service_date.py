@@ -38,9 +38,9 @@ S1,20120414,2
         self.assertFalse(calendar_dates_txt)
 
     def test_export_calendar_dates_txt(self):
-        service_date1 = ServiceDate.objects.create(
+        ServiceDate.objects.create(
             date=date(2012, 8, 31), service=self.service, exception_type=2)
-        service_date2 = ServiceDate.objects.create(
+        ServiceDate.objects.create(
             date=date(2012, 9, 1), service=self.service, exception_type=1)
         calendar_dates_txt = export_calendar_dates_txt(self.feed)
         self.assertEqual(calendar_dates_txt, """\

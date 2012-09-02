@@ -126,11 +126,11 @@ class Stop(models.Model):
     desc = models.CharField(
         max_length=255, blank=True,
         help_text='Description of a stop.')
-    lat = models.DecimalField('Latitude',
-        max_digits=13, decimal_places=8,
+    lat = models.DecimalField(
+        'Latitude', max_digits=13, decimal_places=8,
         help_text='WGS 84 latitude of stop or station')
-    lon = models.DecimalField('Longitude',
-        max_digits=13, decimal_places=8,
+    lon = models.DecimalField(
+        'Longitude', max_digits=13, decimal_places=8,
         help_text='WGS 84 longtitude of stop or station')
     zone = models.ForeignKey(
         'Zone', null=True,
@@ -141,8 +141,8 @@ class Stop(models.Model):
     location_type = models.CharField(
         max_length=1, blank=True, choices=(('0', 'Stop'), ('1', 'Station')),
         help_text="Is this a stop or station?")
-    parent_station = models.ForeignKey('Stop', null=True,
-        help_text="The station associated with the stop")
+    parent_station = models.ForeignKey(
+        'Stop', null=True, help_text="The station associated with the stop")
     timezone = models.CharField(
         max_length=255, blank=True,
         help_text="Timezone of the stop")
