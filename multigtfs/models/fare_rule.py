@@ -79,32 +79,27 @@ project wiki:
   http://code.google.com/p/googletransitdatafeed/wiki/FareExamples
 """
 
-from csv import DictReader
-
 from django.db import models
 
-from multigtfs.models.fare import Fare
-from multigtfs.models.route import Route
-from multigtfs.models.zone import Zone
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class FareRule(models.Model):
+class FareRule(GTFSBase):
     """Associate a Fare with a Route and/or Zones"""
-    fare = models.ForeignKey(Fare)
+    fare = models.ForeignKey('Fare')
     route = models.ForeignKey(
-        'Route', null=True,
+        'Route', null=True, blank=True,
         help_text="Fare class is valid for this route.")
     origin = models.ForeignKey(
-        'Zone', null=True,
+        'Zone', null=True, blank=True,
         related_name='fare_origins',
         help_text="Fare class is valid for travel originating in this zone.")
     destination = models.ForeignKey(
-        'Zone', null=True,
+        'Zone', null=True, blank=True,
         related_name='fare_destinations',
         help_text="Fare class is valid for travel ending in this zone.")
     contains = models.ForeignKey(
-        'Zone', null=True,
+        'Zone', null=True, blank=True,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
 
@@ -118,63 +113,12 @@ class FareRule(models.Model):
         db_table = 'fare_rules'
         app_label = 'multigtfs'
 
-
-def import_fare_rules_txt(fare_rules_file, feed):
-    """Import fare_rules.txt into FareRules records for feed
-
-    Keyword arguments:
-    fare_rules_file -- A open fare_rules.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(fare_rules_file)
-    for row in reader:
-        fare_id = row.pop('fare_id')
-        fare = Fare.objects.get(feed=feed, fare_id=fare_id)
-        route_id = row.pop('route_id', None)
-        if route_id:
-            route = Route.objects.get(feed=feed, route_id=route_id)
-        else:
-            route = None
-        zone_origin_id = row.pop('origin_id', None)
-        if zone_origin_id:
-            zone_origin = Zone.objects.get(feed=feed, zone_id=zone_origin_id)
-        else:
-            zone_origin = None
-        zone_dest_id = row.pop('destination_id', None)
-        if zone_dest_id:
-            zone_dest = Zone.objects.get(feed=feed, zone_id=zone_dest_id)
-        else:
-            zone_dest = None
-        zone_cont_id = row.pop('contains_id', None)
-        if zone_cont_id:
-            zone_cont = Zone.objects.get(feed=feed, zone_id=zone_cont_id)
-        else:
-            zone_cont = None
-        FareRule.objects.create(
-            fare=fare, route=route, origin=zone_origin, destination=zone_dest,
-            contains=zone_cont, **row)
-
-
-def export_fare_rules_txt(feed):
-    """Export FareRules records for feed into fare_rules.txt format
-
-    Keyword arguments:
-    feed -- the Feed with the FareRules records
-    """
-    fare_rules = FareRule.objects.filter(fare__feed=feed)
-    if not fare_rules.exists():
-        return
-    has_routes = fare_rules.exclude(route=None).exists()
-    has_origins = fare_rules.exclude(origin=None).exists()
-    has_dests = fare_rules.exclude(destination=None).exists()
-    has_contains = fare_rules.exclude(contains=None).exists()
-    csv_names = [('fare_id', 'fare__fare_id')]
-    if has_routes or has_origins or has_dests or has_contains:
-        csv_names.append(('route_id', 'route__route_id'))
-    if has_origins or has_dests or has_contains:
-        csv_names.append(('origin_id', 'origin__zone_id'))
-    if has_dests or has_contains:
-        csv_names.append(('destination_id', 'destination__zone_id'))
-    if has_contains:
-        csv_names.append(('contains_id', 'contains__zone_id'))
-    return create_csv(fare_rules, csv_names)
+    # For GTFSBase import/export
+    _column_map = (
+        ('fare_id', 'fare__fare_id'),
+        ('route_id', 'route__route_id'),
+        ('origin_id', 'origin__zone_id'),
+        ('destination_id', 'destination__zone_id'),
+        ('contains_id', 'contains__zone_id')
+    )
+    _rel_to_feed = 'fare__feed'

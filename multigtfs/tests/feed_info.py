@@ -4,8 +4,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, FeedInfo
-from multigtfs.models.feed_info import (
-    import_feed_info_txt, export_feed_info_txt)
 
 
 class FeedInfoTest(TestCase):
@@ -24,7 +22,7 @@ feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,\
 feed_end_date,feed_version
 PTEST,http://example.com,en,20120414,20121231,FOO1
 """)
-        import_feed_info_txt(feed_info_txt, feed=self.feed)
+        FeedInfo.import_txt(feed_info_txt, feed=self.feed)
         feed_info = FeedInfo.objects.get()
         self.assertEqual(feed_info.publisher_name, 'PTEST')
         self.assertEqual(feed_info.publisher_url, 'http://example.com')
@@ -38,7 +36,7 @@ PTEST,http://example.com,en,20120414,20121231,FOO1
 feed_publisher_name,feed_publisher_url
 PTEST,http://example.com
 """)
-        import_feed_info_txt(feed_info_txt, feed=self.feed)
+        FeedInfo.import_txt(feed_info_txt, feed=self.feed)
         feed_info = FeedInfo.objects.get()
         self.assertEqual(feed_info.publisher_name, 'PTEST')
         self.assertEqual(feed_info.publisher_url, 'http://example.com')
@@ -48,13 +46,14 @@ PTEST,http://example.com
         self.assertEqual(feed_info.version, '')
 
     def test_export_feed_info_txt_empty(self):
-        self.assertFalse(export_feed_info_txt(self.feed))
+        feed_info_txt = FeedInfo.objects.in_feed(feed=self.feed).export_txt()
+        self.assertFalse(feed_info_txt)
 
     def test_export_feed_info_txt_minimal(self):
         FeedInfo.objects.create(
             feed=self.feed, publisher_name='PTEST',
             publisher_url='http://example.com', lang='en')
-        feed_info_txt = export_feed_info_txt(self.feed)
+        feed_info_txt = FeedInfo.objects.in_feed(feed=self.feed).export_txt()
         self.assertEqual(feed_info_txt, """\
 feed_publisher_name,feed_publisher_url,feed_lang
 PTEST,http://example.com,en
@@ -66,7 +65,7 @@ PTEST,http://example.com,en
             publisher_url='http://example.com', lang='en',
             start_date=date(2012, 9, 2), end_date=date(2013, 1, 1),
             version='BAR1')
-        feed_info_txt = export_feed_info_txt(self.feed)
+        feed_info_txt = FeedInfo.objects.in_feed(feed=self.feed).export_txt()
         self.assertEqual(feed_info_txt, """\
 feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,\
 feed_end_date,feed_version

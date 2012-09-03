@@ -56,14 +56,12 @@ any special characters in the URL must be correctly escaped. See
 for a description of how to create fully qualified URL values.
 """
 
-from csv import DictReader
-
 from django.db import models
 
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class Agency(models.Model):
+class Agency(GTFSBase):
     """One or more transit agencies that provide the data in this feed."""
     feed = models.ForeignKey('Feed')
     agency_id = models.CharField(
@@ -82,7 +80,7 @@ class Agency(models.Model):
         max_length=2, blank=True,
         help_text="ISO 639-1 code for the primary language")
     phone = models.CharField(
-        max_length=255,
+        max_length=255, blank=True,
         help_text="Voice telephone number")
     fare_url = models.URLField(
         verify_exists=False, blank=True,
@@ -96,42 +94,13 @@ class Agency(models.Model):
         app_label = 'multigtfs'
         verbose_name_plural = "agencies"
 
-
-def import_agency_txt(agency_file, feed):
-    """Import agency.txt into Agency records for feed.
-
-    Keyword arguments:
-    agency_file -- A open agency.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(agency_file)
-    name_map = dict(
-        agency_url='url', agency_name='name', agency_phone='phone',
-        agency_fare_url='fare_url', agency_timezone='timezone',
-        agency_lang='lang')
-    for row in reader:
-        fields = dict((name_map.get(k, k), v) for k, v in row.items())
-        Agency.objects.create(feed=feed, **fields)
-
-
-def export_agency_txt(feed):
-    """Export Agency records in to agency.txt format for feed.
-
-    Keyword arguments:
-    feed -- the Feed associated with the agency
-    """
-    if not feed.agency_set.exists():
-        return
-    csv_names = []
-    if feed.agency_set.exclude(agency_id='').exists():
-        csv_names.append(('agency_id', 'agency_id'))
-    csv_names.append(('agency_name', 'name'))
-    csv_names.append(('agency_url', 'url'))
-    csv_names.append(('agency_timezone', 'timezone'))
-    if feed.agency_set.exclude(lang='').exists():
-        csv_names.append(('agency_lang', 'lang'))
-    if feed.agency_set.exclude(phone='').exists():
-        csv_names.append(('agency_phone', 'phone'))
-    if feed.agency_set.exclude(fare_url='').exists():
-        csv_names.append(('agency_fare_url', 'fare_url'))
-    return create_csv(feed.agency_set.order_by('agency_id'), csv_names)
+    # GTFS column names to fields, used by GTFSBase for import/export
+    _column_map = (
+        ('agency_id', 'agency_id'),
+        ('agency_name', 'name'),
+        ('agency_url', 'url'),
+        ('agency_timezone', 'timezone'),
+        ('agency_lang', 'lang'),
+        ('agency_phone', 'phone'),
+        ('agency_fare_url', 'fare_url')
+    )

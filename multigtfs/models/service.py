@@ -115,15 +115,12 @@ included in the service interval.
 The end_date field's value should be in YYYYMMDD format.
 """
 
-from csv import DictReader
-from datetime import datetime
-
 from django.db import models
 
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class Service(models.Model):
+class Service(GTFSBase):
     """Dates that a route is active."""
 
     feed = models.ForeignKey('Feed')
@@ -161,41 +158,8 @@ class Service(models.Model):
         db_table = 'service'
         app_label = 'multigtfs'
 
-
-def import_calendar_txt(calendar_file, feed):
-    """Import calendar.txt into Service records for feed
-
-    Keyword arguments:
-    calendar_file -- A open calendar.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(calendar_file)
-    for row in reader:
-        monday = row.pop('monday') == '1'
-        tuesday = row.pop('tuesday') == '1'
-        wednesday = row.pop('wednesday') == '1'
-        thursday = row.pop('thursday') == '1'
-        friday = row.pop('friday') == '1'
-        saturday = row.pop('saturday') == '1'
-        sunday = row.pop('sunday') == '1'
-        start_date = datetime.strptime(row.pop('start_date'), '%Y%m%d')
-        end_date = datetime.strptime(row.pop('end_date'), '%Y%m%d')
-
-        Service.objects.create(
-            feed=feed, monday=monday, tuesday=tuesday, wednesday=wednesday,
-            thursday=thursday, friday=friday, saturday=saturday,
-            sunday=sunday, start_date=start_date, end_date=end_date, **row)
-
-
-def export_calendar_txt(feed):
-    """Export Service records into calendar.txt format for feed.
-
-    Keyword arguments:
-    feed -- the Feed associated with the services
-    """
-    if not feed.service_set.exists():
-        return
-    csv_names = (
+    # For GTFSBase import/export
+    _column_map = (
         ('service_id', 'service_id'),
         ('monday', 'monday'),
         ('tuesday', 'tuesday'),
@@ -205,5 +169,5 @@ def export_calendar_txt(feed):
         ('saturday', 'saturday'),
         ('sunday', 'sunday'),
         ('start_date', 'start_date'),
-        ('end_date', 'end_date'))
-    return create_csv(feed.service_set.order_by('service_id'), csv_names)
+        ('end_date', 'end_date')
+    )

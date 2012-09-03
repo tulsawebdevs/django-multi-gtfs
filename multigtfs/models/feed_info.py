@@ -59,15 +59,12 @@ feed publishers determine whether the latest version of their feed has been
 incorporated.
 """
 
-from csv import DictReader
-from datetime import datetime
-
 from django.db import models
 
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class FeedInfo(models.Model):
+class FeedInfo(GTFSBase):
     """Information about the feed"""
     feed = models.ForeignKey('Feed')
     publisher_name = models.CharField(
@@ -80,10 +77,10 @@ class FeedInfo(models.Model):
         max_length=20,
         help_text="IETF BCP 47 language code for text in field.")
     start_date = models.DateField(
-        null=True,
+        null=True, blank=True,
         help_text="Date that feed starts providing reliable data.")
     end_date = models.DateField(
-        null=True,
+        null=True, blank=True,
         help_text="Date that feed stops providing reliable data.")
     version = models.CharField(
         max_length=20, blank=True,
@@ -97,58 +94,11 @@ class FeedInfo(models.Model):
         app_label = 'multigtfs'
         verbose_name_plural = "feed info"
 
-
-def import_feed_info_txt(feed_info_file, feed):
-    """Import feed_info.txt into a FeedInfo record for feed
-
-    Keyword arguments:
-    feed_info_file -- A open feed_info.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(feed_info_file)
-    name_map = dict(
-        feed_publisher_name='publisher_name',
-        feed_publisher_url='publisher_url', feed_lang='lang',
-        feed_start_date='start_date', feed_end_date='end_date',
-        feed_version='version')
-    for row in reader:
-        fields = dict((name_map.get(k, k), v) for k, v in row.items())
-        start_date_raw = fields.pop('start_date', None)
-        if start_date_raw:
-            start_date = datetime.strptime(start_date_raw, '%Y%m%d')
-        else:
-            start_date = None
-        end_date_raw = fields.pop('end_date', None)
-        if end_date_raw:
-            end_date = datetime.strptime(end_date_raw, '%Y%m%d')
-        else:
-            end_date = None
-
-        FeedInfo.objects.create(
-            feed=feed, start_date=start_date, end_date=end_date, **fields)
-
-
-def export_feed_info_txt(feed):
-    """Export FeedInfo records into feed_info.txt format for feed.
-
-    Keyword arguments:
-    feed -- the Feed associated with the FeedInfo
-    """
-    to_output = feed.feedinfo_set
-    if not to_output.exists():
-        return
-    csv_names = [
+    _column_map = (
         ('feed_publisher_name', 'publisher_name'),
         ('feed_publisher_url', 'publisher_url'),
-        ('feed_lang', 'lang')
-    ]
-    has_start = to_output.exclude(start_date=None).exists()
-    has_end = to_output.exclude(end_date=None).exists()
-    has_version = to_output.exclude(version='').exists()
-    if has_start or has_end or has_version:
-        csv_names.append(('feed_start_date', 'start_date'))
-    if has_end or has_version:
-        csv_names.append(('feed_end_date', 'end_date'))
-    if has_version:
-        csv_names.append(('feed_version', 'version'))
-    return create_csv(to_output, csv_names)
+        ('feed_lang', 'lang'),
+        ('feed_start_date', 'start_date'),
+        ('feed_end_date', 'end_date'),
+        ('feed_version', 'version')
+    )

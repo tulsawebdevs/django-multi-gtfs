@@ -51,19 +51,15 @@ the calendar_dates.txt file to add the holiday to the holiday service_id and to
 remove the holiday from the regular service_id schedule.
 """
 
-from csv import DictReader
-from datetime import datetime
-
 from django.db import models
 
-from multigtfs.models.service import Service
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class ServiceDate(models.Model):
+class ServiceDate(GTFSBase):
     """Dates that a route is active."""
 
-    service = models.ForeignKey(Service)
+    service = models.ForeignKey('Service')
     date = models.DateField(
         help_text="Date that the service differs from the norm.")
     exception_type = models.IntegerField(
@@ -80,33 +76,9 @@ class ServiceDate(models.Model):
         db_table = 'service_date'
         app_label = 'multigtfs'
 
-
-def import_calendar_dates_txt(calendar_dates_file, feed):
-    """Import calendar_dates.txt into ServiceDate records for feed
-
-    Keyword arguments:
-    calendar_dates_file -- A open calendar_dates.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(calendar_dates_file)
-    for row in reader:
-        d = datetime.strptime(row.pop('date'), '%Y%m%d')
-        service_id = row.pop('service_id')
-        service = Service.objects.get(feed=feed, service_id=service_id)
-        ServiceDate.objects.create(date=d, service=service, **row)
-
-
-def export_calendar_dates_txt(feed):
-    """Export Service records in to calendar.txt format for feed.
-
-    Keyword arguments:
-    feed -- the Feed associated with the services
-    """
-    service_dates = ServiceDate.objects.filter(service__feed=feed)
-    if not service_dates.exists():
-        return
-    csv_names = (
+    # For GTFSBase import/export
+    _column_map = (
         ('service_id', 'service__service_id'),
         ('date', 'date'),
         ('exception_type', 'exception_type'))
-    return create_csv(service_dates, csv_names)
+    _rel_to_feed = 'service__feed'

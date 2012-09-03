@@ -4,8 +4,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Service, ServiceDate
-from multigtfs.models.service_date import (
-    import_calendar_dates_txt, export_calendar_dates_txt)
 
 
 class ServiceDateTest(TestCase):
@@ -27,23 +25,23 @@ class ServiceDateTest(TestCase):
 service_id,date,exception_type
 S1,20120414,2
 """)
-        import_calendar_dates_txt(calendar_dates_txt, self.feed)
+        ServiceDate.import_txt(calendar_dates_txt, self.feed)
         service_date = ServiceDate.objects.get()
         self.assertEqual(service_date.date, date(2012, 4, 14))
         self.assertEqual(service_date.service, self.service)
         self.assertEqual(service_date.exception_type, 2)
 
     def test_export_calendar_dates_txt_none(self):
-        calendar_dates_txt = export_calendar_dates_txt(self.feed)
-        self.assertFalse(calendar_dates_txt)
+        cdates_txt = ServiceDate.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(cdates_txt)
 
     def test_export_calendar_dates_txt(self):
         ServiceDate.objects.create(
             date=date(2012, 8, 31), service=self.service, exception_type=2)
         ServiceDate.objects.create(
             date=date(2012, 9, 1), service=self.service, exception_type=1)
-        calendar_dates_txt = export_calendar_dates_txt(self.feed)
-        self.assertEqual(calendar_dates_txt, """\
+        cdates_txt = ServiceDate.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(cdates_txt, """\
 service_id,date,exception_type
 S1,20120831,2
 S1,20120901,1

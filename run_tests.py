@@ -23,7 +23,7 @@ def main():
         print "django-nose not installed.  You'd like it."
     else:
         INSTALLED_APPS.append('django_nose')
-        TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'\
+        TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
     settings.configure(
         INSTALLED_APPS=INSTALLED_APPS,
@@ -37,9 +37,8 @@ def main():
         DEBUG=True, TEMPLATE_DEBUG=True, TEST_RUNNER=TEST_RUNNER
     )
 
-    from django.test.utils import get_runner
-    test_runner = get_runner(settings)()
-    failures = test_runner.run_tests(['multigtfs'])
+    from django.core import management
+    failures = management.call_command('test', *sys.argv[1:])
     sys.exit(failures)
 
 

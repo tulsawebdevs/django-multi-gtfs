@@ -47,14 +47,12 @@ you intend to use this field to indicate ticket validity, transfer_duration
 should be omitted or empty when transfers is set to 0.
 """
 
-from csv import DictReader
-
 from django.db import models
 
-from multigtfs.utils import create_csv
+from multigtfs.models.base import GTFSBase
 
 
-class Fare(models.Model):
+class Fare(GTFSBase):
     """A fare class"""
 
     feed = models.ForeignKey('Feed')
@@ -80,7 +78,7 @@ class Fare(models.Model):
                  (-1, 'Unlimited transfers are permitted.')),
         help_text="Are transfers permitted?")
     transfer_duration = models.IntegerField(
-        null=True,
+        null=True, blank=True,
         help_text="Time in seconds until a ticket or transfer expires")
 
     def __unicode__(self):
@@ -91,36 +89,12 @@ class Fare(models.Model):
         db_table = 'fare'
         app_label = 'multigtfs'
 
-
-def import_fare_attributes_txt(fare_attributes_file, feed):
-    """Import fare_attributes.txt into Fare records for feed
-
-    Keyword arguments:
-    fare_attributes_file -- A open fare_attributes.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(fare_attributes_file)
-    for row in reader:
-        transfer_duration = row.get('transfer_duration', None)
-        row['transfer_duration'] = transfer_duration or None
-        Fare.objects.create(feed=feed, **row)
-
-
-def export_fare_attributes_txt(feed):
-    """Export Fare records for feed into fare_attributes.txt format
-
-    Keyword arguments:
-    feed -- the Feed with the Fare records
-    """
-    fares = feed.fare_set
-    if not fares.exists():
-        return
-    csv_names = [
+    # For GTFSBase import/export
+    _column_map = (
         ('fare_id', 'fare_id'),
         ('price', 'price'),
         ('currency_type', 'currency_type'),
         ('payment_method', 'payment_method'),
-        ('transfers', 'transfers')]
-    if fares.exclude(transfer_duration=None).exists():
-        csv_names.append(('transfer_duration', 'transfer_duration'))
-    return create_csv(fares.order_by('fare_id'), csv_names)
+        ('transfers', 'transfers'),
+        ('transfer_duration', 'transfer_duration')
+    )
