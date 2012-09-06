@@ -109,6 +109,8 @@ class Trip(models.Model):
         db_table = 'trip'
         app_label = 'multigtfs'
 
+    _rel_to_feed = 'route__feed'
+
 
 def import_trips_txt(trips_file, feed):
     """Import trips.txt into Trip records for feed

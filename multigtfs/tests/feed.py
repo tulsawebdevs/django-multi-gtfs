@@ -129,6 +129,38 @@ class FeedTest(TestCase):
         self.assertFalse('dv/feed_info.txt' in z_in.namelist())
         self.assertFalse('feed/feed_info.txt' in z_out.namelist())
 
+        freq_in = self.normalize(z_in.read('dv/frequencies.txt'))
+        self.assertEqual(freq_in, '''\
+trip_id,start_time,end_time,headway_secs
+CITY1,10:00:00,15:59:59,1800
+CITY1,16:00:00,18:59:59,600
+CITY1,19:00:00,22:00:00,1800
+CITY1,6:00:00,7:59:59,1800
+CITY1,8:00:00,9:59:59,600
+CITY2,10:00:00,15:59:59,1800
+CITY2,16:00:00,18:59:59,600
+CITY2,19:00:00,22:00:00,1800
+CITY2,6:00:00,7:59:59,1800
+CITY2,8:00:00,9:59:59,600
+STBA,6:00:00,22:00:00,1800
+''')
+        freq_out = self.normalize(z_out.read('feed/frequencies.txt'))
+        self.assertNotEqual(freq_out, "Le Freak, C'est Chic")
+        self.assertEqual(freq_out, '''\
+trip_id,start_time,end_time,headway_secs
+CITY1,06:00:00,07:59:59,1800
+CITY1,08:00:00,09:59:59,600
+CITY1,10:00:00,15:59:59,1800
+CITY1,16:00:00,18:59:59,600
+CITY1,19:00:00,22:00:00,1800
+CITY2,06:00:00,07:59:59,1800
+CITY2,08:00:00,09:59:59,600
+CITY2,10:00:00,15:59:59,1800
+CITY2,16:00:00,18:59:59,600
+CITY2,19:00:00,22:00:00,1800
+STBA,06:00:00,22:00:00,1800
+''')
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -186,3 +218,34 @@ p,STBA
 
         self.assertFalse('feed/feed_info.txt' in z_in.namelist())
         self.assertFalse('feed/feed_info.txt' in z_out.namelist())
+
+        freq_in = self.normalize(z_in.read('frequencies.txt'))
+        self.assertEqual(freq_in, '''\
+trip_id,start_time,end_time,headway_secs
+CITY1,10:00:00,15:59:59,1800
+CITY1,16:00:00,18:59:59,600
+CITY1,19:00:00,22:00:00,1800
+CITY1,6:00:00,7:59:59,1800
+CITY1,8:00:00,9:59:59,600
+CITY2,10:00:00,15:59:59,1800
+CITY2,16:00:00,18:59:59,600
+CITY2,19:00:00,22:00:00,1800
+CITY2,6:00:00,7:59:59,1800
+CITY2,8:00:00,9:59:59,600
+STBA,6:00:00,22:00:00,1800
+''')
+        freq_out = self.normalize(z_out.read('feed/frequencies.txt'))
+        self.assertEqual(freq_out, '''\
+trip_id,start_time,end_time,headway_secs
+CITY1,06:00:00,07:59:59,1800
+CITY1,08:00:00,09:59:59,600
+CITY1,10:00:00,15:59:59,1800
+CITY1,16:00:00,18:59:59,600
+CITY1,19:00:00,22:00:00,1800
+CITY2,06:00:00,07:59:59,1800
+CITY2,08:00:00,09:59:59,600
+CITY2,10:00:00,15:59:59,1800
+CITY2,16:00:00,18:59:59,600
+CITY2,19:00:00,22:00:00,1800
+STBA,06:00:00,22:00:00,1800
+''')

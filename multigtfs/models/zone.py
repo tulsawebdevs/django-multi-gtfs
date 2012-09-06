@@ -15,3 +15,5 @@ class Zone(models.Model):
     class Meta:
         db_table = 'zone'
         app_label = 'multigtfs'
+
+    _rel_to_feed = 'feed'  # TODO: Delete when I'm based on GTFSModel

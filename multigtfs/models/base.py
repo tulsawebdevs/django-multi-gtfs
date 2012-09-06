@@ -92,7 +92,7 @@ class GTFSBase(models.Model):
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
                 if value:
-                    kwargs = {'feed': feed, rel_name: value}
+                    kwargs = {field.rel.to._rel_to_feed: feed, rel_name: value}
                     return field.rel.to.objects.get(**kwargs)
                 else:
                     return None

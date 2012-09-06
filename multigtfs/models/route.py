@@ -148,6 +148,8 @@ class Route(models.Model):
         db_table = 'route'
         app_label = 'multigtfs'
 
+    _rel_to_feed = 'feed'  # TODO: Delete when I'm based on GTFSModel
+
 
 def import_routes_txt(routes_file, feed):
     """Import routes.txt into Route records for feed

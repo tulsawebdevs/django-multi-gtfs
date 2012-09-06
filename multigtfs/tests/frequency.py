@@ -1,10 +1,11 @@
-from datetime import date, time
+from datetime import date
 import StringIO
 
+from django.core.serializers import serialize
 from django.test import TestCase
 
 from multigtfs.models import Feed, Frequency, Route, Service, Trip
-from multigtfs.models.frequency import import_frequencies_txt
+from multigtfs.models.fields import GTFSSeconds
 
 
 class FrequencyTest(TestCase):
@@ -29,37 +30,71 @@ class FrequencyTest(TestCase):
 trip_id,start_time,end_time,headway_secs
 STBA,6:00:00,22:00:00,1800
 """)
-        import_frequencies_txt(frequencies_txt, self.feed)
+        Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
-        self.assertEqual(frequency.start_time, time(6))
-        self.assertEqual(frequency.end_time, time(22))
+        self.assertEqual(frequency.start_time, GTFSSeconds.from_hms(hours=6))
+        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(hours=22))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
 
     def test_import_frequencies_txt_maximal(self):
         frequencies_txt = StringIO.StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
-STBA,6:00:00,22:00:00,1800,1
+STBA,6:00:00,23:30:35,1800,1
 """)
-        import_frequencies_txt(frequencies_txt, self.feed)
+        Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
-        self.assertEqual(frequency.start_time, time(6))
-        self.assertEqual(frequency.end_time, time(22))
+        self.assertEqual(frequency.start_time, GTFSSeconds.from_hms(hours=6))
+        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(23, 30, 35))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '1')
 
-    def test_import_frequencies_txt_omitted(self):
+    def test_import_frequencies_txt_omitted_with_rollover(self):
         frequencies_txt = StringIO.StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
 STBA,00:50:00,24:10:00,1800,
 """)
-        import_frequencies_txt(frequencies_txt, self.feed)
+        Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
-        self.assertEqual(frequency.start_time, time(0, 50))
-        self.assertEqual(frequency.start_day, 0)
-        self.assertEqual(frequency.end_time, time(0, 10))
-        self.assertEqual(frequency.end_day, 1)
+        self.assertEqual(str(frequency.start_time), '00:50:00')
+        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(24, 10))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
+
+    def test_export_frequencies_txt_none(self):
+        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(frequencies_txt, None)
+
+    def test_export_frequencies_txt_minimal(self):
+        Frequency.objects.create(
+            trip=self.trip, start_time=GTFSSeconds.from_hms(hours=6),
+            end_time=GTFSSeconds.from_hms(hours=22), headway_secs=1800)
+        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(frequencies_txt, """\
+trip_id,start_time,end_time,headway_secs
+STBA,06:00:00,22:00:00,1800
+""")
+
+    def test_export_frequencies_txt_maximal(self):
+        Frequency.objects.create(
+            trip=self.trip, start_time='05:00', end_time='25:00',
+            headway_secs=1800)
+        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(frequencies_txt, """\
+trip_id,start_time,end_time,headway_secs
+STBA,05:00:00,25:00:00,1800
+""")
+
+    def test_serialize(self):
+        '''Test serialization of Frequency, which has a GTFSSecondsField'''
+        Frequency.objects.create(
+            trip=self.trip, start_time='05:00', end_time='25:00',
+            headway_secs=1800)
+        json = serialize('json', Frequency.objects.all())
+        self.assertEqual(
+            json,
+            '[{"pk": 1, "model": "multigtfs.frequency",'
+            ' "fields": {"exact_times": "", "start_time": "05:00:00",'
+            ' "headway_secs": 1800, "trip": 1, "end_time": "25:00:00"}}]')

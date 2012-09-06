@@ -65,27 +65,19 @@ be taken to choose an end_time value that is greater than the last desired trip
 start time but less than the last desired trip start time + headway_secs.
 """
 
-from csv import DictReader
-
 from django.db import models
 
-from multigtfs.models.trip import Trip
-from multigtfs.utils import parse_time
+from multigtfs.models.base import GTFSBase
+from multigtfs.models.fields import GTFSSecondsField
 
 
-class Frequency(models.Model):
+class Frequency(GTFSBase):
     """Description of a trip that repeats without fixed stop times"""
-    trip = models.ForeignKey(Trip)
-    start_time = models.TimeField(
+    trip = models.ForeignKey('Trip')
+    start_time = GTFSSecondsField(
         help_text="Time that the service begins at the specified frequency")
-    start_day = models.IntegerField(
-        default=None, null=True,
-        help_text="Start day. 1 if after midnight")
-    end_time = models.TimeField(
+    end_time = GTFSSecondsField(
         help_text="Time that the service ends at the specified frequency")
-    end_day = models.IntegerField(
-        default=None, null=True,
-        help_text="End day. 1 if after midnight")
     headway_secs = models.IntegerField(
         help_text="Time in seconds before returning to same stop")
     exact_times = models.CharField(
@@ -102,21 +94,30 @@ class Frequency(models.Model):
         app_label = 'multigtfs'
         verbose_name_plural = "frequencies"
 
+    # For GTFSBase import/export
+    _column_map = (
+        ('trip_id', 'trip__trip_id'),
+        ('start_time', 'start_time'),
+        ('end_time', 'end_time'),
+        ('headway_secs', 'headway_secs'),
+        ('exact_times', 'exact_times'))
+    _rel_to_feed = 'trip__route__feed'
 
-def import_frequencies_txt(frequencies_file, feed):
-    """Import frequencies.txt into Frequency records for feed
-
-    Keyword arguments:
-    frequencies_file -- A open frequencies.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(frequencies_file)
-    for row in reader:
-        trip_id = row.pop('trip_id')
-        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
-        # Convert times
-        stime, sday = parse_time(row.pop('start_time', None))
-        etime, eday = parse_time(row.pop('end_time', None))
-        Frequency.objects.create(
-            trip=trip, start_time=stime, start_day=sday, end_time=etime,
-            end_day=eday, **row)
+#
+# def import_frequencies_txt(frequencies_file, feed):
+#     """Import frequencies.txt into Frequency records for feed
+#
+#     Keyword arguments:
+#     frequencies_file -- A open frequencies.txt for reading
+#     feed -- the Feed to associate the records with
+#     """
+#     reader = DictReader(frequencies_file)
+#     for row in reader:
+#         trip_id = row.pop('trip_id')
+#         trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
+#         # Convert times
+#         stime, sday = parse_time(row.pop('start_time', None))
+#         etime, eday = parse_time(row.pop('end_time', None))
+#         Frequency.objects.create(
+#             trip=trip, start_time=stime, start_day=sday, end_time=etime,
+#             end_day=eday, **row)
