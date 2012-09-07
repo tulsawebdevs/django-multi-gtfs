@@ -3,7 +3,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Agency, Route
-from multigtfs.models.route import import_routes_txt
 
 
 class RouteTest(TestCase):
@@ -19,7 +18,7 @@ class RouteTest(TestCase):
 route_id,route_short_name,route_long_name,route_type
 AB,10,Airport - Bullfrog,3
 """)
-        import_routes_txt(routes_txt, self.feed)
+        Route.import_txt(routes_txt, self.feed)
         route = Route.objects.get()
         self.assertEqual(route.feed, self.feed)
         self.assertEqual(route.route_id, 'AB')
@@ -40,7 +39,7 @@ AB,DTA,10,Airport - Bullfrog,"Our Airport Route", 3,http://example.com,\
 00FFFF,000000
 """)
         agency = Agency.objects.create(feed=self.feed, agency_id='DTA')
-        import_routes_txt(routes_txt, self.feed)
+        Route.import_txt(routes_txt, self.feed)
         route = Route.objects.get()
         self.assertEqual(route.feed, self.feed)
         self.assertEqual(route.route_id, 'AB')
@@ -52,3 +51,32 @@ AB,DTA,10,Airport - Bullfrog,"Our Airport Route", 3,http://example.com,\
         self.assertEqual(route.url, 'http://example.com')
         self.assertEqual(route.color, '00FFFF')
         self.assertEqual(route.text_color, '000000')
+
+    def test_export_routes_txt_none(self):
+        routes_txt = Route.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(routes_txt)
+
+    def test_export_routes_txt_minimal(self):
+        Route.objects.create(
+            feed=self.feed, route_id='AB', short_name='10',
+            long_name='Airport - Bullfrog', rtype=3)
+        routes_txt = Route.objects.in_feed(self.feed).export_txt()
+        self.assertEquals(routes_txt, """\
+route_id,route_short_name,route_long_name,route_type
+AB,10,Airport - Bullfrog,3
+""")
+
+    def test_export_routes_txt_maximal(self):
+        agency = Agency.objects.create(feed=self.feed, agency_id='DTA')
+        Route.objects.create(
+            feed=self.feed, agency=agency, route_id='AB', short_name='10',
+            long_name='Airport - Bullfrog', desc='Our Airport Route',
+            rtype=3, url='http://example.com', color='00FFFF',
+            text_color='000000')
+        routes_txt = Route.objects.in_feed(self.feed).export_txt()
+        self.assertEquals(routes_txt, """\
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,\
+route_url,route_color,route_text_color
+AB,DTA,10,Airport - Bullfrog,Our Airport Route,3,http://example.com,\
+00FFFF,000000
+""")

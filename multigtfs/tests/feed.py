@@ -161,6 +161,10 @@ CITY2,19:00:00,22:00:00,1800
 STBA,06:00:00,22:00:00,1800
 ''')
 
+        routes_in = self.normalize(z_in.read('dv/routes.txt'))
+        routes_out = self.normalize(z_out.read('feed/routes.txt'))
+        self.assertEqual(routes_in, routes_out)
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -249,3 +253,23 @@ CITY2,16:00:00,18:59:59,600
 CITY2,19:00:00,22:00:00,1800
 STBA,06:00:00,22:00:00,1800
 ''')
+
+        routes_in = self.normalize(z_in.read('routes.txt'))
+        self.assertEqual(routes_in, """\
+route_id,agency_id,route_short_name,route_long_name,route_desc,route_type\
+,route_url,route_color,route_text_color
+AAMV,DTA,50,Airport - Amargosa Valley,,3,,,
+AB,DTA,10,Airport - Bullfrog,,3,,,
+BFC,DTA,20,Bullfrog - Furnace Creek Resort,,3,,,
+CITY,DTA,40,City,,3,,,
+STBA,DTA,30,Stagecoach - Airport Shuttle,,3,,,
+""")
+        routes_out = self.normalize(z_out.read('feed/routes.txt'))
+        self.assertEqual(routes_out, """\
+route_id,agency_id,route_short_name,route_long_name,route_type
+AAMV,DTA,50,Airport - Amargosa Valley,3
+AB,DTA,10,Airport - Bullfrog,3
+BFC,DTA,20,Bullfrog - Furnace Creek Resort,3
+CITY,DTA,40,City,3
+STBA,DTA,30,Stagecoach - Airport Shuttle,3
+""")

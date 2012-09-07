@@ -96,14 +96,12 @@ The color difference between route_color and route_text_color should provide
 sufficient contrast when viewed on a black and white screen.
 """
 
-from csv import DictReader
-
 from django.db import models
 
-from multigtfs.models import Agency
+from multigtfs.models.base import GTFSBase
 
 
-class Route(models.Model):
+class Route(GTFSBase):
     """A transit route"""
 
     feed = models.ForeignKey('Feed')
@@ -111,7 +109,7 @@ class Route(models.Model):
         max_length=255, db_index=True,
         help_text="Unique identifier for route.")
     agency = models.ForeignKey(
-        'Agency', null=True, help_text="Agency for this route.")
+        'Agency', null=True, blank=True, help_text="Agency for this route.")
     short_name = models.CharField(
         max_length=10,
         help_text="Short name of the route")
@@ -148,25 +146,14 @@ class Route(models.Model):
         db_table = 'route'
         app_label = 'multigtfs'
 
-    _rel_to_feed = 'feed'  # TODO: Delete when I'm based on GTFSModel
-
-
-def import_routes_txt(routes_file, feed):
-    """Import routes.txt into Route records for feed
-
-    Keyword arguments:
-    routes_file -- A open routes.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(routes_file)
-    name_map = dict(route_short_name='short_name', route_long_name='long_name',
-                    route_desc='desc', route_type='rtype', route_url='url',
-                    route_color='color', route_text_color='text_color')
-    for row in reader:
-        fields = dict((name_map.get(k, k), v) for k, v in row.items())
-        agency_id = fields.pop('agency_id', None)
-        if agency_id:
-            agency = Agency.objects.get(feed=feed, agency_id=agency_id)
-        else:
-            agency = None
-        Route.objects.create(feed=feed, agency=agency, **fields)
+    _column_map = (
+        ('route_id', 'route_id'),
+        ('agency_id', 'agency__agency_id'),
+        ('route_short_name', 'short_name'),
+        ('route_long_name', 'long_name'),
+        ('route_desc', 'desc'),
+        ('route_type', 'rtype'),
+        ('route_url', 'url'),
+        ('route_color', 'color'),
+        ('route_text_color', 'text_color')
+    )
