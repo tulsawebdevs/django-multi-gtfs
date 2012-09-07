@@ -3,7 +3,6 @@ from zipfile import ZipFile
 from django.db import models
 
 from multigtfs.models.stop import import_stops_txt
-from multigtfs.models.stop_time import import_stop_times_txt
 from multigtfs.models.transfer import import_transfers_txt
 from multigtfs.models.trip import import_trips_txt
 
@@ -37,7 +36,7 @@ class Feed(models.Model):
         """
         from multigtfs.models import (
             Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint)
+            ServiceDate, ShapePoint, StopTime)
 
         z = ZipFile(gtfs_file, 'r')
         files = z.namelist()
@@ -50,7 +49,7 @@ class Feed(models.Model):
             ('calendar_dates.txt', ServiceDate),
             ('shapes.txt', ShapePoint),
             ('trips.txt', import_trips_txt),
-            ('stop_times.txt', import_stop_times_txt),
+            ('stop_times.txt', StopTime),
             ('frequencies.txt', Frequency),
             ('fare_attributes.txt', Fare),
             ('fare_rules.txt', FareRule),
@@ -77,7 +76,7 @@ class Feed(models.Model):
         """
         from multigtfs.models import (
             Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint)
+            ServiceDate, ShapePoint, StopTime)
 
         z = ZipFile(gtfs_file, 'w')
 
@@ -91,7 +90,7 @@ class Feed(models.Model):
             ('frequencies.txt', Frequency),
             ('routes.txt', Route),
             ('shapes.txt', ShapePoint),
-            # ('stop_times.txt', export_stop_times_txt),
+            ('stop_times.txt', StopTime),
             # ('stops.txt', export_stops_txt),
             # ('transfers.txt', export_transfers_txt),
             # ('trips.txt', export_trips_txt),

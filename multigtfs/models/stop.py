@@ -154,6 +154,8 @@ class Stop(models.Model):
         db_table = 'stop'
         app_label = 'multigtfs'
 
+    _rel_to_feed = 'feed'  # TODO: remove when based on GTFSBase
+
 
 def import_stops_txt(stops_file, feed):
     """Import stops.txt into Stop records for feed

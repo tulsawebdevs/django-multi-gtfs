@@ -150,31 +150,24 @@ The units used for shape_dist_traveled in the stop_times.txt file must match
 the units that are used for this field in the shapes.txt file.
 """
 
-from csv import DictReader
-
 from django.db import models
 
 from multigtfs.models.stop import Stop
 from multigtfs.models.trip import Trip
-from multigtfs.utils import parse_time
+from multigtfs.models.base import GTFSBase
+from multigtfs.models.fields import GTFSSecondsField
 
 
-class StopTime(models.Model):
+class StopTime(GTFSBase):
     """A specific stop on a route on a trip."""
     trip = models.ForeignKey(Trip)
     stop = models.ForeignKey(Stop)
-    arrival_time = models.TimeField(
-        null=True,
+    arrival_time = GTFSSecondsField(
+        default=None, null=True, blank=True,
         help_text="Arrival time. Must be set for end stops of trip.")
-    arrival_day = models.IntegerField(
-        default=None, null=True,
-        help_text="Arrival day. 1 if after midnight")
-    departure_time = models.TimeField(
-        null=True,
+    departure_time = GTFSSecondsField(
+        default=None, null=True, blank=True,
         help_text='Departure time. Must be set for end stops of trip.')
-    departure_day = models.IntegerField(
-        default=None, null=True,
-        help_text="Departure day. 1 if after midnight")
     stop_sequence = models.IntegerField()
     stop_headsign = models.CharField(
         max_length=255, blank=True,
@@ -194,7 +187,7 @@ class StopTime(models.Model):
                  ('3', 'Must coordinate with driver to arrange drop off')),
         help_text="How passengers are picked up")
     shape_dist_traveled = models.FloatField(
-        null=True,
+        null=True, blank=True,
         help_text='Distance of stop from start of shape')
 
     def __unicode__(self):
@@ -204,35 +197,15 @@ class StopTime(models.Model):
         db_table = 'stop_time'
         app_label = 'multigtfs'
 
-
-def import_stop_times_txt(stop_times_file, feed):
-    """Import stop_times.txt into StopTime records for feed
-
-    Keyword arguments:
-    stop_times_file -- A open stop_times.txt for reading
-    feed -- the Feed to associate the records with
-    """
-    reader = DictReader(stop_times_file)
-    name_map = dict(drop_off_time='drop_off_type')
-    for row in reader:
-        fields = dict((name_map.get(k, k), v) for k, v in row.items())
-        trip_id = fields.pop('trip_id')
-        trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
-        stop_id = fields.pop('stop_id')
-        stop = Stop.objects.get(feed=feed, stop_id=stop_id)
-        # Turn None into blanks
-        stop_headsign = fields.get('stop_headsign', '')
-        fields['stop_headsign'] = stop_headsign or ''
-        pickup_type = fields.get('pickup_type', '')
-        fields['pickup_type'] = pickup_type or ''
-        drop_off_type = fields.get('drop_off_type', '')
-        fields['drop_off_type'] = drop_off_type or ''
-        # Convert times
-        atime, aday = parse_time(fields.pop('arrival_time', None))
-        dtime, dday = parse_time(fields.pop('departure_time', None))
-        # Set empty strings to None
-        shape_dist_traveled = fields.get('shape_dist_traveled', None)
-        fields['shape_dist_traveled'] = shape_dist_traveled or None
-        StopTime.objects.create(
-            trip=trip, stop=stop, arrival_time=atime, arrival_day=aday,
-            departure_time=dtime, departure_day=dday, **fields)
+    _column_map = (
+        ('trip_id', 'trip__trip_id'),
+        ('arrival_time', 'arrival_time'),
+        ('departure_time', 'departure_time'),
+        ('stop_id', 'stop__stop_id'),
+        ('stop_sequence', 'stop_sequence'),
+        ('stop_headsign', 'stop_headsign'),
+        ('pickup_type', 'pickup_type'),
+        ('drop_off_type', 'drop_off_type'),
+        ('shape_dist_traveled', 'shape_dist_traveled')
+    )
+    _rel_to_feed = 'trip__route__feed'

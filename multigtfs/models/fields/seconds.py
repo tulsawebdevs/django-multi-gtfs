@@ -43,6 +43,8 @@ class GTFSSecondsField(models.Field):
     def to_python(self, value):
         if isinstance(value, GTFSSeconds):
             return value
+        if value is None:
+            return None
         if isinstance(value, (int, long)):
             return GTFSSeconds(value)
         svalue = str(value)

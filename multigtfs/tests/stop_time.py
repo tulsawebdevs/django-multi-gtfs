@@ -4,7 +4,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip
-from multigtfs.models.stop_time import import_stop_times_txt
 
 
 class StopTimeTest(TestCase):
@@ -29,11 +28,11 @@ class StopTimeTest(TestCase):
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,6:00:00,6:00:00,STAGECOACH,1
 """)
-        import_stop_times_txt(stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
         stoptime = StopTime.objects.get()
         self.assertEqual(stoptime.trip, self.trip)
-        self.assertEqual(stoptime.arrival_time, time(6))
-        self.assertEqual(stoptime.departure_time, time(6))
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime.departure_time), '06:00:00')
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)
         self.assertEqual(stoptime.stop_headsign, '')
@@ -41,17 +40,39 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
         self.assertEqual(stoptime.drop_off_type, '')
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
+    def test_import_stop_times_txt_bad_column_empty_OK(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time
+STBA,6:00:00,6:00:00,STAGECOACH,1,
+""")
+        StopTime.import_txt(stop_times_txt, self.feed)
+        stoptime = StopTime.objects.get()
+        self.assertEqual(stoptime.trip, self.trip)
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime.departure_time), '06:00:00')
+        self.assertEqual(stoptime.stop, self.stop)
+        self.assertEqual(stoptime.stop_sequence, 1)
+        self.assertEqual(stoptime.drop_off_type, '')
+
+    def test_import_stop_times_txt_bad_column_populated_raises(self):
+        stop_times_txt = StringIO.StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time
+STBA,6:00:00,6:00:00,STAGECOACH,1,1
+""")
+        self.assertRaises(
+            ValueError, StopTime.import_txt, stop_times_txt, self.feed)
+
     def test_import_stop_times_txt_maximal(self):
         stop_times_txt = StringIO.StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
 """)
-        import_stop_times_txt(stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
         stoptime = StopTime.objects.get()
         self.assertEqual(stoptime.trip, self.trip)
-        self.assertEqual(stoptime.arrival_time, time(6))
-        self.assertEqual(stoptime.departure_time, time(6))
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime.departure_time), '06:00:00')
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)
         self.assertEqual(stoptime.stop_headsign, 'SC')
@@ -65,11 +86,11 @@ trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
 """)
-        import_stop_times_txt(stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
         stoptime = StopTime.objects.get()
         self.assertEqual(stoptime.trip, self.trip)
-        self.assertEqual(stoptime.arrival_time, time(6))
-        self.assertEqual(stoptime.departure_time, time(6))
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime.departure_time), '06:00:00')
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)
         self.assertEqual(stoptime.stop_headsign, '')
@@ -90,32 +111,56 @@ STBA,12:00:00,12:00:00,STAGECOACH3,3
         stop3 = Stop.objects.create(
             feed=self.feed, stop_id='STAGECOACH3', lat="36.425288",
             lon="-117.133162")
-        import_stop_times_txt(stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
         stoptime1 = StopTime.objects.get(stop=self.stop)
-        self.assertEqual(stoptime1.arrival_time, time(6))
-        self.assertEqual(stoptime1.departure_time, time(6))
+        self.assertEqual(str(stoptime1.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime1.departure_time), '06:00:00')
         stoptime2 = StopTime.objects.get(stop=stop2)
         self.assertEqual(stoptime2.arrival_time, None)
         self.assertEqual(stoptime2.departure_time, None)
         stoptime3 = StopTime.objects.get(stop=stop3)
-        self.assertEqual(stoptime3.arrival_time, time(12))
-        self.assertEqual(stoptime3.departure_time, time(12))
+        self.assertEqual(str(stoptime3.arrival_time), '12:00:00')
+        self.assertEqual(str(stoptime3.departure_time), '12:00:00')
 
     def test_import_stop_times_txt_tomorrow(self):
         stop_times_txt = StringIO.StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,23:59:00,24:01:00,STAGECOACH,1
 """)
-        import_stop_times_txt(stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
         stoptime = StopTime.objects.get()
         self.assertEqual(stoptime.trip, self.trip)
-        self.assertEqual(stoptime.arrival_time, time(23, 59))
-        self.assertEqual(stoptime.arrival_day, 0)
-        self.assertEqual(stoptime.departure_time, time(0, 1))
-        self.assertEqual(stoptime.departure_day, 1)
+        self.assertEqual(str(stoptime.arrival_time), '23:59:00')
+        self.assertEqual(str(stoptime.departure_time), '24:01:00')
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)
         self.assertEqual(stoptime.stop_headsign, '')
         self.assertEqual(stoptime.pickup_type, '')
         self.assertEqual(stoptime.drop_off_type, '')
         self.assertEqual(stoptime.shape_dist_traveled, None)
+
+    def test_export_stop_times_none(self):
+        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(stop_times_txt)
+
+    def test_export_stop_times_minimal(self):
+        StopTime.objects.create(
+            trip=self.trip, arrival_time='6:00:00', departure_time='6:00:00',
+            stop=self.stop, stop_sequence=1)
+        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(stop_times_txt, """\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence
+STBA,06:00:00,06:00:00,STAGECOACH,1
+""")
+
+    def test_export_stop_times_maximal(self):
+        StopTime.objects.create(
+            trip=self.trip, arrival_time='6:00:00', departure_time='6:00:00',
+            stop=self.stop, stop_sequence=1, stop_headsign='SC',
+            pickup_type=2, drop_off_type=1, shape_dist_traveled=5.25)
+        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(stop_times_txt, """\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
+pickup_type,drop_off_type,shape_dist_traveled
+STBA,06:00:00,06:00:00,STAGECOACH,1,SC,2,1,5.25
+""")

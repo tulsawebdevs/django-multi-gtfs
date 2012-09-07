@@ -87,6 +87,7 @@ class GTFSBase(models.Model):
         no_convert = lambda value: value
         date_convert = lambda value: datetime.strptime(value, '%Y%m%d')
         bool_convert = lambda value: value == '1'
+        char_convert = lambda value: value or ''
         null_convert = lambda value: value or None
 
         def instance_convert(field, feed, rel_name):
@@ -116,6 +117,8 @@ class GTFSBase(models.Model):
                 converter = date_convert
             elif isinstance(field, models.BooleanField):
                 converter = bool_convert
+            elif isinstance(field, models.CharField):
+                converter = char_convert
             elif field.rel:
                 converter = instance_convert(field, feed, rel_name)
             elif field.null:
@@ -132,5 +135,11 @@ class GTFSBase(models.Model):
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
             for column_name, value in row.items():
-                fields[name_map[column_name]] = val_map[column_name](value)
+                if not column_name in name_map:
+                    if value:
+                        raise ValueError(
+                            'Unexpected column name %s in row %s, expecting'
+                            ' %s' % (column_name, row, name_map.keys()))
+                else:
+                    fields[name_map[column_name]] = val_map[column_name](value)
             cls.objects.create(**fields)
