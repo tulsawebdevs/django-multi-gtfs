@@ -3,7 +3,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Stop, Zone
-from multigtfs.models.stop import import_stops_txt
 
 
 class StopTest(TestCase):
@@ -16,12 +15,19 @@ class StopTest(TestCase):
             lat="36.425288", lon="-117.133162")
         self.assertEqual(str(stop), '1-STEST')
 
+    def test_import_stops_txt_none(self):
+        stops_txt = StringIO.StringIO("""\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        self.assertFalse(Stop.objects.exists())
+
     def test_import_stops_txt_minimal(self):
         stops_txt = StringIO.StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
 FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
 """)
-        import_stops_txt(stops_txt, self.feed)
+        Stop.import_txt(stops_txt, self.feed)
         stop = Stop.objects.get()
         self.assertEqual(stop.feed, self.feed)
         self.assertEqual(stop.stop_id, 'FUR_CREEK_RES')
@@ -44,9 +50,13 @@ FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
 http://example.com,1,,America/Los_Angeles
 FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
 http://example.com/fcr,0,FUR_CREEK_STA,
+FEZ_CREEK_STA,,Fez Creek Station,"Our Station",36.425288,-117.133162,A,\
+http://example.com,1,,America/Los_Angeles
+FEZ_CREEK_RES,FC,Fez Creek Resort,,36.425288,-117.133162,A,\
+http://example.com/fcr,0,FEZ_CREEK_STA,
 """)
-        import_stops_txt(stops_txt, self.feed)
-        self.assertEqual(Stop.objects.count(), 2)
+        Stop.import_txt(stops_txt, self.feed)
+        self.assertEqual(Stop.objects.count(), 4)
 
         station = Stop.objects.get(stop_id='FUR_CREEK_STA')
         zone = Zone.objects.get(feed=self.feed, zone_id='A')
@@ -73,6 +83,9 @@ http://example.com/fcr,0,FUR_CREEK_STA,
         self.assertEqual(stop.parent_station, station)
         self.assertEqual(stop.timezone, '')
 
+        stop2 = Stop.objects.get(stop_id='FEZ_CREEK_RES')
+        self.assertEqual(stop2.parent_station.stop_id, 'FEZ_CREEK_STA')
+
     def test_import_stops_txt_stop_before_station(self):
         '''parent_station is set when the stop comes first'''
         stops_txt = StringIO.StringIO("""\
@@ -83,8 +96,23 @@ http://example.com/fcr,0,FUR_CREEK_STA,
 FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
 http://example.com,1,,America/Los_Angeles
 """)
-        import_stops_txt(stops_txt, self.feed)
+        Stop.import_txt(stops_txt, self.feed)
         self.assertEqual(Stop.objects.count(), 2)
         station = Stop.objects.get(stop_id='FUR_CREEK_STA')
         stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
         self.assertEqual(stop.parent_station, station)
+
+    def test_export_stops_txt_none(self):
+        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(stops_txt)
+
+    def test_export_stops_txt_minimual(self):
+        Stop.objects.create(
+            feed=self.feed, stop_id='FUR_CREEK_RES',
+            name='Furnace Creek Resort (Demo)', lat='36.425288',
+            lon='-117.133162')
+        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(stops_txt, """\
+stop_id,stop_name,stop_lat,stop_lon
+FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
+""")

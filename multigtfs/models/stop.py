@@ -103,15 +103,15 @@ values in a trip always increase over the course of a trip, regardless of which
 timezones the trip crosses.
 """
 
-from csv import DictReader
-from collections import defaultdict
+from csv import DictReader, DictWriter
+import StringIO
 
 from django.db import models
 
-from multigtfs.models.zone import Zone
+from multigtfs.models.base import GTFSBase
 
 
-class Stop(models.Model):
+class Stop(GTFSBase):
     """A stop or station"""
     feed = models.ForeignKey('Feed')
     stop_id = models.CharField(
@@ -133,7 +133,7 @@ class Stop(models.Model):
         'Longitude', max_digits=13, decimal_places=8,
         help_text='WGS 84 longtitude of stop or station')
     zone = models.ForeignKey(
-        'Zone', null=True,
+        'Zone', null=True, blank=True,
         help_text="Fare zone for a stop ID.")
     url = models.URLField(
         verify_exists=False, blank=True,
@@ -142,7 +142,8 @@ class Stop(models.Model):
         max_length=1, blank=True, choices=(('0', 'Stop'), ('1', 'Station')),
         help_text="Is this a stop or station?")
     parent_station = models.ForeignKey(
-        'Stop', null=True, help_text="The station associated with the stop")
+        'Stop', null=True, blank=True,
+        help_text="The station associated with the stop")
     timezone = models.CharField(
         max_length=255, blank=True,
         help_text="Timezone of the stop")
@@ -154,37 +155,48 @@ class Stop(models.Model):
         db_table = 'stop'
         app_label = 'multigtfs'
 
-    _rel_to_feed = 'feed'  # TODO: remove when based on GTFSBase
+    _column_map = (
+        ('stop_id', 'stop_id'),
+        ('stop_code', 'code'),
+        ('stop_name', 'name'),
+        ('stop_desc', 'desc'),
+        ('stop_lat', 'lat'),
+        ('stop_lon', 'lon'),
+        ('zone_id', 'zone__zone_id'),
+        ('stop_url', 'url'),
+        ('location_type', 'location_type'),
+        ('parent_station', 'parent_station__stop_id'),
+        ('stop_timezone', 'timezone')
+    )
 
+    @classmethod
+    def import_txt(cls, txt_file, feed):
+        '''Import from a stops.txt file
 
-def import_stops_txt(stops_file, feed):
-    """Import stops.txt into Stop records for feed
-
-    Keyword arguments:
-    stops_file -- A open stops.txt for reading
-    feed -- the Feed to associate the records with
-
-    Zone objects may also be created, if referenced in the stops
-    """
-    reader = DictReader(stops_file)
-    parent_of = defaultdict(list)
-    name_map = dict(stop_code='code', stop_name='name', stop_desc='desc',
-                    stop_lat='lat', stop_lon='lon', stop_url='url',
-                    stop_timezone='timezone')
-    for row in reader:
-        fields = dict((name_map.get(k, k), v) for k, v in row.items())
-        parent_id = fields.pop('parent_station', None)
-        zone_id = fields.pop('zone_id', None)
-        if zone_id:
-            zone, _c = Zone.objects.get_or_create(feed=feed, zone_id=zone_id)
-        else:
-            zone = None
-        stop = Stop.objects.create(feed=feed, zone=zone, **fields)
-        if parent_id:
-            parent_of[parent_id].append(stop)
-
-    for parent_id, children in parent_of.items():
-        parent = Stop.objects.get(feed=feed, stop_id=parent_id)
-        for child in children:
-            child.parent_station = parent
-            child.save()
+        Stations need to be imported before stops
+        '''
+        txt = txt_file.read()
+        fieldnames, _ = zip(*cls._column_map)
+        has_stations = False
+        stations_csv = StringIO.StringIO()
+        stations = DictWriter(stations_csv, fieldnames)
+        has_stops = False
+        stops_csv = StringIO.StringIO()
+        stops = DictWriter(stops_csv, fieldnames)
+        for row in DictReader(StringIO.StringIO(txt)):
+            if row.get('location_type') == '1':
+                if not has_stations:
+                    stations.writeheader()
+                    has_stations = True
+                stations.writerow(row)
+            else:
+                if not has_stops:
+                    stops.writeheader()
+                    has_stops = True
+                stops.writerow(row)
+        if has_stations:
+            super(Stop, cls).import_txt(
+                StringIO.StringIO(stations_csv.getvalue()), feed)
+        if has_stops:
+            super(Stop, cls).import_txt(
+                StringIO.StringIO(stops_csv.getvalue()), feed)

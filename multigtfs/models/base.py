@@ -79,7 +79,7 @@ class GTFSBase(models.Model):
     _rel_to_feed = 'feed'
 
     @classmethod
-    def import_txt(cls, txt, feed):
+    def import_txt(cls, txt_file, feed):
         '''Import from the GTFS text file'''
 
         # Setup the conversion from GTFS to Django Format
@@ -128,7 +128,6 @@ class GTFSBase(models.Model):
             val_map[csv_name] = converter
 
         # Read and convert the source txt
-        txt_file = txt
         reader = DictReader(txt_file)
         for row in reader:
             fields = dict()

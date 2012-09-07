@@ -233,6 +233,33 @@ STBA,06:00:00,06:00:00,STAGECOACH,1
 STBA,06:20:00,06:20:00,BEATTY_AIRPORT,2
 """)
 
+        stops_in = self.normalize(z_in.read('dv/stops.txt'))
+        self.assertEqual(stops_in, """\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon
+AMV,Amargosa Valley (Demo),,36.641496,-116.40094
+BEATTY_AIRPORT,Nye County Airport (Demo),,36.868446,-116.784582
+BULLFROG,Bullfrog (Demo),,36.88108,-116.81797
+DADAN,Doing Ave / D Ave N (Demo),,36.909489,-116.768242
+EMSI,E Main St / S Irving St (Demo),,36.905697,-116.76218
+FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
+NADAV,North Ave / D Ave N (Demo),,36.914893,-116.76821
+NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472
+STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677
+""")
+        stops_out = self.normalize(z_out.read('feed/stops.txt'))
+        self.assertEqual(stops_out, """\
+stop_id,stop_name,stop_lat,stop_lon
+AMV,Amargosa Valley (Demo),36.641496,-116.40094
+BEATTY_AIRPORT,Nye County Airport (Demo),36.868446,-116.784582
+BULLFROG,Bullfrog (Demo),36.88108,-116.81797
+DADAN,Doing Ave / D Ave N (Demo),36.909489,-116.768242
+EMSI,E Main St / S Irving St (Demo),36.905697,-116.76218
+FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
+NADAV,North Ave / D Ave N (Demo),36.914893,-116.76821
+NANAA,North Ave / N A Ave (Demo),36.914944,-116.761472
+STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
+""")
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -413,4 +440,31 @@ CITY2,06:49:00,06:51:00,NANAA,4
 CITY2,06:56:00,06:58:00,STAGECOACH,5
 STBA,06:00:00,06:00:00,STAGECOACH,1
 STBA,06:20:00,06:20:00,BEATTY_AIRPORT,2
+""")
+
+        stops_in = self.normalize(z_in.read('stops.txt'))
+        self.assertEqual(stops_in, """\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url
+AMV,Amargosa Valley (Demo),,36.641496,-116.40094,,
+BEATTY_AIRPORT,Nye County Airport (Demo),,36.868446,-116.784582,,
+BULLFROG,Bullfrog (Demo),,36.88108,-116.81797,,
+DADAN,Doing Ave / D Ave N (Demo),,36.909489,-116.768242,,
+EMSI,E Main St / S Irving St (Demo),,36.905697,-116.76218,,
+FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162,,
+NADAV,North Ave / D Ave N (Demo),,36.914893,-116.76821,,
+NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472,,
+STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677,,
+""")
+        stops_out = self.normalize(z_out.read('feed/stops.txt'))
+        self.assertEqual(stops_out, """\
+stop_id,stop_name,stop_lat,stop_lon
+AMV,Amargosa Valley (Demo),36.641496,-116.40094
+BEATTY_AIRPORT,Nye County Airport (Demo),36.868446,-116.784582
+BULLFROG,Bullfrog (Demo),36.88108,-116.81797
+DADAN,Doing Ave / D Ave N (Demo),36.909489,-116.768242
+EMSI,E Main St / S Irving St (Demo),36.905697,-116.76218
+FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
+NADAV,North Ave / D Ave N (Demo),36.914893,-116.76821
+NANAA,North Ave / N A Ave (Demo),36.914944,-116.761472
+STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
 """)
