@@ -165,6 +165,9 @@ STBA,06:00:00,22:00:00,1800
         routes_out = self.normalize(z_out.read('feed/routes.txt'))
         self.assertEqual(routes_in, routes_out)
 
+        self.assertFalse('dv/shapes.txt' in z_in.namelist())
+        self.assertFalse('feed/shapes.txt' in z_out.namelist())
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -220,7 +223,7 @@ p,BFC
 p,STBA
 ''')
 
-        self.assertFalse('feed/feed_info.txt' in z_in.namelist())
+        self.assertFalse('feed_info.txt' in z_in.namelist())
         self.assertFalse('feed/feed_info.txt' in z_out.namelist())
 
         freq_in = self.normalize(z_in.read('frequencies.txt'))
@@ -273,3 +276,10 @@ BFC,DTA,20,Bullfrog - Furnace Creek Resort,3
 CITY,DTA,40,City,3
 STBA,DTA,30,Stagecoach - Airport Shuttle,3
 """)
+
+        shapes_out = self.normalize(z_in.read('shapes.txt'))
+        self.assertEqual(shapes_out, '''\
+shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
+
+''')
+        self.assertFalse('feed/shapes.txt' in z_out.namelist())

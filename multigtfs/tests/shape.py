@@ -3,7 +3,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Shape, ShapePoint
-from multigtfs.models.shape import import_shapes_txt
 
 
 class ShapeTest(TestCase):
@@ -22,7 +21,7 @@ class ShapeTest(TestCase):
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
 """)
-        import_shapes_txt(shape_txt, self.feed)
+        ShapePoint.import_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
@@ -38,7 +37,7 @@ S1,36.425288,-117.133162,1
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,0
 """)
-        import_shapes_txt(shape_txt, self.feed)
+        ShapePoint.import_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
@@ -54,7 +53,7 @@ S1,36.425288,-117.133162,1,0
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,
 """)
-        import_shapes_txt(shape_txt, self.feed)
+        ShapePoint.import_txt(shape_txt, self.feed)
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
@@ -64,3 +63,28 @@ S1,36.425288,-117.133162,1,
         self.assertEqual(str(shape_pt.lon), '-117.133162')
         self.assertEqual(shape_pt.sequence, 1)
         self.assertEqual(shape_pt.traveled, None)
+
+    def test_export_shape_empty(self):
+        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(shape_txt)
+
+    def test_export_shape_minimal(self):
+        shape = Shape.objects.create(feed=self.feed, shape_id='S1')
+        ShapePoint.objects.create(
+            shape=shape, lat=36.425288, lon='-117.133162', sequence=1)
+        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(shape_txt, """\
+shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
+S1,36.425288,-117.133162,1
+""")
+
+    def test_export_shape_maximal(self):
+        shape = Shape.objects.create(feed=self.feed, shape_id='S1')
+        ShapePoint.objects.create(
+            shape=shape, lat=36.425288, lon='-117.133162', sequence=1,
+            traveled=1.1)
+        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(shape_txt, """\
+shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
+S1,36.425288,-117.133162,1,1.1
+""")

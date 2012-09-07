@@ -93,7 +93,7 @@ class GTFSBase(models.Model):
             def get_instance(value):
                 if value:
                     kwargs = {field.rel.to._rel_to_feed: feed, rel_name: value}
-                    return field.rel.to.objects.get(**kwargs)
+                    return field.rel.to.objects.get_or_create(**kwargs)[0]
                 else:
                     return None
             return get_instance
