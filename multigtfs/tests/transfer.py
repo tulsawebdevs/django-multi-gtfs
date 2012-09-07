@@ -3,7 +3,6 @@ import StringIO
 from django.test import TestCase
 
 from multigtfs.models import Feed, Stop, Transfer
-from multigtfs.models.transfer import import_transfers_txt
 
 
 class TransferTest(TestCase):
@@ -24,7 +23,7 @@ class TransferTest(TestCase):
 from_stop_id,to_stop_id
 STOP1,STOP2
 """)
-        import_transfers_txt(transfers_txt, self.feed)
+        Transfer.import_txt(transfers_txt, self.feed)
         transfer = Transfer.objects.get()
         self.assertEqual(transfer.from_stop, self.stop1)
         self.assertEqual(transfer.to_stop, self.stop2)
@@ -36,7 +35,7 @@ STOP1,STOP2
 from_stop_id,to_stop_id,transfer_type,min_transfer_time
 STOP1,STOP2,2,5
 """)
-        import_transfers_txt(transfers_txt, self.feed)
+        Transfer.import_txt(transfers_txt, self.feed)
         transfer = Transfer.objects.get()
         self.assertEqual(transfer.from_stop, self.stop1)
         self.assertEqual(transfer.to_stop, self.stop2)
@@ -48,9 +47,45 @@ STOP1,STOP2,2,5
 from_stop_id,to_stop_id,transfer_type,min_transfer_time
 STOP1,STOP2,,
 """)
-        import_transfers_txt(transfers_txt, self.feed)
+        Transfer.import_txt(transfers_txt, self.feed)
         transfer = Transfer.objects.get()
         self.assertEqual(transfer.from_stop, self.stop1)
         self.assertEqual(transfer.to_stop, self.stop2)
         self.assertEqual(transfer.transfer_type, 0)
         self.assertEqual(transfer.min_transfer_time, None)
+
+    def test_export_transfers_empty(self):
+        transfers_txt = Transfer.objects.in_feed(self.feed).export_txt()
+        self.assertFalse(transfers_txt)
+
+    def test_export_transfers_minimal(self):
+        Transfer.objects.create(
+            from_stop=self.stop1, to_stop=self.stop2)
+        transfers_txt = Transfer.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(transfers_txt, """\
+from_stop_id,to_stop_id,transfer_type
+STOP1,STOP2,0
+""")
+
+    def test_export_transfers_maximal(self):
+        Transfer.objects.create(
+            from_stop=self.stop1, to_stop=self.stop2, transfer_type=2,
+            min_transfer_time=5)
+        transfers_txt = Transfer.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(transfers_txt, """\
+from_stop_id,to_stop_id,transfer_type,min_transfer_time
+STOP1,STOP2,2,5
+""")
+
+    def test_export_transfers_two(self):
+        Transfer.objects.create(
+            from_stop=self.stop2, to_stop=self.stop1)
+        Transfer.objects.create(
+            from_stop=self.stop1, to_stop=self.stop2, transfer_type=2,
+            min_transfer_time=5)
+        transfers_txt = Transfer.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(transfers_txt, """\
+from_stop_id,to_stop_id,transfer_type,min_transfer_time
+STOP1,STOP2,2,5
+STOP2,STOP1,0,
+""")

@@ -90,6 +90,14 @@ class Base(models.Model):
         char_convert = lambda value: value or ''
         null_convert = lambda value: value or None
 
+        def default_convert(field):
+            def get_value_or_default(value):
+                if value == '' or value is None:
+                    return field.get_default()
+                else:
+                    return value
+            return get_value_or_default
+
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
                 if value:
@@ -123,6 +131,8 @@ class Base(models.Model):
                 converter = instance_convert(field, feed, rel_name)
             elif field.null:
                 converter = null_convert
+            elif field.has_default():
+                converter = default_convert(field)
             else:
                 converter = no_convert
             val_map[csv_name] = converter

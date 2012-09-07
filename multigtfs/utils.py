@@ -48,6 +48,8 @@ def create_csv(queryset, csv_names):
                 row.append(field.strftime('%Y%m%d'))
             elif isinstance(field, bool):
                 row.append(1 if field else 0)
+            elif field is None:
+                row.append('')
             else:
                 row.append(str(field))
         rows.append(row)

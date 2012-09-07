@@ -260,6 +260,9 @@ NANAA,North Ave / N A Ave (Demo),36.914944,-116.761472
 STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
 """)
 
+        self.assertFalse('dv/transfers.txt' in z_in.namelist())
+        self.assertFalse('feed/transfers.txt' in z_out.namelist())
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -468,3 +471,6 @@ NADAV,North Ave / D Ave N (Demo),36.914893,-116.76821
 NANAA,North Ave / N A Ave (Demo),36.914944,-116.761472
 STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
 """)
+
+        self.assertFalse('dv/transfers.txt' in z_in.namelist())
+        self.assertFalse('feed/transfers.txt' in z_out.namelist())
