@@ -9,7 +9,7 @@ from multigtfs.tests.fare import FareTest
 from multigtfs.tests.fare_rule import FareRuleTest
 from multigtfs.tests.feed import FeedTest
 from multigtfs.tests.feed_info import FeedInfoTest
-from multigtfs.tests.fields import GTFSSecondsTest, GTFSSecondsFieldTest
+from multigtfs.tests.fields import SecondsTest, SecondsFieldTest
 from multigtfs.tests.frequency import FrequencyTest
 from multigtfs.tests.route import RouteTest
 from multigtfs.tests.service import ServiceTest
@@ -26,4 +26,4 @@ __tests = (
     AgencyTest, BlockTest, FareTest, FareRuleTest, FeedTest, FeedInfoTest,
     FrequencyTest, RouteTest, ServiceTest, ServiceDateTest, ShapeTest,
     ServiceDateTest, ShapeTest, StopTest, StopTimeTest, TransferTest,
-    TripTest, ParseTimeTest, GTFSSecondsTest, GTFSSecondsFieldTest)
+    TripTest, ParseTimeTest, SecondsTest, SecondsFieldTest)

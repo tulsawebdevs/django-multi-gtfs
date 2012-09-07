@@ -3,7 +3,7 @@
 from django.db import models
 
 
-class GTFSSeconds(object):
+class Seconds(object):
     '''A GTFS seconds value, formatted as HH:MM:SS in the GTFS feed'''
 
     def __init__(self, seconds=0):
@@ -13,7 +13,7 @@ class GTFSSeconds(object):
 
     @classmethod
     def from_hms(cls, hours=0, minutes=0, seconds=0):
-        return GTFSSeconds((hours * 60 * 60) + (minutes * 60) + seconds)
+        return Seconds((hours * 60 * 60) + (minutes * 60) + seconds)
 
     def __unicode__(self):
         minutes, seconds = divmod(self.seconds, 60)
@@ -33,20 +33,20 @@ class GTFSSeconds(object):
         return not (self == other)
 
 
-class GTFSSecondsField(models.Field):
-    '''A Model Field for storing GTFSSeconds'''
+class SecondsField(models.Field):
+    '''A Model Field for storing Seconds'''
 
     description = 'Seconds since start of the day'
 
     __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
-        if isinstance(value, GTFSSeconds):
+        if isinstance(value, Seconds):
             return value
         if value is None:
             return None
         if isinstance(value, (int, long)):
-            return GTFSSeconds(value)
+            return Seconds(value)
         svalue = str(value)
         colons = svalue.count(':')
         if colons == 2:
@@ -60,7 +60,7 @@ class GTFSSecondsField(models.Field):
             seconds = int(svalue)
         else:
             raise ValueError('Must be in seconds or HH:MM:SS format')
-        return GTFSSeconds.from_hms(hours, minutes, seconds)
+        return Seconds.from_hms(hours, minutes, seconds)
 
     def get_prep_value(self, value):
         if value:

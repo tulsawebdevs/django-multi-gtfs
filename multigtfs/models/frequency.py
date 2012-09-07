@@ -68,15 +68,15 @@ start time but less than the last desired trip start time + headway_secs.
 from django.db import models
 
 from multigtfs.models.base import Base
-from multigtfs.models.fields import GTFSSecondsField
+from multigtfs.models.fields import SecondsField
 
 
 class Frequency(Base):
     """Description of a trip that repeats without fixed stop times"""
     trip = models.ForeignKey('Trip')
-    start_time = GTFSSecondsField(
+    start_time = SecondsField(
         help_text="Time that the service begins at the specified frequency")
-    end_time = GTFSSecondsField(
+    end_time = SecondsField(
         help_text="Time that the service ends at the specified frequency")
     headway_secs = models.IntegerField(
         help_text="Time in seconds before returning to same stop")

@@ -1,5 +1,5 @@
-from seconds import GTFSSeconds, GTFSSecondsField
+from seconds import Seconds, SecondsField
 
 # pyflakes be quiet
-__classes__ = GTFSSeconds
-__fields__ = GTFSSecondsField
+__classes__ = Seconds
+__fields__ = SecondsField

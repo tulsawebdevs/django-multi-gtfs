@@ -5,7 +5,7 @@ from django.core.serializers import serialize
 from django.test import TestCase
 
 from multigtfs.models import Feed, Frequency, Route, Service, Trip
-from multigtfs.models.fields import GTFSSeconds
+from multigtfs.models.fields import Seconds
 
 
 class FrequencyTest(TestCase):
@@ -33,8 +33,8 @@ STBA,6:00:00,22:00:00,1800
         Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
-        self.assertEqual(frequency.start_time, GTFSSeconds.from_hms(hours=6))
-        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(hours=22))
+        self.assertEqual(frequency.start_time, Seconds.from_hms(hours=6))
+        self.assertEqual(frequency.end_time, Seconds.from_hms(hours=22))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
 
@@ -46,8 +46,8 @@ STBA,6:00:00,23:30:35,1800,1
         Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(frequency.trip, self.trip)
-        self.assertEqual(frequency.start_time, GTFSSeconds.from_hms(hours=6))
-        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(23, 30, 35))
+        self.assertEqual(frequency.start_time, Seconds.from_hms(hours=6))
+        self.assertEqual(frequency.end_time, Seconds.from_hms(23, 30, 35))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '1')
 
@@ -59,7 +59,7 @@ STBA,00:50:00,24:10:00,1800,
         Frequency.import_txt(frequencies_txt, self.feed)
         frequency = Frequency.objects.get()
         self.assertEqual(str(frequency.start_time), '00:50:00')
-        self.assertEqual(frequency.end_time, GTFSSeconds.from_hms(24, 10))
+        self.assertEqual(frequency.end_time, Seconds.from_hms(24, 10))
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
 
@@ -69,8 +69,8 @@ STBA,00:50:00,24:10:00,1800,
 
     def test_export_frequencies_txt_minimal(self):
         Frequency.objects.create(
-            trip=self.trip, start_time=GTFSSeconds.from_hms(hours=6),
-            end_time=GTFSSeconds.from_hms(hours=22), headway_secs=1800)
+            trip=self.trip, start_time=Seconds.from_hms(hours=6),
+            end_time=Seconds.from_hms(hours=22), headway_secs=1800)
         frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
         self.assertEqual(frequencies_txt, """\
 trip_id,start_time,end_time,headway_secs
@@ -88,7 +88,7 @@ STBA,05:00:00,25:00:00,1800
 """)
 
     def test_serialize(self):
-        '''Test serialization of Frequency, which has a GTFSSecondsField'''
+        '''Test serialization of Frequency, which has a SecondsField'''
         Frequency.objects.create(
             trip=self.trip, start_time='05:00', end_time='25:00',
             headway_secs=1800)

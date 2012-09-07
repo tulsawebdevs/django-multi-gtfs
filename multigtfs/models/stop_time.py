@@ -155,17 +155,17 @@ from django.db import models
 from multigtfs.models.stop import Stop
 from multigtfs.models.trip import Trip
 from multigtfs.models.base import Base
-from multigtfs.models.fields import GTFSSecondsField
+from multigtfs.models.fields import SecondsField
 
 
 class StopTime(Base):
     """A specific stop on a route on a trip."""
     trip = models.ForeignKey(Trip)
     stop = models.ForeignKey(Stop)
-    arrival_time = GTFSSecondsField(
+    arrival_time = SecondsField(
         default=None, null=True, blank=True,
         help_text="Arrival time. Must be set for end stops of trip.")
-    departure_time = GTFSSecondsField(
+    departure_time = SecondsField(
         default=None, null=True, blank=True,
         help_text='Departure time. Must be set for end stops of trip.')
     stop_sequence = models.IntegerField()
