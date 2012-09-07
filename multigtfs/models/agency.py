@@ -58,10 +58,10 @@ for a description of how to create fully qualified URL values.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class Agency(GTFSBase):
+class Agency(Base):
     """One or more transit agencies that provide the data in this feed."""
     feed = models.ForeignKey('Feed')
     agency_id = models.CharField(
@@ -94,7 +94,7 @@ class Agency(GTFSBase):
         app_label = 'multigtfs'
         verbose_name_plural = "agencies"
 
-    # GTFS column names to fields, used by GTFSBase for import/export
+    # GTFS column names to fields, used by Base for import/export
     _column_map = (
         ('agency_id', 'agency_id'),
         ('agency_name', 'name'),

@@ -108,10 +108,10 @@ import StringIO
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class Stop(GTFSBase):
+class Stop(Base):
     """A stop or station"""
     feed = models.ForeignKey('Feed')
     stop_id = models.CharField(

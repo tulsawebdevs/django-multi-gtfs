@@ -81,10 +81,10 @@ project wiki:
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class FareRule(GTFSBase):
+class FareRule(Base):
     """Associate a Fare with a Route and/or Zones"""
     fare = models.ForeignKey('Fare')
     route = models.ForeignKey(
@@ -113,7 +113,7 @@ class FareRule(GTFSBase):
         db_table = 'fare_rules'
         app_label = 'multigtfs'
 
-    # For GTFSBase import/export
+    # For Base import/export
     _column_map = (
         ('fare_id', 'fare__fare_id'),
         ('route_id', 'route__route_id'),

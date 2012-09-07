@@ -117,10 +117,10 @@ The end_date field's value should be in YYYYMMDD format.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class Service(GTFSBase):
+class Service(Base):
     """Dates that a route is active."""
 
     feed = models.ForeignKey('Feed')
@@ -158,7 +158,7 @@ class Service(GTFSBase):
         db_table = 'service'
         app_label = 'multigtfs'
 
-    # For GTFSBase import/export
+    # For Base import/export
     _column_map = (
         ('service_id', 'service_id'),
         ('monday', 'monday'),

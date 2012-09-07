@@ -7,7 +7,7 @@ from django.db.models.query import QuerySet
 from multigtfs.utils import create_csv
 
 
-class GTFSBaseQuerySet(QuerySet):
+class BaseQuerySet(QuerySet):
     def export_txt(self):
         '''Export records as a GTFS comma-separated file'''
         # If no records, return None
@@ -36,10 +36,10 @@ class GTFSBaseQuerySet(QuerySet):
         return create_csv(self, csv_names)
 
 
-class GTFSBaseManager(models.Manager):
+class BaseManager(models.Manager):
 
     def get_query_set(self):
-        return GTFSBaseQuerySet(self.model)
+        return BaseQuerySet(self.model)
 
     def in_feed(self, feed):
         '''Return the objects in the target feed'''
@@ -47,7 +47,7 @@ class GTFSBaseManager(models.Manager):
         return self.filter(**kwargs)
 
 
-class GTFSBase(models.Model):
+class Base(models.Model):
     """Base class for models that are defined in the GTFS spec
 
     Implementers need to define a class variable:
@@ -73,7 +73,7 @@ class GTFSBase(models.Model):
         abstract = True
         app_label = 'multigtfs'
 
-    objects = GTFSBaseManager()
+    objects = BaseManager()
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'

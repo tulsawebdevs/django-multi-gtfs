@@ -61,10 +61,10 @@ incorporated.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class FeedInfo(GTFSBase):
+class FeedInfo(Base):
     """Information about the feed"""
     feed = models.ForeignKey('Feed')
     publisher_name = models.CharField(

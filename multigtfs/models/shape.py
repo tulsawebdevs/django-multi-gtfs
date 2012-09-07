@@ -68,7 +68,7 @@ like this:
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
 class Shape(models.Model):
@@ -88,7 +88,7 @@ class Shape(models.Model):
     _rel_to_feed = 'feed'
 
 
-class ShapePoint(GTFSBase):
+class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
     lat = models.DecimalField(

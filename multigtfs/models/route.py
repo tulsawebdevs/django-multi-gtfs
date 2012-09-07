@@ -98,10 +98,10 @@ sufficient contrast when viewed on a black and white screen.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class Route(GTFSBase):
+class Route(Base):
     """A transit route"""
 
     feed = models.ForeignKey('Feed')

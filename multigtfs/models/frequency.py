@@ -67,11 +67,11 @@ start time but less than the last desired trip start time + headway_secs.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 from multigtfs.models.fields import GTFSSecondsField
 
 
-class Frequency(GTFSBase):
+class Frequency(Base):
     """Description of a trip that repeats without fixed stop times"""
     trip = models.ForeignKey('Trip')
     start_time = GTFSSecondsField(
@@ -94,7 +94,7 @@ class Frequency(GTFSBase):
         app_label = 'multigtfs'
         verbose_name_plural = "frequencies"
 
-    # For GTFSBase import/export
+    # For Base import/export
     _column_map = (
         ('trip_id', 'trip__trip_id'),
         ('start_time', 'start_time'),

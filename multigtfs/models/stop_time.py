@@ -154,11 +154,11 @@ from django.db import models
 
 from multigtfs.models.stop import Stop
 from multigtfs.models.trip import Trip
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 from multigtfs.models.fields import GTFSSecondsField
 
 
-class StopTime(GTFSBase):
+class StopTime(Base):
     """A specific stop on a route on a trip."""
     trip = models.ForeignKey(Trip)
     stop = models.ForeignKey(Stop)

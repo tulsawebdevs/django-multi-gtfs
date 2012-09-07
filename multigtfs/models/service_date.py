@@ -53,10 +53,10 @@ remove the holiday from the regular service_id schedule.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class ServiceDate(GTFSBase):
+class ServiceDate(Base):
     """Dates that a route is active."""
 
     service = models.ForeignKey('Service')
@@ -76,7 +76,7 @@ class ServiceDate(GTFSBase):
         db_table = 'service_date'
         app_label = 'multigtfs'
 
-    # For GTFSBase import/export
+    # For Base import/export
     _column_map = (
         ('service_id', 'service__service_id'),
         ('date', 'date'),

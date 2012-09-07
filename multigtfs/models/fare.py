@@ -49,10 +49,10 @@ should be omitted or empty when transfers is set to 0.
 
 from django.db import models
 
-from multigtfs.models.base import GTFSBase
+from multigtfs.models.base import Base
 
 
-class Fare(GTFSBase):
+class Fare(Base):
     """A fare class"""
 
     feed = models.ForeignKey('Feed')
@@ -89,7 +89,7 @@ class Fare(GTFSBase):
         db_table = 'fare'
         app_label = 'multigtfs'
 
-    # For GTFSBase import/export
+    # For Base import/export
     _column_map = (
         ('fare_id', 'fare_id'),
         ('price', 'price'),
