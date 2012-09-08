@@ -175,6 +175,14 @@ class Stop(Base):
 
         Stations need to be imported before stops
         '''
+        def writeheader(writer):
+            '''
+            Write the header row for a DictWriter CSV file
+
+            This is a member function of DictWriter in Python 2.7
+            '''
+            writer.writerow(dict((fn, fn) for fn in writer.fieldnames))
+
         txt = txt_file.read()
         fieldnames, _ = zip(*cls._column_map)
         has_stations = False
@@ -186,12 +194,12 @@ class Stop(Base):
         for row in DictReader(StringIO.StringIO(txt)):
             if row.get('location_type') == '1':
                 if not has_stations:
-                    stations.writeheader()
+                    writeheader(stations)
                     has_stations = True
                 stations.writerow(row)
             else:
                 if not has_stops:
-                    stops.writeheader()
+                    writeheader(stops)
                     has_stops = True
                 stops.writerow(row)
         if has_stations:
