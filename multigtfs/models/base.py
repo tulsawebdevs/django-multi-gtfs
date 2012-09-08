@@ -77,7 +77,7 @@ class BaseQuerySet(QuerySet):
                     elif field is None:
                         row.append('')
                     else:
-                        row.append(str(field))
+                        row.append(unicode(field).encode('utf-8'))
             if many_pos:
                 many = row[many_pos]
                 for m in sorted(many):

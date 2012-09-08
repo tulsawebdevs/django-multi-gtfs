@@ -116,3 +116,14 @@ http://example.com,1,,America/Los_Angeles
 stop_id,stop_name,stop_lat,stop_lon
 FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
 """)
+
+    def test_export_stops_utf8(self):
+        Stop.objects.create(
+            feed=self.feed, stop_id=6071,
+            name='The Delta Caf\x82'.decode('latin1'), lat='36.114554',
+            lon='-95.975834')
+        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(stops_txt, """\
+stop_id,stop_name,stop_lat,stop_lon
+6071,The Delta Caf\xc2\x82,36.114554,-95.975834
+""")

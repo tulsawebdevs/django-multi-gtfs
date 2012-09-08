@@ -23,4 +23,4 @@ class Command(BaseCommand):
         name = options.get('name') or 'Imported at %s' % datetime.now()
         feed = Feed.objects.create(name=name)
         feed.import_gtfs(gtfs_feed)
-        self.stdout.write("Successfully imported Feed %s" % (feed))
+        self.stdout.write("Successfully imported Feed %s\n" % (feed))

@@ -121,25 +121,25 @@ class FeedTest(TestCase):
              'dv/trips.txt'])
         self.assertEqual(
             z_out.namelist(),
-            ['feed/agency.txt',
-             'feed/calendar.txt',
-             'feed/calendar_dates.txt',
-             'feed/frequencies.txt',
-             'feed/routes.txt',
-             'feed/stop_times.txt',
-             'feed/stops.txt',
-             'feed/trips.txt'])
+            ['agency.txt',
+             'calendar.txt',
+             'calendar_dates.txt',
+             'frequencies.txt',
+             'routes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'trips.txt'])
 
         agency_in = self.normalize(z_in.read('dv/agency.txt'))
-        agency_out = self.normalize(z_out.read('feed/agency.txt'))
+        agency_out = self.normalize(z_out.read('agency.txt'))
         self.assertEqual(agency_in, agency_out)
 
         calendar_in = self.normalize(z_in.read('dv/calendar.txt'))
-        calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
+        calendar_out = self.normalize(z_out.read('calendar.txt'))
         self.assertEqual(calendar_in, calendar_out)
 
         cdates_in = self.normalize(z_in.read('dv/calendar_dates.txt'))
-        cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('calendar_dates.txt'))
         self.assertEqual(cdates_in, cdates_out)
 
         self.assertFalse('dv/fare_attributes.txt' in z_in.namelist())
@@ -166,7 +166,7 @@ CITY2,6:00:00,7:59:59,1800
 CITY2,8:00:00,9:59:59,600
 STBA,6:00:00,22:00:00,1800
 ''')
-        freq_out = self.normalize(z_out.read('feed/frequencies.txt'))
+        freq_out = self.normalize(z_out.read('frequencies.txt'))
         self.assertNotEqual(freq_out, "Le Freak, C'est Chic")
         self.assertEqual(freq_out, '''\
 trip_id,start_time,end_time,headway_secs
@@ -184,7 +184,7 @@ STBA,06:00:00,22:00:00,1800
 ''')
 
         routes_in = self.normalize(z_in.read('dv/routes.txt'))
-        routes_out = self.normalize(z_out.read('feed/routes.txt'))
+        routes_out = self.normalize(z_out.read('routes.txt'))
         self.assertEqual(routes_in, routes_out)
 
         self.assertFalse('dv/shapes.txt' in z_in.namelist())
@@ -222,7 +222,7 @@ CITY2,6:56:00,6:58:00,STAGECOACH,5
 STBA,6:00:00,6:00:00,STAGECOACH,1
 STBA,6:20:00,6:20:00,BEATTY_AIRPORT,2
 """)
-        stimes_out = self.normalize(z_out.read('feed/stop_times.txt'))
+        stimes_out = self.normalize(z_out.read('stop_times.txt'))
         self.assertEqual(stimes_out, """\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 AAMV1,08:00:00,08:00:00,BEATTY_AIRPORT,1
@@ -268,7 +268,7 @@ NADAV,North Ave / D Ave N (Demo),,36.914893,-116.76821
 NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472
 STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677
 """)
-        stops_out = self.normalize(z_out.read('feed/stops.txt'))
+        stops_out = self.normalize(z_out.read('stops.txt'))
         self.assertEqual(stops_out, """\
 stop_id,stop_name,stop_lat,stop_lon
 AMV,Amargosa Valley (Demo),36.641496,-116.40094
@@ -286,7 +286,7 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
         self.assertFalse('feed/transfers.txt' in z_out.namelist())
 
         trips_in = self.normalize(z_in.read('dv/trips.txt'))
-        trips_out = self.normalize(z_out.read('feed/trips.txt'))
+        trips_out = self.normalize(z_out.read('trips.txt'))
         self.assertEqual(trips_in, trips_out)
 
     def test_export_gtfs_test2(self):
@@ -315,27 +315,27 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
              'trips.txt'])
         self.assertEqual(
             z_out.namelist(),
-            ['feed/agency.txt',
-             'feed/calendar.txt',
-             'feed/calendar_dates.txt',
-             'feed/fare_attributes.txt',
-             'feed/fare_rules.txt',
-             'feed/frequencies.txt',
-             'feed/routes.txt',
-             'feed/stop_times.txt',
-             'feed/stops.txt',
-             'feed/trips.txt'])
+            ['agency.txt',
+             'calendar.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'frequencies.txt',
+             'routes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'trips.txt'])
 
         agency_in = self.normalize(z_in.read('agency.txt'))
-        agency_out = self.normalize(z_out.read('feed/agency.txt'))
+        agency_out = self.normalize(z_out.read('agency.txt'))
         self.assertEqual(agency_in, agency_out)
 
         calendar_in = self.normalize(z_in.read('calendar.txt'))
-        calendar_out = self.normalize(z_out.read('feed/calendar.txt'))
+        calendar_out = self.normalize(z_out.read('calendar.txt'))
         self.assertEqual(calendar_in, calendar_out)
 
         cdates_in = self.normalize(z_in.read('calendar_dates.txt'))
-        cdates_out = self.normalize(z_out.read('feed/calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('calendar_dates.txt'))
         self.assertEqual(cdates_in, cdates_out)
 
         # source fare_attributes.txt has unneeded transfer_duration column
@@ -345,7 +345,7 @@ fare_id,price,currency_type,payment_method,transfers,transfer_duration
 a,5.25,USD,0,0,
 p,1.25,USD,0,0,
 ''')
-        fare_out = z_out.read('feed/fare_attributes.txt')
+        fare_out = z_out.read('fare_attributes.txt')
         self.assertEqual(fare_out, '''\
 fare_id,price,currency_type,payment_method,transfers
 a,5.25,USD,0,0
@@ -361,7 +361,7 @@ p,AB,,,
 p,BFC,,,
 p,STBA,,,
 ''')
-        fare_rules_out = self.normalize(z_out.read('feed/fare_rules.txt'))
+        fare_rules_out = self.normalize(z_out.read('fare_rules.txt'))
         self.assertEqual(fare_rules_out, '''\
 fare_id,route_id
 a,AAMV
@@ -388,7 +388,7 @@ CITY2,6:00:00,7:59:59,1800
 CITY2,8:00:00,9:59:59,600
 STBA,6:00:00,22:00:00,1800
 ''')
-        freq_out = self.normalize(z_out.read('feed/frequencies.txt'))
+        freq_out = self.normalize(z_out.read('frequencies.txt'))
         self.assertEqual(freq_out, '''\
 trip_id,start_time,end_time,headway_secs
 CITY1,06:00:00,07:59:59,1800
@@ -414,7 +414,7 @@ BFC,DTA,20,Bullfrog - Furnace Creek Resort,,3,,,
 CITY,DTA,40,City,,3,,,
 STBA,DTA,30,Stagecoach - Airport Shuttle,,3,,,
 """)
-        routes_out = self.normalize(z_out.read('feed/routes.txt'))
+        routes_out = self.normalize(z_out.read('routes.txt'))
         self.assertEqual(routes_out, """\
 route_id,agency_id,route_short_name,route_long_name,route_type
 AAMV,DTA,50,Airport - Amargosa Valley,3
@@ -464,7 +464,7 @@ CITY2,6:56:00,6:58:00,STAGECOACH,5,,,,
 STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
 STBA,6:20:00,6:20:00,BEATTY_AIRPORT,2,,,,
 """)
-        stimes_out = self.normalize(z_out.read('feed/stop_times.txt'))
+        stimes_out = self.normalize(z_out.read('stop_times.txt'))
         self.assertEqual(stimes_out, """\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 AAMV1,08:00:00,08:00:00,BEATTY_AIRPORT,1
@@ -510,7 +510,7 @@ NADAV,North Ave / D Ave N (Demo),,36.914893,-116.76821,,
 NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472,,
 STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677,,
 """)
-        stops_out = self.normalize(z_out.read('feed/stops.txt'))
+        stops_out = self.normalize(z_out.read('stops.txt'))
         self.assertEqual(stops_out, """\
 stop_id,stop_name,stop_lat,stop_lon
 AMV,Amargosa Valley (Demo),36.641496,-116.40094
@@ -542,7 +542,7 @@ CITY,FULLW,CITY1,,0,,
 CITY,FULLW,CITY2,,1,,
 STBA,FULLW,STBA,Shuttle,,,
 """)
-        trips_out = self.normalize(z_out.read('feed/trips.txt'))
+        trips_out = self.normalize(z_out.read('trips.txt'))
         self.assertEqual(trips_out, """\
 route_id,service_id,trip_id,trip_headsign,direction_id,block_id
 AAMV,WE,AAMV1,to Amargosa Valley,0,

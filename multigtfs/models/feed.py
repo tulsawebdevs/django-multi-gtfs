@@ -96,8 +96,7 @@ class Feed(models.Model):
         )
 
         for filename, exporter in gtfs_order:
-            path = 'feed/%s' % filename
             content = exporter.objects.in_feed(self).export_txt()
             if content:
-                z.writestr(path, content)
+                z.writestr(filename, content)
         z.close()
