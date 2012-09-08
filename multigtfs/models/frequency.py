@@ -102,22 +102,3 @@ class Frequency(Base):
         ('headway_secs', 'headway_secs'),
         ('exact_times', 'exact_times'))
     _rel_to_feed = 'trip__route__feed'
-
-#
-# def import_frequencies_txt(frequencies_file, feed):
-#     """Import frequencies.txt into Frequency records for feed
-#
-#     Keyword arguments:
-#     frequencies_file -- A open frequencies.txt for reading
-#     feed -- the Feed to associate the records with
-#     """
-#     reader = DictReader(frequencies_file)
-#     for row in reader:
-#         trip_id = row.pop('trip_id')
-#         trip = Trip.objects.get(route__feed=feed, trip_id=trip_id)
-#         # Convert times
-#         stime, sday = parse_time(row.pop('start_time', None))
-#         etime, eday = parse_time(row.pop('end_time', None))
-#         Frequency.objects.create(
-#             trip=trip, start_time=stime, start_day=sday, end_time=etime,
-#             end_day=eday, **row)
