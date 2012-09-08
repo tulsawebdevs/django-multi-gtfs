@@ -2,6 +2,20 @@ from zipfile import ZipFile
 
 from django.db import models
 
+from agency import Agency
+from fare import Fare
+from fare_rule import FareRule
+from feed_info import FeedInfo
+from frequency import Frequency
+from route import Route
+from service import Service
+from service_date import ServiceDate
+from shape import ShapePoint
+from stop import Stop
+from stop_time import StopTime
+from transfer import Transfer
+from trip import Trip
+
 
 class Feed(models.Model):
     """Represents a single GTFS feed.
@@ -30,10 +44,6 @@ class Feed(models.Model):
 
         Returns is a list of objects imported
         """
-        from multigtfs.models import (
-            Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint, Stop, StopTime, Transfer, Trip)
-
         z = ZipFile(gtfs_file, 'r')
         files = z.namelist()
 
@@ -67,10 +77,6 @@ class Feed(models.Model):
 
         This function will close the file in order to finalize it.
         """
-        from multigtfs.models import (
-            Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint, Stop, StopTime, Transfer, Trip)
-
         z = ZipFile(gtfs_file, 'w')
 
         gtfs_order = (
