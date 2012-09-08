@@ -2,8 +2,6 @@ from zipfile import ZipFile
 
 from django.db import models
 
-from multigtfs.models.trip import import_trips_txt
-
 
 class Feed(models.Model):
     """Represents a single GTFS feed.
@@ -34,7 +32,7 @@ class Feed(models.Model):
         """
         from multigtfs.models import (
             Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint, Stop, StopTime, Transfer)
+            ServiceDate, ShapePoint, Stop, StopTime, Transfer, Trip)
 
         z = ZipFile(gtfs_file, 'r')
         files = z.namelist()
@@ -46,7 +44,7 @@ class Feed(models.Model):
             ('calendar.txt', Service),
             ('calendar_dates.txt', ServiceDate),
             ('shapes.txt', ShapePoint),
-            ('trips.txt', import_trips_txt),
+            ('trips.txt', Trip),
             ('stop_times.txt', StopTime),
             ('frequencies.txt', Frequency),
             ('fare_attributes.txt', Fare),
@@ -55,14 +53,11 @@ class Feed(models.Model):
             ('feed_info.txt', FeedInfo),
         )
 
-        for table_name, importer in gtfs_order:
+        for table_name, klass in gtfs_order:
             for f in files:
                 if f.endswith(table_name):
                     table = z.open(f)
-                    if hasattr(importer, 'import_txt'):
-                        importer.import_txt(table, self)
-                    else:
-                        importer(table, self)
+                    klass.import_txt(table, self)
 
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed
@@ -74,7 +69,7 @@ class Feed(models.Model):
         """
         from multigtfs.models import (
             Agency, Fare, FareRule, FeedInfo, Frequency, Route, Service,
-            ServiceDate, ShapePoint, Stop, StopTime, Transfer)
+            ServiceDate, ShapePoint, Stop, StopTime, Transfer, Trip)
 
         z = ZipFile(gtfs_file, 'w')
 
@@ -91,7 +86,7 @@ class Feed(models.Model):
             ('stop_times.txt', StopTime),
             ('stops.txt', Stop),
             ('transfers.txt', Transfer),
-            # ('trips.txt', export_trips_txt),
+            ('trips.txt', Trip),
         )
 
         for filename, exporter in gtfs_order:

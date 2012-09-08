@@ -109,6 +109,7 @@ class Base(models.Model):
 
         # Map of field_name to converters from GTFS to Django format
         val_map = dict()
+        m2m_map = dict()
         name_map = dict()
         for csv_name, field_pattern in cls._column_map:
             # Separate the local field name from foreign columns
@@ -121,6 +122,7 @@ class Base(models.Model):
 
             # Pick a conversion function for the field
             field = cls._meta.get_field_by_name(field_name)[0]
+            is_m2m = False
             if isinstance(field, models.DateField):
                 converter = date_convert
             elif isinstance(field, models.BooleanField):
@@ -129,18 +131,24 @@ class Base(models.Model):
                 converter = char_convert
             elif field.rel:
                 converter = instance_convert(field, feed, rel_name)
+                is_m2m = isinstance(field, models.ManyToManyField)
             elif field.null:
                 converter = null_convert
             elif field.has_default():
                 converter = default_convert(field)
             else:
                 converter = no_convert
-            val_map[csv_name] = converter
+
+            if is_m2m:
+                m2m_map[csv_name] = converter
+            else:
+                val_map[csv_name] = converter
 
         # Read and convert the source txt
         reader = DictReader(txt_file)
         for row in reader:
             fields = dict()
+            m2ms = dict()
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
             for column_name, value in row.items():
@@ -149,6 +157,14 @@ class Base(models.Model):
                         raise ValueError(
                             'Unexpected column name %s in row %s, expecting'
                             ' %s' % (column_name, row, name_map.keys()))
-                else:
+                elif column_name in val_map:
                     fields[name_map[column_name]] = val_map[column_name](value)
-            cls.objects.create(**fields)
+                else:
+                    assert column_name in m2m_map
+                    m2ms[name_map[column_name]] = m2m_map[column_name](value)
+            if m2ms:
+                obj, created = cls.objects.get_or_create(**fields)
+                for field_name, value in m2ms.items():
+                    getattr(obj, field_name).add(value)
+            else:
+                cls.objects.create(**fields)

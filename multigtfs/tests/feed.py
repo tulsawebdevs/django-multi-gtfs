@@ -107,6 +107,28 @@ class FeedTest(TestCase):
         feed.export_gtfs(self.temp_path)
         z_in = zipfile.ZipFile(test_path, 'r')
         z_out = zipfile.ZipFile(self.temp_path, 'r')
+        self.assertEqual(
+            z_in.namelist(),
+            ['dv/', 'dv/.DS_Store', '__MACOSX/', '__MACOSX/dv/',
+             '__MACOSX/dv/._.DS_Store',
+             'dv/agency.txt',
+             'dv/calendar.txt',
+             'dv/calendar_dates.txt',
+             'dv/frequencies.txt',
+             'dv/routes.txt',
+             'dv/stop_times.txt',
+             'dv/stops.txt',
+             'dv/trips.txt'])
+        self.assertEqual(
+            z_out.namelist(),
+            ['feed/agency.txt',
+             'feed/calendar.txt',
+             'feed/calendar_dates.txt',
+             'feed/frequencies.txt',
+             'feed/routes.txt',
+             'feed/stop_times.txt',
+             'feed/stops.txt',
+             'feed/trips.txt'])
 
         agency_in = self.normalize(z_in.read('dv/agency.txt'))
         agency_out = self.normalize(z_out.read('feed/agency.txt'))
@@ -263,6 +285,10 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
         self.assertFalse('dv/transfers.txt' in z_in.namelist())
         self.assertFalse('feed/transfers.txt' in z_out.namelist())
 
+        trips_in = self.normalize(z_in.read('dv/trips.txt'))
+        trips_out = self.normalize(z_out.read('feed/trips.txt'))
+        self.assertEqual(trips_in, trips_out)
+
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test2.zip'))
@@ -273,6 +299,32 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
         feed.export_gtfs(self.temp_path)
         z_in = zipfile.ZipFile(test_path, 'r')
         z_out = zipfile.ZipFile(self.temp_path, 'r')
+
+        self.assertEqual(
+            z_in.namelist(),
+            ['agency.txt',
+             'calendar.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'frequencies.txt',
+             'routes.txt',
+             'shapes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'trips.txt'])
+        self.assertEqual(
+            z_out.namelist(),
+            ['feed/agency.txt',
+             'feed/calendar.txt',
+             'feed/calendar_dates.txt',
+             'feed/fare_attributes.txt',
+             'feed/fare_rules.txt',
+             'feed/frequencies.txt',
+             'feed/routes.txt',
+             'feed/stop_times.txt',
+             'feed/stops.txt',
+             'feed/trips.txt'])
 
         agency_in = self.normalize(z_in.read('agency.txt'))
         agency_out = self.normalize(z_out.read('feed/agency.txt'))
@@ -472,5 +524,36 @@ NANAA,North Ave / N A Ave (Demo),36.914944,-116.761472
 STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
 """)
 
-        self.assertFalse('dv/transfers.txt' in z_in.namelist())
+        self.assertFalse('transfers.txt' in z_in.namelist())
         self.assertFalse('feed/transfers.txt' in z_out.namelist())
+
+        trips_in = self.normalize(z_in.read('trips.txt'))
+        self.assertEqual(trips_in, """\
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
+AAMV,WE,AAMV1,to Amargosa Valley,0,,
+AAMV,WE,AAMV2,to Airport,1,,
+AAMV,WE,AAMV3,to Amargosa Valley,0,,
+AAMV,WE,AAMV4,to Airport,1,,
+AB,FULLW,AB1,to Bullfrog,0,1,
+AB,FULLW,AB2,to Airport,1,2,
+BFC,FULLW,BFC1,to Furnace Creek Resort,0,1,
+BFC,FULLW,BFC2,to Bullfrog,1,2,
+CITY,FULLW,CITY1,,0,,
+CITY,FULLW,CITY2,,1,,
+STBA,FULLW,STBA,Shuttle,,,
+""")
+        trips_out = self.normalize(z_out.read('feed/trips.txt'))
+        self.assertEqual(trips_out, """\
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id
+AAMV,WE,AAMV1,to Amargosa Valley,0,
+AAMV,WE,AAMV2,to Airport,1,
+AAMV,WE,AAMV3,to Amargosa Valley,0,
+AAMV,WE,AAMV4,to Airport,1,
+AB,FULLW,AB1,to Bullfrog,0,1
+AB,FULLW,AB2,to Airport,1,2
+BFC,FULLW,BFC1,to Furnace Creek Resort,0,1
+BFC,FULLW,BFC2,to Bullfrog,1,2
+CITY,FULLW,CITY1,,0,
+CITY,FULLW,CITY2,,1,
+STBA,FULLW,STBA,Shuttle,,
+""")

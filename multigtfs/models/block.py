@@ -18,3 +18,5 @@ class Block(models.Model):
     class Meta:
         db_table = 'block'
         app_label = 'multigtfs'
+
+    _rel_to_feed = 'feed'
