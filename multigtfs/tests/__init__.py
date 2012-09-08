@@ -19,11 +19,10 @@ from multigtfs.tests.stop import StopTest
 from multigtfs.tests.stop_time import StopTimeTest
 from multigtfs.tests.transfer import TransferTest
 from multigtfs.tests.trip import TripTest
-from multigtfs.tests.utils import ParseTimeTest
 
 # Be quiet pyflakes
 __tests = (
     AgencyTest, BlockTest, FareTest, FareRuleTest, FeedTest, FeedInfoTest,
     FrequencyTest, RouteTest, ServiceTest, ServiceDateTest, ShapeTest,
     ServiceDateTest, ShapeTest, StopTest, StopTimeTest, TransferTest,
-    TripTest, ParseTimeTest, SecondsTest, SecondsFieldTest)
+    TripTest, SecondsTest, SecondsFieldTest)
