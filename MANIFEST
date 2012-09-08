@@ -1,7 +1,0 @@
-README
-setup.py
-src/django_gtfs/__init__.py
-src/django_gtfs/tests.py
-src/django_gtfs/views.py
-src/django_gtfs/models/__init__.py
-src/django_gtfs/models/feed.py
