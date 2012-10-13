@@ -1,0 +1,4 @@
+include *.py
+graft multigtfs/tests/fixtures/
+include README
+
