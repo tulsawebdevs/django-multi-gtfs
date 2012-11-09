@@ -1,0 +1,8 @@
+0.2.3 20121109
+--------------
+* Added South migrations for applying 0.2.2 changes
+
+0.2.2 20121109
+--------------
+* Fixed Fare.transfers for unlimited rides (use None instead of -1)
+* First PyPi version
