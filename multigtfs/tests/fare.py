@@ -68,3 +68,13 @@ p,1.25,USD,0,0
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0,3600
 """)
+
+    def test_export_fare_attributes_unlimited_transfers(self):
+        Fare.objects.create(
+            feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
+            payment_method=0, transfers=None, transfer_duration=3600)
+        fare_txt = Fare.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(fare_txt, """\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+p,1.25,USD,0,,3600
+""")

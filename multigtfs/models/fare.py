@@ -71,11 +71,11 @@ class Fare(Base):
                  (1, 'Fare must be paid before boarding.')),
         help_text="When is the fare paid?")
     transfers = models.IntegerField(
-        default=1,
+        default=None, null=True, blank=True,
         choices=((0, 'No transfers permitted on this fare.'),
                  (1, 'Passenger may transfer once.'),
                  (2, 'Passenger may transfer twice.'),
-                 (-1, 'Unlimited transfers are permitted.')),
+                 (None, 'Unlimited transfers are permitted.')),
         help_text="Are transfers permitted?")
     transfer_duration = models.IntegerField(
         null=True, blank=True,
