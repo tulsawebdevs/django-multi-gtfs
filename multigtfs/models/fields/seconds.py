@@ -16,6 +16,9 @@
 "Define model and field to represent time of day in GTFS feeds"
 
 from django.db import models
+from south.modelsinspector import add_introspection_rules
+
+add_introspection_rules([], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
 
 
 class Seconds(object):
