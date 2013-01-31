@@ -18,7 +18,8 @@
 from django.db import models
 from south.modelsinspector import add_introspection_rules
 
-add_introspection_rules([], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
+add_introspection_rules(
+    [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
 
 
 class Seconds(object):
