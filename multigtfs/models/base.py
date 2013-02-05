@@ -62,12 +62,15 @@ class BaseQuerySet(QuerySet):
         columns, fields = zip(*csv_names)
 
         # Avoid ordering by ManyToManyFields, which result in duplicate objects
-        sort_fields = []
-        for field in fields:
-            base_field = field.split('__', 1)[0]
-            field_type = self.model._meta.get_field_by_name(base_field)[0]
-            if not isinstance(field_type, ManyToManyField):
-                sort_fields.append(field)
+        if hasattr(self.model, '_sort_order'):
+            sort_fields = self.model._sort_order
+        else:
+            sort_fields = []
+            for field in fields:
+                base_field = field.split('__', 1)[0]
+                field_type = self.model._meta.get_field_by_name(base_field)[0]
+                if not isinstance(field_type, ManyToManyField):
+                    sort_fields.append(field)
 
         rows = [columns]
         for item in self.order_by(*sort_fields):

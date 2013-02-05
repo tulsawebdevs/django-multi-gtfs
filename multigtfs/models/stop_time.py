@@ -224,3 +224,4 @@ class StopTime(Base):
         ('shape_dist_traveled', 'shape_dist_traveled')
     )
     _rel_to_feed = 'trip__route__feed'
+    _sort_order = ('trip__trip_id', 'stop_sequence')

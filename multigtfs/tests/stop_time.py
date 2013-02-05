@@ -179,3 +179,29 @@ trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
 STBA,06:00:00,06:00:00,STAGECOACH,1,SC,2,1,5.25
 """)
+
+    def test_export_natural_sort(self):
+        StopTime.objects.create(
+            trip=self.trip, arrival_time='6:00:00', departure_time='6:00:00',
+            stop=self.stop, stop_sequence=1, stop_headsign='SC',
+            pickup_type=2, drop_off_type=1, shape_dist_traveled=5.25)
+        stop2 = Stop.objects.create(
+            feed=self.feed, stop_id='SALOON', lat="36.5", lon="-117.1")
+        StopTime.objects.create(trip=self.trip, stop=stop2, stop_sequence=2)
+        stop3 = Stop.objects.create(
+            feed=self.feed, stop_id='GENERAL_STORE', lat="36.5", lon="-117.2")
+        StopTime.objects.create(trip=self.trip, stop=stop3, stop_sequence=3)
+        stop4 = Stop.objects.create(
+            feed=self.feed, stop_id='MORGUE', lat="36.6", lon="-117.2")
+        StopTime.objects.create(
+            trip=self.trip, arrival_time='7:00:00', departure_time='7:00:00',
+            stop=stop4, stop_sequence=4, stop_headsign='MORT')
+        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        self.assertEqual(stop_times_txt, """\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
+pickup_type,drop_off_type,shape_dist_traveled
+STBA,06:00:00,06:00:00,STAGECOACH,1,SC,2,1,5.25
+STBA,,,SALOON,2,,,,
+STBA,,,GENERAL_STORE,3,,,,
+STBA,07:00:00,07:00:00,MORGUE,4,MORT,,,
+""")
