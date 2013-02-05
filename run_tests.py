@@ -53,7 +53,7 @@ def main():
     )
 
     from django.core import management
-    failures = management.call_command('test', *sys.argv[1:])
+    failures = management.call_command('test')  # Will pull sysv args itself
     sys.exit(failures)
 
 
