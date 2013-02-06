@@ -1,3 +1,7 @@
+0.2.4 20130206
+--------------
+* Added optional manual sorting of output, used on stop_times.txt
+
 0.2.3 20121109
 --------------
 * Added South migrations for applying 0.2.2 changes
