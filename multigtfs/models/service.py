@@ -186,3 +186,4 @@ class Service(Base):
         ('start_date', 'start_date'),
         ('end_date', 'end_date')
     )
+    _sort_order = ('start_date', 'end_date')

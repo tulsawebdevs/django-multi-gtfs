@@ -103,3 +103,4 @@ class Transfer(Base):
         ('min_transfer_time', 'min_transfer_time')
     )
     _rel_to_feed = 'from_stop__feed'
+    _sort_order = ('from_stop__stop_id', 'to_stop__stop_id')

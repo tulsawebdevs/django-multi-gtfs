@@ -137,3 +137,4 @@ class FareRule(Base):
         ('contains_id', 'contains__zone_id')
     )
     _rel_to_feed = 'fare__feed'
+    _sort_order = ('route__route_id', 'fare__fare_id')

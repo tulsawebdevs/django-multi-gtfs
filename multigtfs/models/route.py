@@ -172,3 +172,4 @@ class Route(Base):
         ('route_color', 'color'),
         ('route_text_color', 'text_color')
     )
+    _sort_order = ('route_id', 'short_name')

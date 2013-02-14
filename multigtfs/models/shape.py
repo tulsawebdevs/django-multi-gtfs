@@ -132,3 +132,4 @@ class ShapePoint(Base):
         ('shape_dist_traveled', 'traveled')
     )
     _rel_to_feed = 'shape__feed'
+    _sort_order = ('shape__shape_id', 'sequence')

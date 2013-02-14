@@ -97,3 +97,4 @@ class ServiceDate(Base):
         ('date', 'date'),
         ('exception_type', 'exception_type'))
     _rel_to_feed = 'service__feed'
+    _sort_order = ('date', 'exception_type')
