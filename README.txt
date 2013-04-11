@@ -7,7 +7,7 @@ versioning.
 To run app tests:
 * Create a virtualenv (I recommend virtualenvwrapper)
 * pip install -r requirements.txt
+* pip install -r requirements.dev.txt
 * ./qa_check.sh
 
 See http://tulsawebdevs.org for more information about the project.
-
