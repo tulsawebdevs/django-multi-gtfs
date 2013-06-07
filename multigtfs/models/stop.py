@@ -151,8 +151,7 @@ class Stop(Base):
         'Zone', null=True, blank=True,
         help_text="Fare zone for a stop ID.")
     url = models.URLField(
-        verify_exists=False, blank=True,
-        help_text="URL for the stop")
+        blank=True, help_text="URL for the stop")
     location_type = models.CharField(
         max_length=1, blank=True, choices=(('0', 'Stop'), ('1', 'Station')),
         help_text="Is this a stop or station?")

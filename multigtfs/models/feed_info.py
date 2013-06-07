@@ -86,7 +86,6 @@ class FeedInfo(Base):
         max_length=255,
         help_text="Full name of organization that publishes the feed.")
     publisher_url = models.URLField(
-        verify_exists=False,
         help_text="URL of the feed publisher's organization.")
     lang = models.CharField(
         max_length=20,

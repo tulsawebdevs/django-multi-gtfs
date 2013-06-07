@@ -145,8 +145,7 @@ class Route(Base):
                  (7, 'Funicular')),
         help_text='Type of transportation used on route')
     url = models.URLField(
-        verify_exists=False, blank=True,
-        help_text="Web page about for the route")
+        blank=True, help_text="Web page about for the route")
     color = models.CharField(
         max_length=6, blank=True,
         help_text="Color of route in hex")

@@ -86,8 +86,7 @@ class Agency(Base):
         max_length=255,
         help_text="Full name of the transit agency")
     url = models.URLField(
-        verify_exists=False, blank=True,
-        help_text="URL of the transit agency")
+        blank=True, help_text="URL of the transit agency")
     timezone = models.CharField(
         max_length=255,
         help_text="Timezone of the agency")
@@ -98,8 +97,7 @@ class Agency(Base):
         max_length=255, blank=True,
         help_text="Voice telephone number")
     fare_url = models.URLField(
-        verify_exists=False, blank=True,
-        help_text="URL for purchasing tickets online")
+        blank=True, help_text="URL for purchasing tickets online")
 
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.agency_id)
