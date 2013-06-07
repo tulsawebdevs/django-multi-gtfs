@@ -10,4 +10,10 @@ To run app tests:
 * pip install -r requirements.dev.txt
 * ./qa_check.sh
 
+Once you've added multigtfs to your INSTALLED_APPS, you can use two management
+commands to get feeds in and out of the database:
+
+    ./manage.py importgtfs [--name name_of_feed] path/to/gtfsfeed.zip
+    ./manage.py exportgtfs [--name basename_of_file] <feed_id>
+
 See http://tulsawebdevs.org for more information about the project.
