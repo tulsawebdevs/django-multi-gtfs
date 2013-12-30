@@ -86,7 +86,7 @@ from django.db import models
 from multigtfs.models.base import Base
 
 
-class Shape(models.Model):
+class Shape(Base):
     """The path the vehicle takes along the route"""
     feed = models.ForeignKey('Feed')
     shape_id = models.CharField(
