@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.db import models
+from multigtfs.models.base import models, Base
 
 
-class Zone(models.Model):
+class Zone(Base):
     """Represents a fare zone.
 
     This data is not represented as a file in the GTFS.  It appears as an
@@ -30,5 +30,3 @@ class Zone(models.Model):
     class Meta:
         db_table = 'zone'
         app_label = 'multigtfs'
-
-    _rel_to_feed = 'feed'  # TODO: Delete when I'm based on GTFSModel

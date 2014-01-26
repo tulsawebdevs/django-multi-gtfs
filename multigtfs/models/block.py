@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.db import models
+
+from multigtfs.models.base import models, Base
 
 
-class Block(models.Model):
+class Block(Base):
     """Represents a fare zone.
 
     This data is not represented as a file in the GTFS.  It appears as an
@@ -33,5 +34,3 @@ class Block(models.Model):
     class Meta:
         db_table = 'block'
         app_label = 'multigtfs'
-
-    _rel_to_feed = 'feed'
