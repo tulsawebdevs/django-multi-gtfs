@@ -17,8 +17,8 @@ from csv import DictReader, writer
 from datetime import datetime, date
 from StringIO import StringIO
 
-from django.db import models
-from django.db.models.query import QuerySet
+from django.contrib.gis.db import models
+from django.contrib.gis.db.models.query import QuerySet
 from django.db.models.fields.related import ManyToManyField
 
 
@@ -109,7 +109,7 @@ class BaseQuerySet(QuerySet):
         return out.getvalue()
 
 
-class BaseManager(models.Manager):
+class BaseManager(models.GeoManager):
 
     def get_query_set(self):
         return BaseQuerySet(self.model)

@@ -71,9 +71,7 @@ any special characters in the URL must be correctly escaped. See
 for a description of how to create fully qualified URL values.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Agency(Base):

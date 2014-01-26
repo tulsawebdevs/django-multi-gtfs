@@ -81,9 +81,8 @@ like this:
     A_shp,37.65863,-122.30839,11,15.8765
 """
 
-from django.db import models
 
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Shape(Base):

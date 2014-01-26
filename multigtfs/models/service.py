@@ -130,9 +130,7 @@ included in the service interval.
 The end_date field's value should be in YYYYMMDD format.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Service(Base):

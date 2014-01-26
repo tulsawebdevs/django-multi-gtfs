@@ -80,9 +80,7 @@ be taken to choose an end_time value that is greater than the last desired trip
 start time but less than the last desired trip start time + headway_secs.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 from multigtfs.models.fields import SecondsField
 
 

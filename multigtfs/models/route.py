@@ -111,9 +111,7 @@ The color difference between route_color and route_text_color should provide
 sufficient contrast when viewed on a black and white screen.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Route(Base):

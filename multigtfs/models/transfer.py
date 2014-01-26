@@ -63,9 +63,7 @@ The min_transfer_time value must be entered in seconds, and must be a
 non-negative integer.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Transfer(Base):

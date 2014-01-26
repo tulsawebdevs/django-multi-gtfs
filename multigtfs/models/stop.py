@@ -121,9 +121,7 @@ timezones the trip crosses.
 from csv import DictReader, DictWriter
 import StringIO
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Stop(Base):

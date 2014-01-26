@@ -62,9 +62,7 @@ you intend to use this field to indicate ticket validity, transfer_duration
 should be omitted or empty when transfers is set to 0.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Fare(Base):

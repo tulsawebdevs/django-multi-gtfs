@@ -94,9 +94,7 @@ project wiki:
   http://code.google.com/p/googletransitdatafeed/wiki/FareExamples
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class FareRule(Base):

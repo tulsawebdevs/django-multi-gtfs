@@ -74,9 +74,7 @@ feed publishers determine whether the latest version of their feed has been
 incorporated.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class FeedInfo(Base):
