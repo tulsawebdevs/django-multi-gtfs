@@ -30,6 +30,22 @@ class StopTest(TestCase):
             lat="36.425288", lon="-117.133162")
         self.assertEqual(str(stop), '1-STEST')
 
+    def test_legacy_lat_long(self):
+        stop1 = Stop(feed=self.feed, stop_id='STOP1')
+        stop1.lat = 36.425288
+        stop1.lon = -117.133162
+        stop1.save()
+        stop2 = Stop(feed=self.feed, stop_id='STOP2')
+        stop2.lon = -117.14
+        stop2.lat = 36.43
+        stop2.save()
+        self.assertEqual(stop1.point.coords, (-117.133162, 36.425288))
+        self.assertEqual(stop1.lat, 36.425288)
+        self.assertEqual(stop1.lon, -117.133162)
+        self.assertEqual(stop2.point.coords, (-117.14, 36.43))
+        self.assertEqual(stop2.lat, 36.43)
+        self.assertEqual(stop2.lon, -117.14)
+
     def test_import_stops_txt_none(self):
         stops_txt = StringIO.StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon

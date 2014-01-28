@@ -42,11 +42,10 @@ def main():
 
     settings.configure(
         INSTALLED_APPS=INSTALLED_APPS,
-        # Django replaces this, but it still wants it. *shrugs*
-        DATABASE_ENGINE='django.db.backends.sqlite3',
+        DATABASE_ENGINE='django.contrib.gis.db.backends.spatialite',
         DATABASES={
             'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
+                'ENGINE': 'django.contrib.gis.db.backends.spatialite',
             }
         },
         DEBUG=True, TEMPLATE_DEBUG=True, TEST_RUNNER=TEST_RUNNER

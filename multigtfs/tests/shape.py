@@ -31,6 +31,23 @@ class ShapeTest(TestCase):
             shape=shape, lat='36.425288', lon='-117.133162', sequence=1)
         self.assertEqual(str(shape_pt), '1-S1-1')
 
+    def test_legacy_lat_long(self):
+        shape = Shape.objects.create(feed=self.feed, shape_id='S1')
+        shape_pt1 = ShapePoint(shape=shape, sequence=1)
+        shape_pt1.lat = 36.425288
+        shape_pt1.lon = -117.133162
+        shape_pt1.save()
+        shape_pt2 = ShapePoint(shape=shape, sequence=2)
+        shape_pt2.lon = -117.14
+        shape_pt2.lat = 36.43
+        shape_pt2.save()
+        self.assertEqual(shape_pt1.point.coords, (-117.133162, 36.425288))
+        self.assertEqual(shape_pt1.lat, 36.425288)
+        self.assertEqual(shape_pt1.lon, -117.133162)
+        self.assertEqual(shape_pt2.point.coords, (-117.14, 36.43))
+        self.assertEqual(shape_pt2.lat, 36.43)
+        self.assertEqual(shape_pt2.lon, -117.14)
+
     def test_import_shape_minimal(self):
         shape_txt = StringIO.StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence

@@ -119,8 +119,11 @@ timezones the trip crosses.
 """
 
 from csv import DictReader, DictWriter
+import warnings
 import StringIO
 
+
+from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
 from multigtfs.models.base import models, Base
 
 
@@ -139,12 +142,9 @@ class Stop(Base):
     desc = models.CharField(
         max_length=255, blank=True,
         help_text='Description of a stop.')
-    lat = models.DecimalField(
-        'Latitude', max_digits=13, decimal_places=8,
-        help_text='WGS 84 latitude of stop or station')
-    lon = models.DecimalField(
-        'Longitude', max_digits=13, decimal_places=8,
-        help_text='WGS 84 longtitude of stop or station')
+    point = models.PointField(
+        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
+        help_text='WGS 84 latitude/longitude of stop or station')
     zone = models.ForeignKey(
         'Zone', null=True, blank=True,
         help_text="Fare zone for a stop ID.")
@@ -163,6 +163,38 @@ class Stop(Base):
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.stop_id)
 
+    def getlon(self):
+        return self.point[0] if self.point else 0.0
+
+    def setlon(self, value):
+        if self.point:
+            self.point[0] = value
+        else:
+            self.point = "POINT(%s 0)" % value
+
+    lon = property(getlon, setlon, doc="WGS 84 longitude of stop or station")
+
+    def getlat(self):
+        return self.point[1] if self.point else 0.0
+
+    def setlat(self, value):
+        if self.point:
+            self.point[1] = value
+        else:
+            self.point = "POINT(0 %s)" % value
+
+    lat = property(getlat, setlat, doc="WGS 84 latitude of stop or station")
+
+    def __init__(self, *args, **kwargs):
+        lat = kwargs.pop('lat', None)
+        lon = kwargs.pop('lon', None)
+        if lat is not None or lon is not None:
+            assert kwargs.get('point') is None
+            msg = "Setting Stop location with lat and lon is deprecated"
+            warnings.warn(msg, DeprecationWarning)
+            kwargs['point'] = "POINT(%s %s)" % (lon or 0.0, lat or 0.0)
+        super(Stop, self).__init__(*args, **kwargs)
+
     class Meta:
         db_table = 'stop'
         app_label = 'multigtfs'
@@ -172,8 +204,8 @@ class Stop(Base):
         ('stop_code', 'code'),
         ('stop_name', 'name'),
         ('stop_desc', 'desc'),
-        ('stop_lat', 'lat'),
-        ('stop_lon', 'lon'),
+        ('stop_lat', 'point[1]'),
+        ('stop_lon', 'point[0]'),
         ('zone_id', 'zone__zone_id'),
         ('stop_url', 'url'),
         ('location_type', 'location_type'),

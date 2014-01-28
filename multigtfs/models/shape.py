@@ -81,7 +81,9 @@ like this:
     A_shp,37.65863,-122.30839,11,15.8765
 """
 
+import warnings
 
+from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
 from multigtfs.models.base import models, Base
 
 
@@ -105,12 +107,9 @@ class Shape(Base):
 class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
-    lat = models.DecimalField(
-        'Latitude', max_digits=13, decimal_places=8,
-        help_text='WGS 84 latitude of shape point')
-    lon = models.DecimalField(
-        'Longitude', max_digits=13, decimal_places=8,
-        help_text='WGS 84 longtitude of shape point')
+    point = models.PointField(
+        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
+        help_text='WGS 84 latitude/longitude of shape point')
     sequence = models.IntegerField()
     traveled = models.FloatField(
         null=True, blank=True,
@@ -119,14 +118,46 @@ class ShapePoint(Base):
     def __unicode__(self):
         return u"%s-%d" % (self.shape, self.sequence)
 
+    def getlon(self):
+        return self.point[0] if self.point else 0.0
+
+    def setlon(self, value):
+        if self.point:
+            self.point[0] = value
+        else:
+            self.point = "POINT(%s 0)" % value
+
+    lon = property(getlon, setlon, doc="WGS 84 longitude of shape point")
+
+    def getlat(self):
+        return self.point[1] if self.point else 0.0
+
+    def setlat(self, value):
+        if self.point:
+            self.point[1] = value
+        else:
+            self.point = "POINT(0 %s)" % value
+
+    lat = property(getlat, setlat, doc="WGS 84 latitude of shape point")
+
+    def __init__(self, *args, **kwargs):
+        lat = kwargs.pop('lat', None)
+        lon = kwargs.pop('lon', None)
+        if lat is not None or lon is not None:
+            assert kwargs.get('point') is None
+            msg = "Setting ShapePoint location with lat and lon is deprecated"
+            warnings.warn(msg, DeprecationWarning)
+            kwargs['point'] = "POINT(%s %s)" % (lon or 0.0, lat or 0.0)
+        super(ShapePoint, self).__init__(*args, **kwargs)
+
     class Meta:
         db_table = 'shape_point'
         app_label = 'multigtfs'
 
     _column_map = (
         ('shape_id', 'shape__shape_id'),
-        ('shape_pt_lat', 'lat'),
-        ('shape_pt_lon', 'lon'),
+        ('shape_pt_lat', 'point[1]'),
+        ('shape_pt_lon', 'point[0]'),
         ('shape_pt_sequence', 'sequence'),
         ('shape_dist_traveled', 'traveled')
     )

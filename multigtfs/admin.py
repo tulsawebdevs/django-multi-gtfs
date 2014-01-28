@@ -13,11 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.contrib import admin
+from django.contrib.gis import admin
 
+from multigtfs.app_settings import MULTIGTFS_OSMADMIN
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency, Route, Service,
     ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer, Trip, Zone)
+
+geo_admin = admin.OSMGeoAdmin if MULTIGTFS_OSMADMIN else admin.GeoModelAdmin
+
 
 admin.site.register(Agency)
 admin.site.register(Block)
@@ -30,8 +34,8 @@ admin.site.register(Route)
 admin.site.register(Service)
 admin.site.register(ServiceDate)
 admin.site.register(Shape)
-admin.site.register(ShapePoint)
-admin.site.register(Stop)
+admin.site.register(ShapePoint, geo_admin)
+admin.site.register(Stop, geo_admin)
 admin.site.register(StopTime)
 admin.site.register(Transfer)
 admin.site.register(Trip)
