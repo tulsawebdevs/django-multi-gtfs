@@ -24,9 +24,9 @@ class TransferTest(TestCase):
     def setUp(self):
         self.feed = Feed.objects.create()
         self.stop1 = Stop.objects.create(
-            feed=self.feed, stop_id='STOP1', lat="36.4", lon="-117.1")
+            feed=self.feed, stop_id='STOP1', point="POINT(-117.1 36.4)")
         self.stop2 = Stop.objects.create(
-            feed=self.feed, stop_id='STOP2', lat="36.5", lon="-117.2")
+            feed=self.feed, stop_id='STOP2', point="POINT(-117.2 36.5)")
 
     def test_string(self):
         transfer = Transfer.objects.create(
