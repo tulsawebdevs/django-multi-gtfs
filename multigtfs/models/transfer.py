@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,9 +63,7 @@ The min_transfer_time value must be entered in seconds, and must be a
 non-negative integer.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Transfer(Base):

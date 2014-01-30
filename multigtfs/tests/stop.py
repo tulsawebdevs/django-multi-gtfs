@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,8 +27,30 @@ class StopTest(TestCase):
     def test_string(self):
         stop = Stop.objects.create(
             feed=self.feed, stop_id='STEST',
-            lat="36.425288", lon="-117.133162")
+            point="POINT(-117.133162 36.425288)")
         self.assertEqual(str(stop), '1-STEST')
+
+    def test_legacy_lat_long(self):
+        stop1 = Stop(feed=self.feed, stop_id='STOP1')
+        stop1.lat = 36.425288
+        stop1.lon = -117.133162
+        stop1.save()
+        stop2 = Stop(feed=self.feed, stop_id='STOP2')
+        stop2.lon = -117.14
+        stop2.lat = 36.43
+        stop2.save()
+        self.assertEqual(stop1.point.coords, (-117.133162, 36.425288))
+        self.assertEqual(stop1.lat, 36.425288)
+        self.assertEqual(stop1.lon, -117.133162)
+        self.assertEqual(stop2.point.coords, (-117.14, 36.43))
+        self.assertEqual(stop2.lat, 36.43)
+        self.assertEqual(stop2.lon, -117.14)
+
+    def test_legacy_create_with_lat_lon(self):
+        stop = Stop.objects.create(
+            feed=self.feed, stop_id='STEST',
+            lat="36.425288", lon="-117.133162")
+        self.assertEqual(stop.point.coords, (-117.133162, 36.425288))
 
     def test_import_stops_txt_none(self):
         stops_txt = StringIO.StringIO("""\
@@ -124,8 +146,8 @@ http://example.com,1,,America/Los_Angeles
     def test_export_stops_txt_minimual(self):
         Stop.objects.create(
             feed=self.feed, stop_id='FUR_CREEK_RES',
-            name='Furnace Creek Resort (Demo)', lat='36.425288',
-            lon='-117.133162')
+            name='Furnace Creek Resort (Demo)',
+            point="POINT(-117.133162 36.425288)")
         stops_txt = Stop.objects.in_feed(self.feed).export_txt()
         self.assertEqual(stops_txt, """\
 stop_id,stop_name,stop_lat,stop_lon
@@ -135,8 +157,8 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
     def test_export_stops_utf8(self):
         Stop.objects.create(
             feed=self.feed, stop_id=6071,
-            name='The Delta Caf\x82'.decode('latin1'), lat='36.114554',
-            lon='-95.975834')
+            name='The Delta Caf\x82'.decode('latin1'),
+            point='POINT(-95.975834 36.114554)')
         stops_txt = Stop.objects.in_feed(self.feed).export_txt()
         self.assertEqual(stops_txt, """\
 stop_id,stop_name,stop_lat,stop_lon

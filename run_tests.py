@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,11 +42,10 @@ def main():
 
     settings.configure(
         INSTALLED_APPS=INSTALLED_APPS,
-        # Django replaces this, but it still wants it. *shrugs*
-        DATABASE_ENGINE='django.db.backends.sqlite3',
+        DATABASE_ENGINE='django.contrib.gis.db.backends.spatialite',
         DATABASES={
             'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
+                'ENGINE': 'django.contrib.gis.db.backends.spatialite',
             }
         },
         DEBUG=True, TEMPLATE_DEBUG=True, TEST_RUNNER=TEST_RUNNER

@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -165,11 +165,9 @@ The units used for shape_dist_traveled in the stop_times.txt file must match
 the units that are used for this field in the shapes.txt file.
 """
 
-from django.db import models
-
+from multigtfs.models.base import models, Base
 from multigtfs.models.stop import Stop
 from multigtfs.models.trip import Trip
-from multigtfs.models.base import Base
 from multigtfs.models.fields import SecondsField
 
 
