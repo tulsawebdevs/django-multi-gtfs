@@ -29,8 +29,8 @@ class StopTimeTest(TestCase):
             feed=self.feed, route_id='R1', rtype=3)
         self.trip = Trip.objects.create(route=self.route, trip_id='STBA')
         self.stop = Stop.objects.create(
-            feed=self.feed, stop_id='STAGECOACH', lat="36.425288",
-            lon="-117.133162")
+            feed=self.feed, stop_id='STAGECOACH',
+            point="POINT(-117.133162 36.425288)")
 
     def test_string(self):
         stoptime = StopTime.objects.create(
@@ -121,11 +121,11 @@ STBA,,,STAGECOACH2,2
 STBA,12:00:00,12:00:00,STAGECOACH3,3
 """)
         stop2 = Stop.objects.create(
-            feed=self.feed, stop_id='STAGECOACH2', lat="36.425288",
-            lon="-117.133162")
+            feed=self.feed, stop_id='STAGECOACH2',
+            point="POINT(-117.133162 36.425288)")
         stop3 = Stop.objects.create(
-            feed=self.feed, stop_id='STAGECOACH3', lat="36.425288",
-            lon="-117.133162")
+            feed=self.feed, stop_id='STAGECOACH3',
+            point="POINT(-117.133162 36.425288)")
         StopTime.import_txt(stop_times_txt, self.feed)
         stoptime1 = StopTime.objects.get(stop=self.stop)
         self.assertEqual(str(stoptime1.arrival_time), '06:00:00')
@@ -186,13 +186,14 @@ STBA,06:00:00,06:00:00,STAGECOACH,1,SC,2,1,5.25
             stop=self.stop, stop_sequence=1, stop_headsign='SC',
             pickup_type=2, drop_off_type=1, shape_dist_traveled=5.25)
         stop2 = Stop.objects.create(
-            feed=self.feed, stop_id='SALOON', lat="36.5", lon="-117.1")
+            feed=self.feed, stop_id='SALOON', point="POINT(-117.1 36.5)")
         StopTime.objects.create(trip=self.trip, stop=stop2, stop_sequence=2)
         stop3 = Stop.objects.create(
-            feed=self.feed, stop_id='GENERAL_STORE', lat="36.5", lon="-117.2")
+            feed=self.feed, stop_id='GENERAL_STORE',
+            point="POINT(-117.2 36.5)")
         StopTime.objects.create(trip=self.trip, stop=stop3, stop_sequence=3)
         stop4 = Stop.objects.create(
-            feed=self.feed, stop_id='MORGUE', lat="36.6", lon="-117.2")
+            feed=self.feed, stop_id='MORGUE', point="POINT(-117.2 36.6)")
         StopTime.objects.create(
             trip=self.trip, arrival_time='7:00:00', departure_time='7:00:00',
             stop=stop4, stop_sequence=4, stop_headsign='MORT')

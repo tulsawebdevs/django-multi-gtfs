@@ -16,13 +16,17 @@
 from csv import DictReader, writer
 from datetime import datetime, date
 from StringIO import StringIO
+import re
 
-from django.db import models
-from django.db.models.query import QuerySet
+from django.contrib.gis.db import models
+from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 
 
-class BaseQuerySet(QuerySet):
+re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
+
+
+class BaseQuerySet(GeoQuerySet):
     def export_txt(self):
         '''Export records as a GTFS comma-separated file'''
         # If no records, return None
@@ -35,9 +39,16 @@ class BaseQuerySet(QuerySet):
                 field_name, rel_name = field_pattern.split('__', 1)
             else:
                 field_name, rel_name = (field_pattern, None)
+
+            # Handle point fields
+            point_match = re_point.match(field_name)
+            if point_match:
+                field = None
+            else:
+                field = self.model._meta.get_field_by_name(field_name)[0]
+
             # Only add optional columns if they are used in the records
-            field = self.model._meta.get_field_by_name(field_name)[0]
-            if field.blank and not field.has_default():
+            if field and field.blank and not field.has_default():
                 if field.null:
                     blank = None
                 else:
@@ -68,6 +79,9 @@ class BaseQuerySet(QuerySet):
             sort_fields = []
             for field in fields:
                 base_field = field.split('__', 1)[0]
+                point_match = re_point.match(base_field)
+                if point_match:
+                    continue
                 field_type = self.model._meta.get_field_by_name(base_field)[0]
                 if not isinstance(field_type, ManyToManyField):
                     sort_fields.append(field)
@@ -81,11 +95,16 @@ class BaseQuerySet(QuerySet):
                 while obj and '__' in field_name:
                     parent_field, field_name = field_name.split('__', 1)
                     obj = getattr(obj, parent_field)
+                point_match = re_point.match(field_name)
                 if hasattr(obj, 'all'):
                     assert many_pos is None
                     many_pos = len(row)
                     many = [str(getattr(o, field_name)) for o in obj.all()]
                     row.append(many)
+                elif point_match:
+                    name, index = point_match.groups()
+                    field = getattr(obj, name)
+                    row.append(field.coords[int(index)])
                 else:
                     field = getattr(obj, field_name) if obj else ''
                     if isinstance(field, date):
@@ -109,7 +128,7 @@ class BaseQuerySet(QuerySet):
         return out.getvalue()
 
 
-class BaseManager(models.Manager):
+class BaseManager(models.GeoManager):
 
     def get_query_set(self):
         return BaseQuerySet(self.model)
@@ -162,6 +181,7 @@ class Base(models.Model):
         bool_convert = lambda value: value == '1'
         char_convert = lambda value: value or ''
         null_convert = lambda value: value or None
+        point_convert = lambda value: value or 0.0
 
         def default_convert(field):
             def get_value_or_default(value):
@@ -184,6 +204,7 @@ class Base(models.Model):
         val_map = dict()
         m2m_map = dict()
         name_map = dict()
+        point_map = dict()
         for csv_name, field_pattern in cls._column_map:
             # Separate the local field name from foreign columns
             if '__' in field_pattern:
@@ -193,10 +214,18 @@ class Base(models.Model):
             # Use the field name in the name mapping
             name_map[csv_name] = field_name
 
+            # Is it a point field?
+            point_match = re_point.match(field_name)
+            if point_match:
+                field = None
+            else:
+                field = cls._meta.get_field_by_name(field_name)[0]
+
             # Pick a conversion function for the field
-            field = cls._meta.get_field_by_name(field_name)[0]
             is_m2m = False
-            if isinstance(field, models.DateField):
+            if point_match:
+                converter = point_convert
+            elif isinstance(field, models.DateField):
                 converter = date_convert
             elif isinstance(field, models.BooleanField):
                 converter = bool_convert
@@ -214,6 +243,9 @@ class Base(models.Model):
 
             if is_m2m:
                 m2m_map[csv_name] = converter
+            elif point_match:
+                index = int(point_match.group('index'))
+                point_map[csv_name] = (index, converter)
             else:
                 val_map[csv_name] = converter
 
@@ -222,6 +254,7 @@ class Base(models.Model):
         for row in reader:
             fields = dict()
             m2ms = dict()
+            point_coords = [None, None]
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
             for column_name, value in row.items():
@@ -232,9 +265,16 @@ class Base(models.Model):
                             ' %s' % (column_name, row, name_map.keys()))
                 elif column_name in val_map:
                     fields[name_map[column_name]] = val_map[column_name](value)
-                else:
-                    assert column_name in m2m_map
+                elif column_name in m2m_map:
                     m2ms[name_map[column_name]] = m2m_map[column_name](value)
+                else:
+                    assert column_name in point_map
+                    pos, converter = point_map[column_name]
+                    point_coords[pos] = converter(value)
+            if point_map:
+                assert point_coords[0] and point_coords[1]
+                fields['point'] = "POINT(%s)" % (' '.join(point_coords))
+
             if m2ms:
                 obj, created = cls.objects.get_or_create(**fields)
                 for field_name, value in m2ms.items():

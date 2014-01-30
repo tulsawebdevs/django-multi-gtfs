@@ -19,7 +19,7 @@ from django.db import models
 
 try:
     from south.modelsinspector import add_introspection_rules
-except ImportError:
+except ImportError:  # pragma: no cover
     # south is not required
     pass
 else:

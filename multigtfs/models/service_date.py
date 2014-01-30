@@ -66,9 +66,7 @@ the calendar_dates.txt file to add the holiday to the holiday service_id and to
 remove the holiday from the regular service_id schedule.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class ServiceDate(Base):

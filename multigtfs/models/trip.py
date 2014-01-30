@@ -84,9 +84,7 @@ is referenced from the shapes.txt file. The shapes.txt file allows you to
 define how a line should be drawn on the map to represent a trip.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Trip(Base):

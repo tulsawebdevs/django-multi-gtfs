@@ -15,7 +15,7 @@
 
 from zipfile import ZipFile
 
-from django.db import models
+from django.contrib.gis.db import models
 
 from agency import Agency
 from fare import Fare
