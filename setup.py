@@ -15,10 +15,14 @@
 # limitations under the License.
 
 from setuptools import setup, find_packages
+import os
+
+def read(*paths):
+    with open(os.path.join(*paths), 'r') as f:
+        return f.read()
 
 # Get the version from __init__.py
-__version__ = None
-execfile('multigtfs/__init__.py')  # Should redefine __version__
+from multigtfs import __version__
 
 setup(
     name='multigtfs',
@@ -43,16 +47,8 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    long_description="""\
-General Transit Feed Specification (GTFS) as a Django app
----------------------------------------------------------
-
-multigtfs supports importing and exporting of GTFS feeds.  All features of the
-June 20, 2012 reference are supported. See
-https://developers.google.com/transit/gtfs/reference for more information.
-
-multigtfs is designed to allow multiple feeds to be stored in the database
-at once.
-
-"""
+    long_description=(
+        read('README.rst') + '\n\n' +
+        read('CHANGELOG.rst') + '\n\n' +
+        read('AUTHORS.rst'))
 )
