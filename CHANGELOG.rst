@@ -5,8 +5,10 @@ Changelog
 ------------------
 This release was sponsored by MRCagney_.
 
-* Convert to GeoDjango support
-
+* Convert to GeoDjango: Stops and ShapePoints use Points rather than lat/long,
+  admin shows map of points, and new configuration settings to customize.
+* Import south in try/except blocks (so that South really is optional).
+* Django 1.5 or above is now required.
 
 0.2.6 (2013-06-07)
 ------------------
