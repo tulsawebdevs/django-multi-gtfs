@@ -27,7 +27,7 @@ from multigtfs import __version__
 setup(
     name='multigtfs',
     version=__version__,
-    description='General Transit Feed Specification (GTFS) as Django app',
+    description='General Transit Feed Specification (GTFS) as a Django app',
     author='John Whitlock',
     author_email='John-Whitlock@ieee.org',
     license='Apache License 2.0',
@@ -36,6 +36,7 @@ setup(
     install_requires=['Django>=1.5'],
     keywords='django gtfs',
     test_suite = "run_tests",
+    zip_safe=True,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",

@@ -1,4 +1,4 @@
 include *.py
 graft multigtfs/tests/fixtures/
 include *.rst
-
+include COPYING.txt

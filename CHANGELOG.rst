@@ -4,6 +4,7 @@ Changelog
 0.3.0 (2014-02-01)
 ------------------
 This release was sponsored by MRCagney_.
+
 * Convert to GeoDjango support
 
 
