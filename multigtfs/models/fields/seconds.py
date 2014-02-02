@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
 "Define model and field to represent time of day in GTFS feeds"
 
 from django.db import models
-from south.modelsinspector import add_introspection_rules
 
-add_introspection_rules(
-    [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
+try:
+    from south.modelsinspector import add_introspection_rules
+except ImportError:  # pragma: no cover
+    # south is not required
+    pass
+else:
+    # Let south know how to create a SecondsField
+    add_introspection_rules(
+        [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
 
 
 class Seconds(object):

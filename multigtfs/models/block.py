@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from django.db import models
+
+from multigtfs.models.base import models, Base
 
 
-class Block(models.Model):
+class Block(Base):
     """Represents a fare zone.
 
     This data is not represented as a file in the GTFS.  It appears as an
@@ -33,5 +34,3 @@ class Block(models.Model):
     class Meta:
         db_table = 'block'
         app_label = 'multigtfs'
-
-    _rel_to_feed = 'feed'

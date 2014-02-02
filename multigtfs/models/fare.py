@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,9 +62,7 @@ you intend to use this field to indicate ticket validity, transfer_duration
 should be omitted or empty when transfers is set to 0.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Fare(Base):

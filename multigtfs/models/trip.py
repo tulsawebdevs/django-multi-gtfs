@@ -1,5 +1,5 @@
 #
-# Copyright 2012 John Whitlock
+# Copyright 2012-2014 John Whitlock
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,9 +84,7 @@ is referenced from the shapes.txt file. The shapes.txt file allows you to
 define how a line should be drawn on the map to represent a trip.
 """
 
-from django.db import models
-
-from multigtfs.models.base import Base
+from multigtfs.models.base import models, Base
 
 
 class Trip(Base):
