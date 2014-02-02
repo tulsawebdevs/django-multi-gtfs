@@ -33,8 +33,9 @@ setup(
     license='Apache License 2.0',
     url='https://github.com/tulsawebdevs/django-multi-gtfs',
     packages=find_packages(),
-    install_requires=['Django>=1.3'],
+    install_requires=['Django>=1.5'],
     keywords='django gtfs',
+    test_suite = "run_tests",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Environment :: Web Environment",

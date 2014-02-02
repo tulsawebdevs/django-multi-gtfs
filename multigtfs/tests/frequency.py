@@ -14,6 +14,7 @@
 # limitations under the License.
 
 from datetime import date
+from json import loads
 import StringIO
 
 from django.core.serializers import serialize
@@ -107,9 +108,14 @@ STBA,05:00:00,25:00:00,1800
         Frequency.objects.create(
             trip=self.trip, start_time='05:00', end_time='25:00',
             headway_secs=1800)
-        json = serialize('json', Frequency.objects.all())
-        self.assertEqual(
-            json,
-            '[{"pk": 1, "model": "multigtfs.frequency",'
-            ' "fields": {"exact_times": "", "start_time": "05:00:00",'
-            ' "headway_secs": 1800, "trip": 1, "end_time": "25:00:00"}}]')
+        actual = loads(serialize('json', Frequency.objects.all()))
+        expected = [{
+            "pk": 1,
+            "model": "multigtfs.frequency",
+            "fields": {
+                "exact_times": "",
+                "start_time": "05:00:00",
+                "headway_secs": 1800,
+                "trip": 1,
+                "end_time": "25:00:00"}}]
+        self.assertEqual(expected, actual)
