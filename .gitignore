@@ -7,3 +7,5 @@
 /htmlcov/*
 *.swp
 .tox
+examples/explore/db.sqlite3
+examples/explore/exploreproj/local_settings.py
