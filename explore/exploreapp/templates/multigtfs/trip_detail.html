@@ -1,0 +1,25 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Trip {{object}}{% endblock %}
+{% block page_title %}Trip {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Trip</strong> is a single run of a Route
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>route</dt><dd><a href="{% url 'route_detail' feed_id=object.route.feed_id pk=object.route_id %}">Route {{object.route}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>trip_id</dt><dd>{{object.trip_id|default:'<em>Not set</em>'}}</dd>
+    <dt>headsign</dt><dd>{{object.headsign|default:'<em>Not set</em>'}}</dd>
+    <dt>short_name</dt><dd>{{object.short_name|default:'<em>Not set</em>'}}</dd>
+    <dt>direction</dt><dd>{{object.get_direction_display|default:'<em>Not set</em>'}}</dd>
+    <dt>block</dt><dd>{% if object.block_id %}<a href="{% url 'block_detail' feed_id=object.id pk=object.block_id %}">Block {{object.block}}</a>{% else %}<em>No Block</em>{% endif %}</dd>
+    <dt>shape</dt><dd>{% if object.shape_id %}<a href="{% url 'shape_detail' feed_id=object.id pk=object.shape_id %}">Shape {{object.shape}}</a>{% else %}<em>No Shape</em>{% endif %}</dd>
+</dl>
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'service_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.services.count}} Service{{ object.services.count|pluralize }}</a></li>
+    <li><a href="{% url 'frequency_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.frequency_set.count}} Frequenc{{ object.frequency_set.count|pluralize:"y,ies" }}</a></li>
+    <li><a href="{% url 'stoptime_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.stoptime_set.count}} StopTime{{ object.stoptime_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}

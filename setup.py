@@ -16,13 +16,14 @@
 
 from setuptools import setup, find_packages
 import os
+# Get the version from __init__.py
+from multigtfs import __version__
+
 
 def read(*paths):
     with open(os.path.join(*paths), 'r') as f:
         return f.read()
 
-# Get the version from __init__.py
-from multigtfs import __version__
 
 setup(
     name='multigtfs',
@@ -35,7 +36,7 @@ setup(
     packages=find_packages(),
     install_requires=['Django>=1.5'],
     keywords='django gtfs',
-    test_suite = "run_tests",
+    test_suite="run_tests",
     zip_safe=True,
     classifiers=[
         "Development Status :: 4 - Beta",

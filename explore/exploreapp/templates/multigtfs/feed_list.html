@@ -1,0 +1,19 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Feeds{% endblock %}
+{% block nav_feed_active_class %} class="active"{% endblock %}
+{% block page_title %}Feeds{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Feed</strong> represents a single GTFS feed.
+{% endblock %}
+{% block page_middle_content %}
+{% for feed in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'feed_detail' pk=feed.pk %}">Feed {{ feed }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No feeds yet.</em></p>
+{% endfor %}
+<br/>
+<p>To add a feed, use:</p>
+<pre>./manage.py importgtfs --name "Feed Name" /path/to/feed.zip</pre>
+{% endblock %}

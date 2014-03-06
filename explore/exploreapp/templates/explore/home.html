@@ -1,0 +1,13 @@
+{% extends "multigtfs/base.html" %}
+{% block nav_home_active_class %} class="active"{% endblock %}
+{% block page_title %}Explore{% endblock %}
+{% block page_top_content_elem %}
+This is an example project to demonstrate how to use django-multi-gtfs
+in your own project.
+{% endblock %}
+{% block page_middle_content %}
+<p class="text-center">
+  <a href="{% url 'feed_list' %}"   class="btn btn-primary" role="button">Feed List</a>
+  <a href="{% url 'admin:index' %}" class="btn btn-primary" role="button">Admin</a>
+</p>
+{% endblock %}

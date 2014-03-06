@@ -1,0 +1,20 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - FareRules{% endblock %}
+{% block page_title %}FareRules{% endblock %}
+{% block page_top_content_elem %}
+A <strong>FareRule</strong> is the intersection between a Fare and a Route.
+{% endblock %}
+{% block page_middle_content %}
+{% if route %}
+<p>FareRules for <a href="{% url 'route_detail' feed_id=feed_id pk=route.pk %}">Route {{route}}</a></p>
+{% elif fare %}
+<p>FareRules for <a href="{% url 'fare_detail' feed_id=feed_id pk=fare.pk %}">Fare {{fare}}</a></p>
+{% endif %}
+{% for farerule in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'farerule_detail' feed_id=feed_id pk=farerule.pk %}">FareRule {{ farerule }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No farerules yet.</em></p>
+{% endfor %}
+{% endblock %}
