@@ -3,7 +3,7 @@ Changelog
 
 0.3.0 (2014-02-01)
 ------------------
-This release was sponsored by MRCagney_.
+This release was generously sponsored by MRCagney.
 
 * Convert to GeoDjango: Stops and ShapePoints use Points rather than lat/long,
   admin shows map of points, and new configuration settings to customize.
@@ -30,5 +30,3 @@ This release was sponsored by MRCagney_.
 ------------------
 * Fixed Fare.transfers for unlimited rides (use None instead of -1)
 * First PyPi version
-
-.. _MRCagney: http://mrcagney.co.nz
