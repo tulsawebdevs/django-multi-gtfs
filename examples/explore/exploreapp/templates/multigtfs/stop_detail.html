@@ -1,10 +1,16 @@
 {% extends "multigtfs/base.html" %}
+{% load staticfiles %}
 {% block head_title %}{{ block.super }} - Stop {{object}}{% endblock %}
+{% block head_extra %}
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="{% static 'js/explore.js' %}"></script>
+{% endblock %}
 {% block page_title %}Stop {{object}}{% endblock %}
 {% block page_top_content_elem %}
 A <strong>Stop</strong> is a stop or station in the schedule.
 {% endblock %}
 {% block page_middle_content %}
+<div class="row" style="height:300px" id="map"></div>
 <h2>Attributes</h2>
 <dl>
     <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
@@ -24,4 +30,9 @@ A <strong>Stop</strong> is a stop or station in the schedule.
 <ul>
     <li><a href="{% url 'stoptime_by_stop_list' feed_id=object.id stop_id=object.id %}">{{object.stoptime_set.count}} StopTime{{ object.stoptime_set.count|pluralize }}</a></li>
 </ul>
+{% endblock %}
+{% block body_script %}
+<script defer="defer" type="text/javascript">
+  explore.mapPoint('map', {{object.point.x}}, {{object.point.y}}, 16);
+</script>
 {% endblock %}
