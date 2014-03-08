@@ -95,7 +95,7 @@ class FeedInfo(Base):
         null=True, blank=True,
         help_text="Date that feed stops providing reliable data.")
     version = models.CharField(
-        max_length=20, blank=True,
+        max_length=255, blank=True,
         help_text="Version of feed.")
 
     def __unicode__(self):
