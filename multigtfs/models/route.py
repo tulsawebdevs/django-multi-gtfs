@@ -124,7 +124,7 @@ class Route(Base):
     agency = models.ForeignKey(
         'Agency', null=True, blank=True, help_text="Agency for this route.")
     short_name = models.CharField(
-        max_length=10,
+        max_length=63,
         help_text="Short name of the route")
     long_name = models.CharField(
         max_length=255,
