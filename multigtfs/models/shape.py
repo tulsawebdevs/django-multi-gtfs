@@ -83,7 +83,6 @@ like this:
 
 import warnings
 
-from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
 from multigtfs.models.base import models, Base
 
 
@@ -108,7 +107,6 @@ class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
     point = models.PointField(
-        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
         help_text='WGS 84 latitude/longitude of shape point')
     sequence = models.IntegerField()
     traveled = models.FloatField(

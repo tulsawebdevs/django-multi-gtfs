@@ -123,7 +123,6 @@ import warnings
 import StringIO
 
 
-from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
 from multigtfs.models.base import models, Base
 
 
@@ -143,7 +142,6 @@ class Stop(Base):
         max_length=255, blank=True,
         help_text='Description of a stop.')
     point = models.PointField(
-        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
         help_text='WGS 84 latitude/longitude of stop or station')
     zone = models.ForeignKey(
         'Zone', null=True, blank=True,
