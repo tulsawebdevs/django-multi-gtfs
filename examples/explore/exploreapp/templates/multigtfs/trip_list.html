@@ -11,6 +11,8 @@ A <strong>Trip</strong> is a single run of a Route
 <p>Trips for <a href="{% url 'service_detail' feed_id=feed_id pk=service.pk %}">Service {{service}}</a></p>
 {% elif shape %}
 <p>Trips for <a href="{% url 'shape_detail' feed_id=feed_id pk=shape.pk %}">Shape {{shape}}</a></p>
+{% elif the_block %}
+<p>Trips for <a href="{% url 'block_detail' feed_id=feed_id pk=the_block.pk %}">Block {{the_block}}</a></p>
 {% endif %}
 {% for trip in object_list %}
   {% if forloop.first %}<ul>{% endif %}

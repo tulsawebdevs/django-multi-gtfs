@@ -10,7 +10,7 @@ A <strong>Route</strong> is a named route in the schedule
     <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
     <dt>id</dt><dd>{{object.id}}</dd>
     <dt>route_id</dt><dd>{{object.route_id}}</dd>
-    <dt>agency</dt><dd>{% if object.agency_id %}<a href="{% url 'agency_detail' pk=object.agency_id %}">Agency {{object.agency}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>agency</dt><dd>{% if object.agency_id %}<a href="{% url 'agency_detail' feed_id=object.feed_id pk=object.agency_id %}">Agency {{object.agency}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
     <dt>short_name</dt><dd>{{object.short_name}}</dd>
     <dt>long_name</dt><dd>{{object.long_name}}</dd>
     <dt>desc</dt><dd>{{object.desc|default:'<em>Not set</em>'}}</dd>

@@ -1,6 +1,6 @@
 from django.views.generic import ListView
 from multigtfs.models import (
-    Fare, FareRule, Feed, Frequency, Route, Service, ServiceDate, Shape,
+    Block, Fare, FareRule, Feed, Frequency, Route, Service, ServiceDate, Shape,
     ShapePoint, Stop, StopTime, Trip)
 
 
@@ -131,6 +131,19 @@ class StopTimeByTripListView(ListView):
 
     def get_queryset(self, **kwargs):
         return StopTime.objects.filter(trip=self.kwargs['trip_id'])
+
+
+class TripByBlockListView(ListView):
+    model = Trip
+
+    def get_context_data(self, **kwargs):
+        context = super(TripByBlockListView, self).get_context_data(**kwargs)
+        context['the_block'] = Block.objects.get(id=self.kwargs['block_id'])
+        context['feed_id'] = self.kwargs['feed_id']
+        return context
+
+    def get_queryset(self, **kwargs):
+        return Trip.objects.filter(block_id=self.kwargs['block_id'])
 
 
 class TripByRouteListView(ListView):
