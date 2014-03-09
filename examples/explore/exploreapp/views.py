@@ -1,7 +1,27 @@
 from django.views.generic import ListView
 from multigtfs.models import (
-    Fare, FareRule, Frequency, Route, Service, ServiceDate, Shape, ShapePoint,
-    Stop, StopTime, Trip)
+    Fare, FareRule, Feed, Frequency, Route, Service, ServiceDate, Shape,
+    ShapePoint, Stop, StopTime, Trip)
+
+
+class ByFeedListView(ListView):
+    by_col = 'feed_id'
+    by_kwarg = 'feed_id'
+    by_class = Feed
+    by_classname = 'feed'
+
+    def get_context_data(self, **kwargs):
+        context = super(ByFeedListView, self).get_context_data(
+            **kwargs)
+        context[self.by_classname] = self.by_class.objects.get(
+            id=self.kwargs[self.by_kwarg])
+        context['feed_id'] = self.kwargs['feed_id']
+        return context
+
+    def get_queryset(self, **kwargs):
+        q_filter = {self.by_col: self.kwargs[self.by_kwarg]}
+        qset = super(ByFeedListView, self).get_queryset(**kwargs)
+        return qset.filter(**q_filter)
 
 
 class FareRuleByFareListView(ListView):
