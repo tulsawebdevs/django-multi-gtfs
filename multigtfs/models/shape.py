@@ -83,6 +83,8 @@ like this:
 
 import warnings
 
+from django.contrib.gis.geos import LineString
+
 from multigtfs.models.base import models, Base
 
 
@@ -92,9 +94,21 @@ class Shape(Base):
     shape_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a shape.")
+    geometry = models.LineStringField(
+        null=True, blank=True,
+        help_text='Geometry cache of ShapePoints')
 
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.shape_id)
+
+    def update_geometry(self):
+        """Update the geometry from the related ShapePoints"""
+        original = self.geometry
+        points = self.points.values_list('point', flat=True)
+        if len(points) > 1:
+            self.geometry = LineString([pt.coords for pt in points])
+            if self.geometry != original:
+                self.save()
 
     class Meta:
         db_table = 'shape'
@@ -139,6 +153,11 @@ class ShapePoint(Base):
     lat = property(getlat, setlat, doc="WGS 84 latitude of shape point")
 
     def __init__(self, *args, **kwargs):
+        """Initialize a ShapePoint
+
+        If the legacy lat and lon params are used, then warn and initialize
+        the point from them.
+        """
         lat = kwargs.pop('lat', None)
         lon = kwargs.pop('lon', None)
         if lat is not None or lon is not None:
@@ -146,7 +165,24 @@ class ShapePoint(Base):
             msg = "Setting ShapePoint location with lat and lon is deprecated"
             warnings.warn(msg, DeprecationWarning)
             kwargs['point'] = "POINT(%s %s)" % (lon or 0.0, lat or 0.0)
+
         super(ShapePoint, self).__init__(*args, **kwargs)
+        self.__original_point = self.point
+
+    def save(self, update_geometry=True, update_fields=None, *args, **kwargs):
+        """Save the ShapePoint to the database
+
+        If update_geometry is True (default) and the point has changed, then
+        update the geometry in the parent Shape.
+        """
+        super(ShapePoint, self).save(*args, **kwargs)
+        update_fields = kwargs.get('update_fields', None)
+        update_geometry = kwargs.get('update_geometry', True)
+        point_written = update_fields is None or 'point' in update_fields
+        point_changed = self.point != self.__original_point
+        if point_written and point_changed and update_geometry:
+            self.shape.update_geometry()
+            self.__original_point = self.point
 
     class Meta:
         db_table = 'shape_point'
@@ -161,3 +197,4 @@ class ShapePoint(Base):
     )
     _rel_to_feed = 'shape__feed'
     _sort_order = ('shape__shape_id', 'sequence')
+    __original_point = None

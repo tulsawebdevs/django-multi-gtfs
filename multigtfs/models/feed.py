@@ -84,6 +84,11 @@ class Feed(models.Model):
                     table = z.open(f)
                     klass.import_txt(table, self)
 
+        # Update geometries
+        # TODO: Add test feed that includes shapes (issue #20)
+        for shape in self.shape_set.all():  # pragma: no cover
+            shape.update_geometry()
+
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed
 

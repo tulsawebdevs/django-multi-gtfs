@@ -63,10 +63,10 @@ S1,36.425288,-117.133162,1
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
+        self.assertEqual(shape.geometry, None)
         shape_pt = ShapePoint.objects.get()
         self.assertEqual(shape_pt.shape, shape)
-        self.assertEqual(str(shape_pt.lat), '36.425288')
-        self.assertEqual(str(shape_pt.lon), '-117.133162')
+        self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
         self.assertEqual(shape_pt.sequence, 1)
         self.assertEqual(shape_pt.traveled, None)
 
@@ -79,12 +79,28 @@ S1,36.425288,-117.133162,1,0
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
+        self.assertEqual(shape.geometry, None)
         shape_pt = ShapePoint.objects.get()
         self.assertEqual(shape_pt.shape, shape)
-        self.assertEqual(str(shape_pt.lat), '36.425288')
-        self.assertEqual(str(shape_pt.lon), '-117.133162')
+        self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
         self.assertEqual(shape_pt.sequence, 1)
         self.assertEqual(shape_pt.traveled, 0)
+
+    def test_update_geometry(self):
+        self.test_import_shape_maximal()
+        shape = Shape.objects.get()
+        self.assertEqual(shape.geometry, None)
+        ShapePoint.objects.create(
+            shape=shape, point='POINT(-117.14 36.43)', sequence=2)
+        shape.update_geometry()
+        self.assertEqual(
+            shape.geometry.coords,
+            ((-117.133162, 36.425288), (-117.14, 36.43)))
+        # Branch testing - update_geometry does not save
+        shape.update_geometry()
+        self.assertEqual(
+            shape.geometry.coords,
+            ((-117.133162, 36.425288), (-117.14, 36.43)))
 
     def test_import_shape_traveled_omitted(self):
         shape_txt = StringIO.StringIO("""\
@@ -95,10 +111,10 @@ S1,36.425288,-117.133162,1,
         shape = Shape.objects.get()
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
+        self.assertEqual(shape.geometry, None)
         shape_pt = ShapePoint.objects.get()
         self.assertEqual(shape_pt.shape, shape)
-        self.assertEqual(str(shape_pt.lat), '36.425288')
-        self.assertEqual(str(shape_pt.lon), '-117.133162')
+        self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
         self.assertEqual(shape_pt.sequence, 1)
         self.assertEqual(shape_pt.traveled, None)
 
