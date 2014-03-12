@@ -84,6 +84,8 @@ like this:
 import warnings
 
 from django.contrib.gis.geos import LineString
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from multigtfs.models.base import models, Base
 
@@ -169,22 +171,6 @@ class ShapePoint(Base):
             kwargs['point'] = "POINT(%s %s)" % (lon or 0.0, lat or 0.0)
 
         super(ShapePoint, self).__init__(*args, **kwargs)
-        self.__original_point = self.point
-
-    def save(self, *args, **kwargs):
-        """Save the ShapePoint to the database
-
-        If update_geometry is True (default) and the point has changed, then
-        update the geometry in the parent Shape.
-        """
-        super(ShapePoint, self).save(*args, **kwargs)
-        update_fields = kwargs.get('update_fields', None)
-        update_geometry = kwargs.get('update_geometry', True)
-        point_written = update_fields is None or 'point' in update_fields
-        point_changed = self.point != self.__original_point
-        if point_written and point_changed and update_geometry:
-            self.shape.update_geometry()
-            self.__original_point = self.point
 
     class Meta:
         db_table = 'shape_point'
@@ -199,4 +185,9 @@ class ShapePoint(Base):
     )
     _rel_to_feed = 'shape__feed'
     _sort_order = ('shape__shape_id', 'sequence')
-    __original_point = None
+
+
+@receiver(post_save, sender=ShapePoint, dispatch_uid="post_save_shapepoint")
+def post_save_shapepoint(sender, instance, **kwargs):
+    '''Update related objects when the ShapePoint is updated'''
+    instance.shape.update_geometry()

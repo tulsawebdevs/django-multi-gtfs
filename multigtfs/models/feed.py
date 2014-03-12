@@ -16,6 +16,7 @@
 from zipfile import ZipFile
 
 from django.contrib.gis.db import models
+from django.db.models.signals import post_save
 
 from agency import Agency
 from fare import Fare
@@ -25,7 +26,7 @@ from frequency import Frequency
 from route import Route
 from service import Service
 from service_date import ServiceDate
-from shape import ShapePoint
+from shape import ShapePoint, post_save_shapepoint
 from stop import Stop
 from stop_time import StopTime
 from transfer import Transfer
@@ -78,11 +79,15 @@ class Feed(models.Model):
             ('feed_info.txt', FeedInfo),
         )
 
-        for table_name, klass in gtfs_order:
-            for f in files:
-                if f.endswith(table_name):
-                    table = z.open(f)
-                    klass.import_txt(table, self)
+        post_save.disconnect(dispatch_uid='post_save_shapepoint')
+        try:
+            for table_name, klass in gtfs_order:
+                for f in files:
+                    if f.endswith(table_name):
+                        table = z.open(f)
+                        klass.import_txt(table, self)
+        finally:
+            post_save.connect(post_save_shapepoint, sender=ShapePoint)
 
         # Update geometries
         # TODO: Add test feed that includes shapes (issue #20)
