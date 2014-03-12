@@ -19,7 +19,8 @@ class Migration(DataMigration):
                 shape.save()
 
     def backwards(self, orm):
-        pass  # Geometry field will be dropped
+        GeoManager().contribute_to_class(orm.Shape, "objects")
+        orm.Shape.objects.update(geometry=None)
 
     models = {
         'multigtfs.agency': {
