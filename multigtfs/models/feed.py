@@ -27,7 +27,7 @@ from route import Route
 from service import Service
 from service_date import ServiceDate
 from shape import ShapePoint, post_save_shapepoint
-from stop import Stop
+from stop import Stop, post_save_stop
 from stop_time import StopTime
 from transfer import Transfer
 from trip import Trip
@@ -80,6 +80,7 @@ class Feed(models.Model):
         )
 
         post_save.disconnect(dispatch_uid='post_save_shapepoint')
+        post_save.disconnect(dispatch_uid='post_save_stop')
         try:
             for table_name, klass in gtfs_order:
                 for f in files:
@@ -88,6 +89,7 @@ class Feed(models.Model):
                         klass.import_txt(table, self)
         finally:
             post_save.connect(post_save_shapepoint, sender=ShapePoint)
+            post_save.connect(post_save_stop, sender=Stop)
 
         # Update geometries
         # TODO: Add test feed that includes shapes (issue #20)

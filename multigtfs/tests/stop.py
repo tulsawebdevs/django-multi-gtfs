@@ -17,7 +17,7 @@ import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Feed, Stop, Zone
+from multigtfs.models import Feed, Route, Stop, StopTime, Trip, Zone
 
 
 class StopTest(TestCase):
@@ -164,3 +164,26 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
 stop_id,stop_name,stop_lat,stop_lon
 6071,The Delta Caf\xc2\x82,36.114554,-95.975834
 """)
+
+    def test_update_geometry_on_stop_save(self):
+        route = Route.objects.create(feed=self.feed, rtype=3)
+        trip = Trip.objects.create(route=route)
+        s1 = Stop.objects.create(
+            feed=self.feed, point="POINT(-117.133162 36.425288)")
+        s2 = Stop.objects.create(
+            feed=self.feed, point="POINT(-117.13 36.42)")
+        StopTime.objects.create(stop=s1, trip=trip, stop_sequence=1)
+        StopTime.objects.create(stop=s2, trip=trip, stop_sequence=2)
+
+        # Starts unset
+        trip = Trip.objects.get(id=trip.id)
+        self.assertFalse(trip.geometry)
+
+        # Stop save
+        s1.save()
+
+        # Now set
+        trip = Trip.objects.get(id=trip.id)
+        self.assertEqual(
+            trip.geometry.coords,
+            ((-117.133162, 36.425288), (-117.13, 36.42)))
