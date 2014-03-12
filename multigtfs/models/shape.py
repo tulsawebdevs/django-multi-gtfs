@@ -103,7 +103,7 @@ class Shape(Base):
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.shape_id)
 
-    def update_geometry(self):
+    def update_geometry(self, update_parent=True):
         """Update the geometry from the related ShapePoints"""
         original = self.geometry
         points = self.points.values_list('point', flat=True)
@@ -111,8 +111,9 @@ class Shape(Base):
             self.geometry = LineString([pt.coords for pt in points])
             if self.geometry != original:
                 self.save()
-                for trip in self.trip_set.all():
-                    trip.update_geometry()
+                if update_parent:
+                    for trip in self.trip_set.all():
+                        trip.update_geometry()
 
     class Meta:
         db_table = 'shape'

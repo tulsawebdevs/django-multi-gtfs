@@ -94,7 +94,11 @@ class Feed(models.Model):
         # Update geometries
         # TODO: Add test feed that includes shapes (issue #20)
         for shape in self.shape_set.all():  # pragma: no cover
-            shape.update_geometry()
+            shape.update_geometry(update_parent=False)
+        for trip in Trip.objects.in_feed(self):
+            trip.update_geometry(update_parent=False)
+        for route in self.route_set.all():
+            route.update_geometry()
 
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed

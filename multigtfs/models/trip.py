@@ -117,7 +117,7 @@ class Trip(Base):
         null=True, blank=True,
         help_text='Geometry cache of Shape or Stops')
 
-    def update_geometry(self):
+    def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""
         original = self.geometry
         if self.shape:
@@ -129,7 +129,8 @@ class Trip(Base):
                     [st.stop.point.coords for st in stoptimes])
         if self.geometry != original:
             self.save()
-            self.route.update_geometry()
+            if update_parent:
+                self.route.update_geometry()
 
     def __unicode__(self):
         return u"%s-%s" % (self.route, self.trip_id)
