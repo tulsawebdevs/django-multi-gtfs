@@ -17,7 +17,7 @@ import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Feed, Agency, Route
+from multigtfs.models import Feed, Agency, Route, Trip
 
 
 class RouteTest(TestCase):
@@ -95,3 +95,26 @@ route_url,route_color,route_text_color
 AB,DTA,10,Airport - Bullfrog,Our Airport Route,3,http://example.com,\
 00FFFF,000000
 """)
+
+    def test_update_geometry_no_trips(self):
+        route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
+        self.assertFalse(route.geometry)
+        route.update_geometry()
+        self.assertFalse(route.geometry)
+
+    def test_update_geometry_1_trip(self):
+        route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 3)')
+        self.assertFalse(route.geometry)
+        route.update_geometry()
+        self.assertEqual(route.geometry.coords, (((1.0, 2.0), (1.0, 3.0)),))
+
+    def test_update_geometry_no_change(self):
+        # For code coverage
+        route = Route.objects.create(
+            feed=self.feed, route_id='RTEST', rtype=3,
+            geometry='MULTILINESTRING((1 2, 1 3))')
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 3)')
+        self.assertEqual(route.geometry.coords, (((1.0, 2.0), (1.0, 3.0)),))
+        route.update_geometry()
+        self.assertEqual(route.geometry.coords, (((1.0, 2.0), (1.0, 3.0)),))

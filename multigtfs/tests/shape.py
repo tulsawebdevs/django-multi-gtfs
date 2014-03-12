@@ -15,6 +15,7 @@
 
 import StringIO
 
+from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
 
 from multigtfs.models import Feed, Route, Shape, ShapePoint, Trip
@@ -138,7 +139,9 @@ S1,36.425288,-117.133162,1,1.1
 
         shape = Shape.objects.get(id=shape.id)
         trip = Trip.objects.get(id=trip.id)
+        route = Route.objects.get(id=route.id)
         self.assertEqual(
             shape.geometry.coords,
             ((-117.133162, 36.425288), (-117.13, 36.42)))
         self.assertEqual(trip.geometry, shape.geometry)
+        self.assertEqual(route.geometry, MultiLineString(shape.geometry))

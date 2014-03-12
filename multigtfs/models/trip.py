@@ -129,6 +129,7 @@ class Trip(Base):
                     [st.stop.point.coords for st in stoptimes])
         if self.geometry != original:
             self.save()
+            self.route.update_geometry()
 
     def __unicode__(self):
         return u"%s-%s" % (self.route, self.trip_id)

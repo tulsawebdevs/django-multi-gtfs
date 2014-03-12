@@ -15,6 +15,7 @@
 
 import StringIO
 
+from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
 
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip, Zone
@@ -177,6 +178,7 @@ stop_id,stop_name,stop_lat,stop_lon
 
         # Starts unset
         trip = Trip.objects.get(id=trip.id)
+        route = Route.objects.get(id=route.id)
         self.assertFalse(trip.geometry)
 
         # Stop save
@@ -184,6 +186,8 @@ stop_id,stop_name,stop_lat,stop_lon
 
         # Now set
         trip = Trip.objects.get(id=trip.id)
+        route = Route.objects.get(id=route.id)
         self.assertEqual(
             trip.geometry.coords,
             ((-117.133162, 36.425288), (-117.13, 36.42)))
+        self.assertEqual(route.geometry, MultiLineString(trip.geometry))
