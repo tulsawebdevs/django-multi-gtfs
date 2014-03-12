@@ -110,6 +110,7 @@ specified, the default text color is black (000000).
 The color difference between route_color and route_text_color should provide
 sufficient contrast when viewed on a black and white screen.
 """
+from django.contrib.gis.geos import MultiLineString
 
 from multigtfs.models.base import models, Base
 
@@ -124,7 +125,7 @@ class Route(Base):
     agency = models.ForeignKey(
         'Agency', null=True, blank=True, help_text="Agency for this route.")
     short_name = models.CharField(
-        max_length=10,
+        max_length=63,
         help_text="Short name of the route")
     long_name = models.CharField(
         max_length=255,
@@ -150,6 +151,17 @@ class Route(Base):
     text_color = models.CharField(
         max_length=6, blank=True,
         help_text="Color of route text in hex")
+    geometry = models.MultiLineStringField(
+        null=True, blank=True,
+        help_text='Geometry cache of Trips')
+
+    def update_geometry(self):
+        """Update the geometry from the Trips"""
+        original = self.geometry
+        trips = self.trip_set.exclude(geometry=None)
+        self.geometry = MultiLineString([t.geometry for t in trips])
+        if self.geometry != original:
+            self.save()
 
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.route_id)

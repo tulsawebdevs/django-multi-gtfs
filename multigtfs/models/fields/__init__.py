@@ -25,5 +25,4 @@ except ImportError:  # pragma: no cover
     # south is not required
     pass
 else:
-    add_introspection_rules(
-        [], ['^django\.contrib\.gis\.db\.models\.fields\.PointField'])
+    add_introspection_rules([], ['^django\.contrib\.gis'])

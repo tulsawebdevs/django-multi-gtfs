@@ -1,0 +1,25 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Feed {{object}}{% endblock %}
+{% block page_title %}Feed {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Feed</strong> represents a single GTFS feed.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>name</dt><dd>{{object.name}}</dd>
+    <dt>created</dt><dd>{{object.created}}</dd>
+</dl>
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'agency_list' feed_id=object.id %}">{{feed.agency_set.count}} Agenc{{ feed.agency_set.count|pluralize:"y,ies"}}</a></li>
+    <li><a href="{% url 'stop_list' feed_id=object.id %}">{{feed.stop_set.count}} Stop{{ feed.stop_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'route_list' feed_id=object.id %}">{{feed.route_set.count}} Route{{ feed.route_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'service_list' feed_id=object.id %}">{{feed.service_set.count}} Service{{ feed.service_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'shape_list' feed_id=object.id %}">{{feed.shape_set.count}} Shape{{ feed.shape_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'fare_list' feed_id=object.id %}">{{feed.fare_set.count}} Fare{{ feed.fare_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'feedinfo_list' feed_id=object.id %}">{{feed.feedinfo_set.count}} FeedInfo{{ feed.feedinfo_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'zone_list' feed_id=object.id %}">{{feed.zone_set.count}} Zone{{ feed.zone_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}

@@ -16,6 +16,7 @@
 from zipfile import ZipFile
 
 from django.contrib.gis.db import models
+from django.db.models.signals import post_save
 
 from agency import Agency
 from fare import Fare
@@ -25,8 +26,8 @@ from frequency import Frequency
 from route import Route
 from service import Service
 from service_date import ServiceDate
-from shape import ShapePoint
-from stop import Stop
+from shape import ShapePoint, post_save_shapepoint
+from stop import Stop, post_save_stop
 from stop_time import StopTime
 from transfer import Transfer
 from trip import Trip
@@ -78,11 +79,26 @@ class Feed(models.Model):
             ('feed_info.txt', FeedInfo),
         )
 
-        for table_name, klass in gtfs_order:
-            for f in files:
-                if f.endswith(table_name):
-                    table = z.open(f)
-                    klass.import_txt(table, self)
+        post_save.disconnect(dispatch_uid='post_save_shapepoint')
+        post_save.disconnect(dispatch_uid='post_save_stop')
+        try:
+            for table_name, klass in gtfs_order:
+                for f in files:
+                    if f.endswith(table_name):
+                        table = z.open(f)
+                        klass.import_txt(table, self)
+        finally:
+            post_save.connect(post_save_shapepoint, sender=ShapePoint)
+            post_save.connect(post_save_stop, sender=Stop)
+
+        # Update geometries
+        # TODO: Add test feed that includes shapes (issue #20)
+        for shape in self.shape_set.all():  # pragma: no cover
+            shape.update_geometry(update_parent=False)
+        for trip in Trip.objects.in_feed(self):
+            trip.update_geometry(update_parent=False)
+        for route in self.route_set.all():
+            route.update_geometry()
 
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed

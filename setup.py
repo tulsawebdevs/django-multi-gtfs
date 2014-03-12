@@ -15,14 +15,22 @@
 # limitations under the License.
 
 from setuptools import setup, find_packages
+from setuptools.command.test import test
 import os
+# Get the version from __init__.py
+from multigtfs import __version__
+
+
+class my_test(test):
+    def run(self):
+        import run_tests
+        run_tests.main()
+
 
 def read(*paths):
     with open(os.path.join(*paths), 'r') as f:
         return f.read()
 
-# Get the version from __init__.py
-from multigtfs import __version__
 
 setup(
     name='multigtfs',
@@ -35,7 +43,8 @@ setup(
     packages=find_packages(),
     install_requires=['Django>=1.5'],
     keywords='django gtfs',
-    test_suite = "run_tests",
+    test_suite="run_tests",  # Ignored, but makes pyroma happy
+    cmdclass={'test': my_test},
     zip_safe=True,
     classifiers=[
         "Development Status :: 4 - Beta",

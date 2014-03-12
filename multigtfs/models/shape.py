@@ -83,7 +83,10 @@ like this:
 
 import warnings
 
-from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
+from django.contrib.gis.geos import LineString
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from multigtfs.models.base import models, Base
 
 
@@ -93,9 +96,24 @@ class Shape(Base):
     shape_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a shape.")
+    geometry = models.LineStringField(
+        null=True, blank=True,
+        help_text='Geometry cache of ShapePoints')
 
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.shape_id)
+
+    def update_geometry(self, update_parent=True):
+        """Update the geometry from the related ShapePoints"""
+        original = self.geometry
+        points = self.points.values_list('point', flat=True)
+        if len(points) > 1:
+            self.geometry = LineString([pt.coords for pt in points])
+            if self.geometry != original:
+                self.save()
+                if update_parent:
+                    for trip in self.trip_set.all():
+                        trip.update_geometry()
 
     class Meta:
         db_table = 'shape'
@@ -108,7 +126,6 @@ class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
     point = models.PointField(
-        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
         help_text='WGS 84 latitude/longitude of shape point')
     sequence = models.IntegerField()
     traveled = models.FloatField(
@@ -141,6 +158,11 @@ class ShapePoint(Base):
     lat = property(getlat, setlat, doc="WGS 84 latitude of shape point")
 
     def __init__(self, *args, **kwargs):
+        """Initialize a ShapePoint
+
+        If the legacy lat and lon params are used, then warn and initialize
+        the point from them.
+        """
         lat = kwargs.pop('lat', None)
         lon = kwargs.pop('lon', None)
         if lat is not None or lon is not None:
@@ -148,6 +170,7 @@ class ShapePoint(Base):
             msg = "Setting ShapePoint location with lat and lon is deprecated"
             warnings.warn(msg, DeprecationWarning)
             kwargs['point'] = "POINT(%s %s)" % (lon or 0.0, lat or 0.0)
+
         super(ShapePoint, self).__init__(*args, **kwargs)
 
     class Meta:
@@ -163,3 +186,9 @@ class ShapePoint(Base):
     )
     _rel_to_feed = 'shape__feed'
     _sort_order = ('shape__shape_id', 'sequence')
+
+
+@receiver(post_save, sender=ShapePoint, dispatch_uid="post_save_shapepoint")
+def post_save_shapepoint(sender, instance, **kwargs):
+    '''Update related objects when the ShapePoint is updated'''
+    instance.shape.update_geometry()

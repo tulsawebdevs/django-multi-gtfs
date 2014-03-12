@@ -1,0 +1,16 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - ServiceDates{% endblock %}
+{% block page_title %}ServiceDates{% endblock %}
+{% block page_top_content_elem %}
+A <strong>ServiceDate</strong> is an exception to a Service's routine schedule
+{% endblock %}
+{% block page_middle_content %}
+<p>ServiceDates for <a href="{% url 'service_detail' feed_id=service.feed_id pk=service.pk %}">Service {{service}}</a></p>
+{% for servicedate in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'servicedate_detail' feed_id=service.feed_id pk=servicedate.pk %}">ServiceDate {{ servicedate }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No servicedates yet.</em></p>
+{% endfor %}
+{% endblock %}

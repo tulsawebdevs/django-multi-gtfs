@@ -117,13 +117,14 @@ timezone specified by agency_timezone in agency.txt. This ensures that the time
 values in a trip always increase over the course of a trip, regardless of which
 timezones the trip crosses.
 """
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from csv import DictReader, DictWriter
 import warnings
 import StringIO
 
 
-from multigtfs.app_settings import MULTIGTFS_USE_GEOGRAPHY, MULTIGTFS_SRID
 from multigtfs.models.base import models, Base
 
 
@@ -143,7 +144,6 @@ class Stop(Base):
         max_length=255, blank=True,
         help_text='Description of a stop.')
     point = models.PointField(
-        geography=MULTIGTFS_USE_GEOGRAPHY, srid=MULTIGTFS_SRID,
         help_text='WGS 84 latitude/longitude of stop or station')
     zone = models.ForeignKey(
         'Zone', null=True, blank=True,
@@ -252,3 +252,13 @@ class Stop(Base):
         if has_stops:
             super(Stop, cls).import_txt(
                 StringIO.StringIO(stops_csv.getvalue()), feed)
+
+
+@receiver(post_save, sender=Stop, dispatch_uid="post_save_stop")
+def post_save_stop(sender, instance, **kwargs):
+    '''Update related objects when the Stop is updated'''
+    from multigtfs.models.trip import Trip
+    trip_ids = instance.stoptime_set.filter(
+        trip__shape=None).values_list('trip_id', flat=True).distinct()
+    for trip in Trip.objects.filter(id__in=trip_ids):
+        trip.update_geometry()
