@@ -109,6 +109,8 @@ class Shape(Base):
             self.geometry = LineString([pt.coords for pt in points])
             if self.geometry != original:
                 self.save()
+                for trip in self.trip_set.all():
+                    trip.update_geometry()
 
     class Meta:
         db_table = 'shape'
@@ -169,7 +171,7 @@ class ShapePoint(Base):
         super(ShapePoint, self).__init__(*args, **kwargs)
         self.__original_point = self.point
 
-    def save(self, update_geometry=True, update_fields=None, *args, **kwargs):
+    def save(self, *args, **kwargs):
         """Save the ShapePoint to the database
 
         If update_geometry is True (default) and the point has changed, then

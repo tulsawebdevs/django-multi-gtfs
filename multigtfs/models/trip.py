@@ -84,6 +84,8 @@ is referenced from the shapes.txt file. The shapes.txt file allows you to
 define how a line should be drawn on the map to represent a trip.
 """
 
+from django.contrib.gis.geos import LineString
+
 from multigtfs.models.base import models, Base
 
 
@@ -111,6 +113,22 @@ class Trip(Base):
     shape = models.ForeignKey(
         'Shape', null=True, blank=True,
         help_text="Shape used for this trip")
+    geometry = models.LineStringField(
+        null=True, blank=True,
+        help_text='Geometry cache of Shape or Stops')
+
+    def update_geometry(self):
+        """Update the geometry from the Shape or Stops"""
+        original = self.geometry
+        if self.shape:
+            self.geometry = self.shape.geometry
+        else:
+            stoptimes = self.stoptime_set.order_by('stop_sequence')
+            if stoptimes.count() > 1:
+                self.geometry = LineString(
+                    [st.stop.point.coords for st in stoptimes])
+        if self.geometry != original:
+            self.save()
 
     def __unicode__(self):
         return u"%s-%s" % (self.route, self.trip_id)

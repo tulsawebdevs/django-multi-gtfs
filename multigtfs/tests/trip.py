@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from datetime import date
+from datetime import date, time
 import StringIO
 
 from django.test import TestCase
 
-from multigtfs.models import Block, Feed, Route, Service, Shape, Trip
+from multigtfs.models import (
+    Block, Feed, Route, Service, Shape, Stop, StopTime, Trip)
 
 
 class TripTest(TestCase):
@@ -141,3 +142,35 @@ route_id,service_id,trip_id
 R1,S1,T1
 R1,S2,T1
 """)
+
+    def test_update_geometry_no_shape_or_stoptime(self):
+        trip = Trip.objects.create(route=self.route, trip_id='T1')
+        trip.update_geometry()
+        self.assertEqual(trip.geometry, None)
+
+    def test_update_geometry_has_shape(self):
+        shape = Shape.objects.create(
+            feed=self.feed, shape_id='S1',
+            geometry='LINESTRING(-117.133162 36.425288, -117.14 36.43)')
+        trip = Trip.objects.create(route=self.route, trip_id='T1', shape=shape)
+        trip.update_geometry()
+        self.assertEqual(trip.geometry, shape.geometry)
+
+    def test_update_geometry_has_stoptimes(self):
+        stop1 = Stop.objects.create(
+            feed=self.feed, stop_id='STAGECOACH',
+            point="POINT(-117.133162 36.425288)")
+        stop2 = Stop.objects.create(
+            feed=self.feed, stop_id='TAVERN',
+            point="POINT(-117.14 36.43)")
+        trip = Trip.objects.create(route=self.route, trip_id='T1')
+        StopTime.objects.create(
+            trip=trip, stop=stop1, arrival_time=time(6),
+            departure_time=time(6), stop_sequence=1)
+        StopTime.objects.create(
+            trip=trip, stop=stop2, arrival_time=time(7),
+            departure_time=time(7), stop_sequence=2)
+        trip.update_geometry()
+        self.assertEqual(
+            trip.geometry.coords,
+            ((-117.133162, 36.425288), (-117.14, 36.43)))
