@@ -43,6 +43,7 @@ setup(
     packages=find_packages(),
     install_requires=['Django>=1.5'],
     keywords='django gtfs',
+    test_suite="run_tests",  # Ignored, but makes pyroma happy
     cmdclass={'test': my_test},
     zip_safe=True,
     classifiers=[

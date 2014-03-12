@@ -8,7 +8,7 @@ are supported.  It allows multiple feeds to be stored in the database at once.
 It requires a spatial databases compatible with GeoDjango_.  PostgreSQL_ 9.x
 and PostGIS_ 2.x are recommended for development and production, since these
 support all the GeoDjango features.  There are issues with GeoDjango in
-Django 1.4 (see `#20036`_), so Django 1.5 or above is recommended.
+Django 1.4 (see issue `20036`_), so Django 1.5 or above is recommended.
 
 Usage
 -----
@@ -47,6 +47,13 @@ feed and follow relations.
 There isn't separate documentation yet.  Load the app in your Django project,
 play with the admin, and read the source code to learn more.
 
+Sample Project
+++++++++++++++
+The `examples/explore` sample project demonstrates a simple read-only website
+for viewing one or more GTFS feeds.  It include OpenLayers_ maps for viewing
+the routes, trips, and shapes.  You an use it as is, or as a starting place
+for your own projects.  See the project README for more information.
+
 Project History
 ---------------
 multigtfs was first developed for the `Tulsa Web Devs`_' project to get
@@ -63,7 +70,6 @@ Future
 ------
 Upcoming features include:
 
-- A sample project
 - Validating the feed against Google's requirements
 - More documentation
 - More flexible GTFS imports and exports (longer values, extra columns)
@@ -83,4 +89,6 @@ See the `issues list`_ for more details.
 .. _`Code for Tulsa`: http://codefortulsa.org
 .. _MRCagney: http://mrcagney.co.nz
 .. _`issues list`: https://github.com/tulsawebdevs/django-multi-gtfs/issues?state=open
-.. _`#20036`: https://code.djangoproject.com/ticket/20036
+.. _20036: https://code.djangoproject.com/ticket/20036
+.. _OpenLayers: http://openlayers.org
+

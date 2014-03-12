@@ -1,6 +1,16 @@
 Changelog
 =========
 
+0.3.1 (2014-03-12)
+------------------
+This release was generously sponsored by MRCagney.
+
+* Add example project 'explore', which represents a feed as linked pages with
+  OpenLayer maps.
+* Add cached geometry for Routes, Trips, and Shapes.
+* Extend fields for real-world data (FeedInfo.version, Route.short_name).
+* Drop support for Points as geography fields.
+
 0.3.0 (2014-02-01)
 ------------------
 This release was generously sponsored by MRCagney.
@@ -30,3 +40,4 @@ This release was generously sponsored by MRCagney.
 ------------------
 * Fixed Fare.transfers for unlimited rides (use None instead of -1)
 * First PyPi version
+
