@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.3.2 (2014-03-16)
+------------------
+This release was generously sponsored by MRCagney.
+
+* Fix migration 0007 for PostGIS (issue #22)
+
 0.3.1 (2014-03-12)
 ------------------
 This release was generously sponsored by MRCagney.

@@ -70,6 +70,7 @@ Future
 ------
 Upcoming features include:
 
+- Python 3 support
 - Validating the feed against Google's requirements
 - More documentation
 - More flexible GTFS imports and exports (longer values, extra columns)
