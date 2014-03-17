@@ -10,11 +10,23 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
+        # Alter PointField for migration
+        field_type = self.gf('django.contrib.gis.db.models.fields.PointField')
+
+        def db_type_for_postgis(self, connection):
+            '''Add a USING ST_Transform for PostGIS'''
+            db_type = super(field_type, self).db_type(connection)
+            return db_type + ' USING ST_Transform(point::geometry, 4326)'
+
+        if db.backend_name == 'postgres':
+            field_type.db_type = db_type_for_postgis
+        field = field_type()
+
         # Changing field 'ShapePoint.point'
-        db.alter_column('shape_point', 'point', self.gf('django.contrib.gis.db.models.fields.PointField')())
+        db.alter_column('shape_point', 'point', field)
 
         # Changing field 'Stop.point'
-        db.alter_column('stop', 'point', self.gf('django.contrib.gis.db.models.fields.PointField')())
+        db.alter_column('stop', 'point', field)
 
     def backwards(self, orm):
 
