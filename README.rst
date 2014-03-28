@@ -3,7 +3,7 @@ multigtfs: GTFS as a Django app
 
 **multigtfs** is an `Apache 2.0`_-licensed Django app that supports importing
 and exporting of GTFS feeds.  All features of the `June 20, 2012 reference`_
-are supported, including all changes up to `February 17, 2014`.
+are supported, including `all changes`_ up to February 17, 2014.
 It allows multiple feeds to be stored in the database at once.
 
 It requires a spatial databases compatible with GeoDjango_.  PostgreSQL_ 9.x
@@ -30,6 +30,18 @@ There are two management commands to get GTFS feeds in and out of the database:
 
     ./manage.py importgtfs [--name name_of_feed] path/to/gtfsfeed.zip
     ./manage.py exportgtfs [--name basename_of_file] <feed_id>
+
+A third command will update cached geometries, used for making geo-queries at
+the shape, trip, or route level:
+
+::
+
+    ./manage.py refreshgeometries --all   # Refresh all geometries
+    ./manage.py refreshgeometries 1 2 3   # Refresh just feeds 1, 2, and 3
+
+*Note*: cached geometries are normally updated whenever the related shape
+points or stops are updated.  This command is useful for refreshing geometries
+after manual changes or after a bug fix (like the v0.3.3 update).
 
 In Code
 +++++++
@@ -80,7 +92,7 @@ See the `issues list`_ for more details.
 
 .. _`Apache 2.0`: http://choosealicense.com/licenses/apache/
 .. _`June 20, 2012 reference`: https://developers.google.com/transit/gtfs/reference
-.. _`February 17, 2014`: https://developers.google.com/transit/gtfs/changes#RevisionHistory
+.. _`all changes`: https://developers.google.com/transit/gtfs/changes#RevisionHistory
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
 .. _PostgreSQL: http://www.postgresql.org
 .. _PostGIS: http://postgis.refractions.net
