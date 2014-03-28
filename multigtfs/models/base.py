@@ -66,7 +66,7 @@ class BaseQuerySet(GeoQuerySet):
 
         Keyword Arguments:
         queryset -- A queryset with at least one record
-        csv_names -- A sequnce of (csv column, field name) pairs
+        csv_names -- A sequence of (csv column, field name) pairs
 
         A field name can follow relations, such as 'field1__subfield2'
         """
