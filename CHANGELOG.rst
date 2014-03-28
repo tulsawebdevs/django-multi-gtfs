@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.3.3 (2014-03-28)
+------------------
+* Add new optional fields (issue #23):
+    - trip.wheelchair_accessible
+    - trip.bikes_allowed
+    - stop.wheelchair_boarding
+* Route.geometry does not include duplicate Trip.geometry lines (issue #24)
+* Fix order of points in Shape.geometry (issue #25)
+* Add management command 'refreshgeometries' to refresh cached geometries
+  (useful if you were impacted by issues #24 or #25)
+
 0.3.2 (2014-03-16)
 ------------------
 This release was generously sponsored by MRCagney.
