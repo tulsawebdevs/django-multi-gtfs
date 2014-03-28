@@ -79,13 +79,14 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
         self.assertEqual(stop.location_type, '')
         self.assertEqual(stop.parent_station, None)
         self.assertEqual(stop.timezone, '')
+        self.assertEqual(stop.wheelchair_boarding, '')
 
     def test_import_stops_txt_maximal(self):
         stops_txt = StringIO.StringIO("""\
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
-location_type,parent_station,stop_timezone
+location_type,parent_station,stop_timezone,wheelchair_boarding
 FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
-http://example.com,1,,America/Los_Angeles
+http://example.com,1,,America/Los_Angeles,1
 FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
 http://example.com/fcr,0,FUR_CREEK_STA,
 FEZ_CREEK_STA,,Fez Creek Station,"Our Station",36.425288,-117.133162,A,\
@@ -108,6 +109,7 @@ http://example.com/fcr,0,FEZ_CREEK_STA,
         self.assertEqual(station.location_type, '1')
         self.assertEqual(station.parent_station, None)
         self.assertEqual(station.timezone, 'America/Los_Angeles')
+        self.assertEqual(station.wheelchair_boarding, '1')
 
         stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
         self.assertEqual(stop.code, 'FC')
@@ -144,7 +146,7 @@ http://example.com,1,,America/Los_Angeles
         stops_txt = Stop.objects.in_feed(self.feed).export_txt()
         self.assertFalse(stops_txt)
 
-    def test_export_stops_txt_minimual(self):
+    def test_export_stops_txt_minimal(self):
         Stop.objects.create(
             feed=self.feed, stop_id='FUR_CREEK_RES',
             name='Furnace Creek Resort (Demo)',

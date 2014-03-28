@@ -36,6 +36,8 @@ A <strong>Trip</strong> is a single run of a Route
     <dt>direction</dt><dd>{{object.get_direction_display|default:'<em>Not set</em>'}}</dd>
     <dt>block</dt><dd>{% if object.block_id %}<a href="{% url 'block_detail' feed_id=view.kwargs.feed_id pk=object.block_id %}">Block {{object.block}}</a>{% else %}<em>No Block</em>{% endif %}</dd>
     <dt>shape</dt><dd>{% if object.shape_id %}<a href="{% url 'shape_detail' feed_id=view.kwargs.feed_id pk=object.shape_id %}">Shape {{object.shape}}</a>{% else %}<em>No Shape</em>{% endif %}</dd>
+    <dt>wheelchair_accessible</dt><dd>{{object.get_wheelchair_accessible_display|default:'<em>Not set</em>'}}</dd>
+    <dt>bikes_allowed</dt><dd>{{object.get_bikes_allowed_display|default:'<em>Not set</em>'}}</dd>
 </dl>
 <h2>Related Objects</h2>
 <ul>

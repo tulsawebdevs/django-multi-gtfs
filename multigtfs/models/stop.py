@@ -116,6 +116,28 @@ stop_times.txt should continue to be specified as time since midnight in the
 timezone specified by agency_timezone in agency.txt. This ensures that the time
 values in a trip always increase over the course of a trip, regardless of which
 timezones the trip crosses.
+
+- wheelchair_boarding (optional)
+The wheelchair_boarding field identifies whether wheelchair boardings are
+possible from the specified stop or station. The field can have the following
+values:
+
+    * 0 (or empty) - indicates that there is no accessibility information for
+        the stop
+    * 1 - indicates that at least some vehicles at this stop can be boarded
+        by a rider in a wheelchair
+    * 2 - wheelchair boarding is not possible at this stop
+
+When a stop is part of a larger station complex, as indicated by a stop with a
+parent_station value, the stop's wheelchair_boarding field has the following
+additional semantics:
+
+    * 0 (or empty) - the stop will inherit its wheelchair_boarding value from
+        the parent station, if specified in the parent
+    * 1 - there exists some accessible path from outside the station to the
+        specific stop / platform
+    * 2 - there exists no accessible path from outside the station to the
+        specific stop / platform
 """
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -159,6 +181,13 @@ class Stop(Base):
     timezone = models.CharField(
         max_length=255, blank=True,
         help_text="Timezone of the stop")
+    wheelchair_boarding = models.CharField(
+        max_length=1, blank=True,
+        choices=(
+            ('0', 'No information'),
+            ('1', 'Some wheelchair boarding'),
+            ('2', 'No wheelchair boarding')),
+        help_text='Is wheelchair boarding possible?')
 
     def __unicode__(self):
         return u"%d-%s" % (self.feed.id, self.stop_id)
@@ -210,7 +239,8 @@ class Stop(Base):
         ('stop_url', 'url'),
         ('location_type', 'location_type'),
         ('parent_station', 'parent_station__stop_id'),
-        ('stop_timezone', 'timezone')
+        ('stop_timezone', 'timezone'),
+        ('wheelchair_boarding', 'wheelchair_boarding'),
     )
 
     @classmethod

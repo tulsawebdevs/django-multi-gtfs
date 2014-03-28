@@ -3,7 +3,8 @@ multigtfs: GTFS as a Django app
 
 **multigtfs** is an `Apache 2.0`_-licensed Django app that supports importing
 and exporting of GTFS feeds.  All features of the `June 20, 2012 reference`_
-are supported.  It allows multiple feeds to be stored in the database at once.
+are supported, including all changes up to `February 17, 2014`.
+It allows multiple feeds to be stored in the database at once.
 
 It requires a spatial databases compatible with GeoDjango_.  PostgreSQL_ 9.x
 and PostGIS_ 2.x are recommended for development and production, since these
@@ -79,6 +80,7 @@ See the `issues list`_ for more details.
 
 .. _`Apache 2.0`: http://choosealicense.com/licenses/apache/
 .. _`June 20, 2012 reference`: https://developers.google.com/transit/gtfs/reference
+.. _`February 17, 2014`: https://developers.google.com/transit/gtfs/changes#RevisionHistory
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
 .. _PostgreSQL: http://www.postgresql.org
 .. _PostGIS: http://postgis.refractions.net
