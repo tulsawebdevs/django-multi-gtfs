@@ -109,6 +109,30 @@ AB,DTA,10,Airport - Bullfrog,Our Airport Route,3,http://example.com,\
         route.update_geometry()
         self.assertEqual(route.geometry.coords, (((1.0, 2.0), (1.0, 3.0)),))
 
+    def test_update_geometry_2_trips_different_geometries(self):
+        route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 3)')
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 4)')
+        self.assertFalse(route.geometry)
+        route.update_geometry()
+        route_coords = list(route.geometry.coords)
+        route_coords.sort()
+        self.assertEqual(len(route_coords), 2)
+        self.assertEqual(
+            route_coords,
+            [((1., 2.), (1., 3.)), ((1., 2.), (1., 4.))])
+
+    def test_update_geometry_2_trips_same_geometry(self):
+        route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 3)')
+        Trip.objects.create(route=route, geometry='LINESTRING(1 2, 1 3)')
+        self.assertFalse(route.geometry)
+        route.update_geometry()
+        route_coords = list(route.geometry.coords)
+        route_coords.sort()
+        self.assertEqual(len(route_coords), 1)
+        self.assertEqual(route.geometry.coords, (((1.0, 2.0), (1.0, 3.0)),))
+
     def test_update_geometry_no_change(self):
         # For code coverage
         route = Route.objects.create(
