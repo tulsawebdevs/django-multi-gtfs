@@ -106,7 +106,8 @@ class Shape(Base):
     def update_geometry(self, update_parent=True):
         """Update the geometry from the related ShapePoints"""
         original = self.geometry
-        points = self.points.values_list('point', flat=True)
+        points = self.points.order_by(
+            'sequence').values_list('point', flat=True)
         if len(points) > 1:
             self.geometry = LineString([pt.coords for pt in points])
             if self.geometry != original:

@@ -159,7 +159,14 @@ class Route(Base):
         """Update the geometry from the Trips"""
         original = self.geometry
         trips = self.trip_set.exclude(geometry=None)
-        self.geometry = MultiLineString([t.geometry for t in trips])
+        unique_coords = set()
+        unique_geom = list()
+        for t in trips:
+            coords = t.geometry.coords
+            if coords not in unique_coords:
+                unique_coords.add(coords)
+                unique_geom.append(t.geometry)
+        self.geometry = MultiLineString(unique_geom)
         if self.geometry != original:
             self.save()
 

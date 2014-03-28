@@ -82,6 +82,20 @@ vehicle. The block_id must be referenced by two or more trips in trips.txt.
 The shape_id field contains an ID that defines a shape for the trip. This value
 is referenced from the shapes.txt file. The shapes.txt file allows you to
 define how a line should be drawn on the map to represent a trip.
+
+- wheelchair_accessible (optional)
+    * 0 (or empty) - indicates that there is no accessibility information for
+        the trip
+    * 1 - indicates that the vehicle being used on this particular trip can
+        accommodate at least one rider in a wheelchair
+    * 2 - indicates that no riders in wheelchairs can be accommodated on this
+        trip
+
+- bikes_allowed (optional)
+    * 0 (or empty) - indicates that there is no bike information for the trip
+    * 1 - indicates that the vehicle being used on this particular trip can
+        accommodate at least one bicycle
+    * 2 - indicates that no bicycles are allowed on this trip
 """
 
 from django.contrib.gis.geos import LineString
@@ -116,6 +130,20 @@ class Trip(Base):
     geometry = models.LineStringField(
         null=True, blank=True,
         help_text='Geometry cache of Shape or Stops')
+    wheelchair_accessible = models.CharField(
+        max_length=1, blank=True,
+        choices=(
+            ('0', 'No information'),
+            ('1', 'Some wheelchair accommodation'),
+            ('2', 'No wheelchair accommodation')),
+        help_text='Are there accommodations for riders with wheelchair?')
+    bikes_allowed = models.CharField(
+        max_length=1, blank=True,
+        choices=(
+            ('0', 'No information'),
+            ('1', 'Some bicycle accommodation'),
+            ('2', 'No bicycles allowed')),
+        help_text='Are bicycles allowed?')
 
     def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""
@@ -148,6 +176,8 @@ class Trip(Base):
         ('direction_id', 'direction'),
         ('block_id', 'block__block_id'),
         ('shape_id', 'shape__shape_id'),
+        ('wheelchair_accessible', 'wheelchair_accessible'),
+        ('bikes_allowed', 'bikes_allowed'),
     )
 
     _rel_to_feed = 'route__feed'

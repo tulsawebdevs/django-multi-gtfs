@@ -50,12 +50,14 @@ R1,S1,T1
         self.assertEqual(trip.direction, '')
         self.assertEqual(trip.block, None)
         self.assertEqual(trip.shape, None)
+        self.assertEqual(trip.wheelchair_accessible, '')
+        self.assertEqual(trip.bikes_allowed, '')
 
     def test_import_trips_txt_maximal(self):
         trips_txt = StringIO.StringIO("""\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
-block_id,shape_id
-R1,S1,T1,Headsign,HS,0,B1,S1
+block_id,shape_id,wheelchair_accessible,bikes_allowed
+R1,S1,T1,Headsign,HS,0,B1,S1,1,2
 """)
         service = Service.objects.create(
             feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
@@ -72,6 +74,8 @@ R1,S1,T1,Headsign,HS,0,B1,S1
         self.assertEqual(trip.direction, '0')
         self.assertEqual(trip.block, block)
         self.assertEqual(trip.shape, shape)
+        self.assertEqual(trip.wheelchair_accessible, '1')
+        self.assertEqual(trip.bikes_allowed, '2')
 
     def test_import_trips_txt_multiple_services(self):
         '''If a trip is associated with several services, one is created'''
@@ -118,13 +122,14 @@ R1,S1,T1
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
         trip = Trip.objects.create(
             route=self.route, trip_id='T1', headsign='Headsign',
-            short_name='HS', direction=0, block=block, shape=shape)
+            short_name='HS', direction=0, block=block, shape=shape,
+            wheelchair_accessible='2', bikes_allowed='1')
         trip.services.add(service)
         trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
         self.assertEqual(trips_txt, """\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
-block_id,shape_id
-R1,S1,T1,Headsign,HS,0,B1,S1
+block_id,shape_id,wheelchair_accessible,bikes_allowed
+R1,S1,T1,Headsign,HS,0,B1,S1,2,1
 """)
 
     def test_export_trips_txt_multiple_services(self):

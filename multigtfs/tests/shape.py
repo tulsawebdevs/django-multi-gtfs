@@ -145,3 +145,24 @@ S1,36.425288,-117.133162,1,1.1
             ((-117.133162, 36.425288), (-117.13, 36.42)))
         self.assertEqual(trip.geometry, shape.geometry)
         self.assertEqual(route.geometry, MultiLineString(shape.geometry))
+
+    def test_shape_geometry_is_ordered(self):
+        '''Shape geometry is ordered by ShapePoint sequence
+
+        See issue #24
+        '''
+        shape = Shape.objects.create(feed=self.feed)
+        shape.points.create(point="POINT(-117.2 36.42)", sequence=2)
+        shape.points.create(point="POINT(-117.6 36.42)", sequence=6)
+        shape.points.create(point="POINT(-117.7 36.42)", sequence=7)
+        shape.points.create(point="POINT(-117.3 36.42)", sequence=3)
+        shape.points.create(point="POINT(-117.8 36.42)", sequence=8)
+        shape.points.create(point="POINT(-117.1 36.42)", sequence=1)
+        shape.points.create(point="POINT(-117.4 36.42)", sequence=4)
+        shape.points.create(point="POINT(-117.9 36.42)", sequence=9)
+        shape.points.create(point="POINT(-117.5 36.42)", sequence=5)
+        self.assertEqual(
+            shape.geometry.coords,
+            ((-117.1, 36.42), (-117.2, 36.42), (-117.3, 36.42),
+             (-117.4, 36.42), (-117.5, 36.42), (-117.6, 36.42),
+             (-117.7, 36.42), (-117.8, 36.42), (-117.9, 36.42)))

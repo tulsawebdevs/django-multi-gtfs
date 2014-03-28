@@ -25,6 +25,7 @@ A <strong>Stop</strong> is a stop or station in the schedule.
     <dt>location_type</dt><dd>{{object.get_location_type_display|default:'<em>Not set</em>'}}</dd>
     <dt>parent_station</dt><dd>{% if object.parent_station_id %}<a href="{% url 'stop_detail' feed_id=object.id stop_id=object.parent_station_id %}">Parent Station {{object.name}}</a>{% else %}<em>No Parent Station</em>{% endif %}</dd>
     <dt>timezone</dt><dd>{{object.timezone|default:'<em>Not set</em>'}}</dd>
+    <dt>wheelchair_boarding</dt><dd>{{object.get_wheelchair_boarding_type_display|default:'<em>Not set</em>'}}</dd>
 </dl>
 <h2>Related Objects</h2>
 <ul>
