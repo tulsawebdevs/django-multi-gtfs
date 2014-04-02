@@ -26,9 +26,8 @@ class AgencyTest(TestCase):
         self.feed = Feed.objects.create()
 
     def test_string(self):
-        self.assertEqual(self.feed.id, 1)
         agency = Agency.objects.create(feed=self.feed, agency_id='TEST')
-        self.assertEqual(str(agency), '1-TEST')
+        self.assertEqual(str(agency), '%d-TEST' % self.feed.id)
 
     def test_import_minimal(self):
         agency_txt = StringIO.StringIO("""\

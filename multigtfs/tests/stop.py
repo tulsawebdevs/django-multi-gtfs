@@ -29,7 +29,7 @@ class StopTest(TestCase):
         stop = Stop.objects.create(
             feed=self.feed, stop_id='STEST',
             point="POINT(-117.133162 36.425288)")
-        self.assertEqual(str(stop), '1-STEST')
+        self.assertEqual(str(stop), '%d-STEST' % self.feed.id)
 
     def test_legacy_lat_long(self):
         stop1 = Stop(feed=self.feed, stop_id='STOP1')

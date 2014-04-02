@@ -31,7 +31,7 @@ class TransferTest(TestCase):
     def test_string(self):
         transfer = Transfer.objects.create(
             from_stop=self.stop1, to_stop=self.stop2)
-        self.assertEqual(str(transfer), '1-STOP1-STOP2')
+        self.assertEqual(str(transfer), '%d-STOP1-STOP2' % self.feed.id)
 
     def test_import_transfers_txt_minimal(self):
         transfers_txt = StringIO.StringIO("""\

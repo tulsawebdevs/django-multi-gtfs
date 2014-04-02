@@ -39,7 +39,7 @@ class FrequencyTest(TestCase):
         frequency = Frequency.objects.create(
             trip=self.trip, start_time='6:00', end_time='22:00',
             headway_secs=1800)
-        self.assertEqual(str(frequency), '1-R1-STBA')
+        self.assertEqual(str(frequency), '%d-R1-STBA' % self.feed.id)
 
     def test_import_frequencies_txt_minimal(self):
         frequencies_txt = StringIO.StringIO("""\
@@ -105,17 +105,18 @@ STBA,05:00:00,25:00:00,1800
 
     def test_serialize(self):
         '''Test serialization of Frequency, which has a SecondsField'''
-        Frequency.objects.create(
+        f = Frequency.objects.create(
             trip=self.trip, start_time='05:00', end_time='25:00',
             headway_secs=1800)
         actual = loads(serialize('json', Frequency.objects.all()))
         expected = [{
-            "pk": 1,
-            "model": "multigtfs.frequency",
-            "fields": {
-                "exact_times": "",
-                "start_time": "05:00:00",
-                "headway_secs": 1800,
-                "trip": 1,
-                "end_time": "25:00:00"}}]
+            u"pk": f.id,
+            u"model": u"multigtfs.frequency",
+            u"fields": {
+                u"exact_times": u"",
+                u"start_time": u"05:00:00",
+                u"headway_secs": 1800,
+                u"trip": self.trip.id,
+                u"end_time": u"25:00:00"}}]
+        self.maxDiff = None
         self.assertEqual(expected, actual)

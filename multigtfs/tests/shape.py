@@ -27,10 +27,10 @@ class ShapeTest(TestCase):
 
     def test_string(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
-        self.assertEqual(str(shape), '1-S1')
+        self.assertEqual(str(shape), '%d-S1' % self.feed.id)
         shape_pt = ShapePoint.objects.create(
             shape=shape, point="POINT(-117.133162 36.425288)", sequence=1)
-        self.assertEqual(str(shape_pt), '1-S1-1')
+        self.assertEqual(str(shape_pt), '%d-S1-1' % self.feed.id)
 
     def test_legacy_lat_long(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='s1')

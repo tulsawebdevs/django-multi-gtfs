@@ -36,7 +36,8 @@ class StopTimeTest(TestCase):
         stoptime = StopTime.objects.create(
             trip=self.trip, stop=self.stop, arrival_time=time(6),
             departure_time=time(6), stop_sequence=1)
-        self.assertEqual(str(stoptime), '1-R1-STBA-STAGECOACH-1')
+        self.assertEqual(
+            str(stoptime), '%d-R1-STBA-STAGECOACH-1' % self.feed.id)
 
     def test_import_stop_times_txt_minimal(self):
         stop_times_txt = StringIO.StringIO("""\

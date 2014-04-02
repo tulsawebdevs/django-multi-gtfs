@@ -31,9 +31,11 @@ class ServiceDateTest(TestCase):
     def test_string(self):
         service_date = ServiceDate.objects.create(
             date=date(2012, 4, 14), service=self.service, exception_type=2)
-        self.assertEqual(str(service_date), '1-S1 2012-04-14 Removed')
+        self.assertEqual(
+            str(service_date), '%d-S1 2012-04-14 Removed' % self.feed.id)
         service_date.exception_type = 1
-        self.assertEqual(str(service_date), '1-S1 2012-04-14 Added')
+        self.assertEqual(
+            str(service_date), '%d-S1 2012-04-14 Added' % self.feed.id)
 
     def test_import_calendar_dates_txt(self):
         calendar_dates_txt = StringIO.StringIO("""\

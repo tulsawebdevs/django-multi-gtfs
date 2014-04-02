@@ -46,10 +46,9 @@ class FeedTest(TestCase):
 
     def test_string(self):
         feed = Feed.objects.create()
-        self.assertEqual(feed.id, 1)
-        self.assertEqual(str(feed), '1')
+        self.assertEqual(str(feed), '%d' % feed.id)
         feed.name = 'Test'
-        self.assertEqual(str(feed), '1 Test')
+        self.assertEqual(str(feed), '%d Test' % feed.id)
 
     def test_import_gtfs_test1(self):
         '''Try importing test1.zip
@@ -360,12 +359,14 @@ fare_id,price,currency_type,payment_method,transfers,transfer_duration
 a,5.25,USD,0,0,
 p,1.25,USD,0,0,
 ''')
+        fare_a = Fare.objects.get(fare_id='a')
+        fare_p = Fare.objects.get(fare_id='p')
         fare_out = z_out.read('fare_attributes.txt')
         self.assertEqual(fare_out, '''\
 fare_id,price,currency_type,payment_method,transfers
-a,5.25,USD,0,0
-p,1.25,USD,0,0
-''')
+a,%s,USD,0,0
+p,%s,USD,0,0
+''' % (fare_a.price, fare_p.price))
 
         # source fare_rules.txt has unneeded columns
         fare_rules_in = self.normalize(z_in.read('fare_rules.txt'))

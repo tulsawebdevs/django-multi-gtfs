@@ -28,10 +28,10 @@ class FareRuleTest(TestCase):
 
     def test_string(self):
         fr = FareRule.objects.create(fare=self.fare)
-        self.assertEqual(str(fr), '1-p')
+        self.assertEqual(str(fr), '%d-p' % self.feed.id)
         route = Route.objects.create(feed=self.feed, route_id='R1', rtype=3)
         fr.route = route
-        self.assertEqual(str(fr), '1-p-R1')
+        self.assertEqual(str(fr), '%d-p-R1' % self.feed.id)
 
     def test_import_fare_rules_txt_route(self):
         fare_rules_txt = StringIO.StringIO("""\

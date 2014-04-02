@@ -29,7 +29,7 @@ class ServiceTest(TestCase):
         service = Service.objects.create(
             feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
             end_date=date(2011, 12, 31))
-        self.assertEqual(str(service), '1-S1')
+        self.assertEqual(str(service), '%d-S1' % self.feed.id)
 
     def test_import_calendar_txt(self):
         calendar_txt = StringIO.StringIO("""\

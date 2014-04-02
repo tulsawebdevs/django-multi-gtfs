@@ -29,7 +29,7 @@ class FeedInfoTest(TestCase):
         feed_info = FeedInfo.objects.create(
             feed=self.feed, publisher_name='PTEST',
             publisher_url='http://example.com', lang='en')
-        self.assertEqual(str(feed_info), '1-PTEST')
+        self.assertEqual(str(feed_info), '%d-PTEST' % self.feed.id)
 
     def test_import_feed_info_txt_maximal(self):
         feed_info_txt = StringIO.StringIO("""\

@@ -26,7 +26,7 @@ class RouteTest(TestCase):
 
     def test_string(self):
         route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
-        self.assertEqual(str(route), '1-RTEST')
+        self.assertEqual(str(route), '%d-RTEST' % self.feed.id)
 
     def test_import_routes_txt_minimal(self):
         routes_txt = StringIO.StringIO("""\

@@ -30,7 +30,7 @@ class TripTest(TestCase):
 
     def test_string(self):
         trip = Trip.objects.create(route=self.route, trip_id='T1')
-        self.assertEqual(str(trip), '1-R1-T1')
+        self.assertEqual(str(trip), '%d-R1-T1' % self.feed.id)
 
     def test_import_trips_txt_minimal(self):
         trips_txt = StringIO.StringIO("""\
