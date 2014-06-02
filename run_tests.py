@@ -15,6 +15,7 @@
 #
 # Thanks to django-extensions for the starting code
 
+from __future__ import print_function
 import sys
 
 from django.conf import settings
@@ -51,9 +52,9 @@ def main():
         working_set = WorkingSet()
         working_set.require('django_nose')
     except ImportError:
-        print 'setuptools not installed.  Weird.'
+        print('setuptools not installed.  Weird.')
     except DistributionNotFound:
-        print "django-nose not installed.  You'd like it."
+        print("django-nose not installed.  You'd like it.")
     else:
         config['INSTALLED_APPS'].append('django_nose')
         config['TEST_RUNNER'] = 'django_nose.NoseTestSuiteRunner'
