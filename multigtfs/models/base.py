@@ -12,15 +12,15 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import unicode_literals
 from csv import DictReader, writer
 from datetime import datetime, date
-from StringIO import StringIO
 import re
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
+from django.utils.six import StringIO, text_type
 
 
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
@@ -36,9 +36,9 @@ class BaseQuerySet(GeoQuerySet):
         for csv_name, field_pattern in self.model._column_map:
             # Separate the local field name from foreign columns
             if '__' in field_pattern:
-                field_name, rel_name = field_pattern.split('__', 1)
+                field_name = field_pattern.split('__', 1)[0]
             else:
-                field_name, rel_name = (field_pattern, None)
+                field_name = field_pattern
 
             # Handle point fields
             point_match = re_point.match(field_name)
@@ -86,7 +86,7 @@ class BaseQuerySet(GeoQuerySet):
                 if not isinstance(field_type, ManyToManyField):
                     sort_fields.append(field)
 
-        rows = [columns]
+        rows = [[text_type(c) for c in columns]]
         for item in self.order_by(*sort_fields):
             row = []
             many_pos = None
@@ -108,13 +108,14 @@ class BaseQuerySet(GeoQuerySet):
                 else:
                     field = getattr(obj, field_name) if obj else ''
                     if isinstance(field, date):
-                        row.append(field.strftime('%Y%m%d'))
+                        formatted = field.strftime(u'%Y%m%d')
+                        row.append(text_type(formatted))
                     elif isinstance(field, bool):
                         row.append(1 if field else 0)
                     elif field is None:
-                        row.append('')
+                        row.append(u'')
                     else:
-                        row.append(unicode(field).encode('utf-8'))
+                        row.append(text_type(field))
             if many_pos:
                 many = row[many_pos]
                 for m in sorted(many):
@@ -124,7 +125,19 @@ class BaseQuerySet(GeoQuerySet):
             else:
                 rows.append(row)
         out = StringIO()
-        writer(out, lineterminator='\n').writerows(rows)
+        csv_writer = writer(out, lineterminator='\n')
+        for row in rows:
+            try:
+                csv_writer.writerow(row)
+            except UnicodeEncodeError:  # pragma: no cover
+                # Python 2 csv does badly with unicode outside of ASCII
+                new_row = []
+                for item in row:
+                    if isinstance(item, text_type):
+                        new_row.append(item.encode('utf-8'))
+                    else:
+                        new_row.append(item)
+                csv_writer.writerow(new_row)
         return out.getvalue()
 
 
@@ -258,7 +271,7 @@ class Base(models.Model):
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
             for column_name, value in row.items():
-                if not column_name in name_map:
+                if column_name not in name_map:
                     if value:
                         raise ValueError(
                             'Unexpected column name %s in row %s, expecting'

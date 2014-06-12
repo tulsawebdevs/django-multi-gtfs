@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
+from __future__ import print_function
 import datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -20,8 +21,8 @@ class Migration(SchemaMigration):
                         self.gf('django.contrib.gis.db.models.fields.PointField')(null=True, blank=True),
                         keep_default=False)
         except:
-            print "*** Did you install GeoDjango prereqs, and update your database?"
-            print "*** See https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/"
+            print("*** Did you install GeoDjango prereqs, and update your database?")
+            print("*** See https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/")
             raise
 
 

@@ -139,17 +139,19 @@ additional semantics:
     * 2 - there exists no accessible path from outside the station to the
         specific stop / platform
 """
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-
+from __future__ import unicode_literals
 from csv import DictReader, DictWriter
 import warnings
-import StringIO
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import StringIO
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Stop(Base):
     """A stop or station"""
     feed = models.ForeignKey('Feed')
@@ -189,8 +191,8 @@ class Stop(Base):
             ('2', 'No wheelchair boarding')),
         help_text='Is wheelchair boarding possible?')
 
-    def __unicode__(self):
-        return u"%d-%s" % (self.feed.id, self.stop_id)
+    def __str__(self):
+        return "%d-%s" % (self.feed.id, self.stop_id)
 
     def getlon(self):
         return self.point[0] if self.point else 0.0
@@ -260,12 +262,12 @@ class Stop(Base):
         txt = txt_file.read()
         fieldnames, _ = zip(*cls._column_map)
         has_stations = False
-        stations_csv = StringIO.StringIO()
+        stations_csv = StringIO()
         stations = DictWriter(stations_csv, fieldnames)
         has_stops = False
-        stops_csv = StringIO.StringIO()
+        stops_csv = StringIO()
         stops = DictWriter(stops_csv, fieldnames)
-        for row in DictReader(StringIO.StringIO(txt)):
+        for row in DictReader(StringIO(txt)):
             if row.get('location_type') == '1':
                 if not has_stations:
                     writeheader(stations)
@@ -278,10 +280,10 @@ class Stop(Base):
                 stops.writerow(row)
         if has_stations:
             super(Stop, cls).import_txt(
-                StringIO.StringIO(stations_csv.getvalue()), feed)
+                StringIO(stations_csv.getvalue()), feed)
         if has_stops:
             super(Stop, cls).import_txt(
-                StringIO.StringIO(stops_csv.getvalue()), feed)
+                StringIO(stops_csv.getvalue()), feed)
 
 
 @receiver(post_save, sender=Stop, dispatch_uid="post_save_stop")

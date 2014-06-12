@@ -12,27 +12,30 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
+from __future__ import unicode_literals
 from zipfile import ZipFile
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import PY3
 
-from agency import Agency
-from fare import Fare
-from fare_rule import FareRule
-from feed_info import FeedInfo
-from frequency import Frequency
-from route import Route
-from service import Service
-from service_date import ServiceDate
-from shape import ShapePoint, post_save_shapepoint
-from stop import Stop, post_save_stop
-from stop_time import StopTime
-from transfer import Transfer
-from trip import Trip
+from .agency import Agency
+from .fare import Fare
+from .fare_rule import FareRule
+from .feed_info import FeedInfo
+from .frequency import Frequency
+from .route import Route
+from .service import Service
+from .service_date import ServiceDate
+from .shape import ShapePoint, post_save_shapepoint
+from .stop import Stop, post_save_stop
+from .stop_time import StopTime
+from .transfer import Transfer
+from .trip import Trip
 
 
+@python_2_unicode_compatible
 class Feed(models.Model):
     """Represents a single GTFS feed.
 
@@ -46,11 +49,11 @@ class Feed(models.Model):
         db_table = 'feed'
         app_label = 'multigtfs'
 
-    def __unicode__(self):
+    def __str__(self):
         if self.name:
-            return u"%d %s" % (self.id, self.name)
+            return "%d %s" % (self.id, self.name)
         else:
-            return u"%d" % self.id
+            return "%d" % self.id
 
     def import_gtfs(self, gtfs_file):
         """Import a GTFS file as feed
@@ -86,6 +89,9 @@ class Feed(models.Model):
                 for f in files:
                     if f.endswith(table_name):
                         table = z.open(f)
+                        if PY3:  # pragma: no cover
+                            from io import TextIOWrapper
+                            table = TextIOWrapper(table)
                         klass.import_txt(table, self)
         finally:
             post_save.connect(post_save_shapepoint, sender=ShapePoint)

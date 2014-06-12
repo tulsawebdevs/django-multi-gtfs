@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 from datetime import date
-import StringIO
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Service
 
@@ -32,7 +33,7 @@ class ServiceTest(TestCase):
         self.assertEqual(str(service), '%d-S1' % self.feed.id)
 
     def test_import_calendar_txt(self):
-        calendar_txt = StringIO.StringIO("""\
+        calendar_txt = StringIO("""\
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,\
 start_date,end_date
 W,1,0,1,0,1,0,1,20120414,20121231

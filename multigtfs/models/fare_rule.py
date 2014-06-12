@@ -94,9 +94,14 @@ project wiki:
   http://code.google.com/p/googletransitdatafeed/wiki/FareExamples
 """
 
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
+
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class FareRule(Base):
     """Associate a Fare with a Route and/or Zones"""
     fare = models.ForeignKey('Fare')
@@ -116,8 +121,8 @@ class FareRule(Base):
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
 
-    def __unicode__(self):
-        u = u"%d-%s" % (self.fare.feed.id, self.fare.fare_id)
+    def __str__(self):
+        u = "%d-%s" % (self.fare.feed.id, self.fare.fare_id)
         if self.route:
             u += '-%s' % self.route.route_id
         return u

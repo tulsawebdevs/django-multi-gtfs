@@ -13,10 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Block(Base):
     """Represents a fare zone.
 
@@ -28,7 +32,7 @@ class Block(Base):
         max_length=10, db_index=True,
         help_text="Unique identifier for a block.")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d-%s" % (self.feed.id, self.block_id)
 
     class Meta:

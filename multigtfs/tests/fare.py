@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Fare
 
@@ -31,7 +32,7 @@ class FareTest(TestCase):
         self.assertEqual(str(fa), '%d-p(1.25 USD)' % self.feed.id)
 
     def test_import_fare_attributes_minimal(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers
 p,1.25,USD,0,0
 """)
@@ -47,7 +48,7 @@ p,1.25,USD,0,0
         self.assertEqual(fa.transfer_duration, None)
 
     def test_import_fare_attributes_maximal(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0,60
 """)
@@ -56,7 +57,7 @@ p,1.25,USD,0,0,60
         self.assertEqual(fa.transfer_duration, 60)
 
     def test_import_fare_attributes_omitted(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0
 """)
@@ -66,7 +67,7 @@ p,1.25,USD,0,0
         self.assertEqual(fa.transfer_duration, None)
 
     def test_import_fare_attributes_unlimited_transfers(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,,3600
 """)

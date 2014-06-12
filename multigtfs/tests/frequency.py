@@ -13,12 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 from datetime import date
 from json import loads
-import StringIO
 
 from django.core.serializers import serialize
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Frequency, Route, Service, Trip
 from multigtfs.models.fields import Seconds
@@ -42,7 +43,7 @@ class FrequencyTest(TestCase):
         self.assertEqual(str(frequency), '%d-R1-STBA' % self.feed.id)
 
     def test_import_frequencies_txt_minimal(self):
-        frequencies_txt = StringIO.StringIO("""\
+        frequencies_txt = StringIO("""\
 trip_id,start_time,end_time,headway_secs
 STBA,6:00:00,22:00:00,1800
 """)
@@ -55,7 +56,7 @@ STBA,6:00:00,22:00:00,1800
         self.assertEqual(frequency.exact_times, '')
 
     def test_import_frequencies_txt_maximal(self):
-        frequencies_txt = StringIO.StringIO("""\
+        frequencies_txt = StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
 STBA,6:00:00,23:30:35,1800,1
 """)
@@ -68,7 +69,7 @@ STBA,6:00:00,23:30:35,1800,1
         self.assertEqual(frequency.exact_times, '1')
 
     def test_import_frequencies_txt_omitted_with_rollover(self):
-        frequencies_txt = StringIO.StringIO("""\
+        frequencies_txt = StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times
 STBA,00:50:00,24:10:00,1800,
 """)

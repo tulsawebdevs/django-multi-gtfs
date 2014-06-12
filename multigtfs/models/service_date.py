@@ -65,10 +65,14 @@ corresponds to the holiday schedule. For a particular holiday, you would use
 the calendar_dates.txt file to add the holiday to the holiday service_id and to
 remove the holiday from the regular service_id schedule.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class ServiceDate(Base):
     """Dates that a route is active."""
 
@@ -79,9 +83,9 @@ class ServiceDate(Base):
         default=1, choices=((1, 'Added'), (2, 'Removed')),
         help_text="Is service added or removed on this date?")
 
-    def __unicode__(self):
+    def __str__(self):
         return (
-            u"%d-%s %s %s" % (
+            "%d-%s %s %s" % (
                 self.service.feed.id, self.service.service_id, self.date,
                 'Added' if self.exception_type == 1 else 'Removed'))
 

@@ -4,10 +4,10 @@
 from __future__ import print_function
 
 # Python versions (major, minor)
-pythons = [(2, 7)]
+pythons = [(2, 7), (3, 4)]
 # Python package versions (major, minor)
 djangos = [(1, 5), (1, 6)]
-souths = [(0, 7), (0, 8), (None, None)]
+souths = [(0, 8), (None, None)]
 # Backend databases (names)
 dbs = ['spatiallite', 'postgis']
 
@@ -72,6 +72,9 @@ print("""\
 [tox]
 envlist =
     {}
+
+[flake8]
+exclude = .tox/*
 
 [testenv]
 deps=

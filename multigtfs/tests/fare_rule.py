@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Fare, FareRule, Route, Zone
 
@@ -34,7 +35,7 @@ class FareRuleTest(TestCase):
         self.assertEqual(str(fr), '%d-p-R1' % self.feed.id)
 
     def test_import_fare_rules_txt_route(self):
-        fare_rules_txt = StringIO.StringIO("""\
+        fare_rules_txt = StringIO("""\
 fare_id,route_id,origin_id,destination_id,contains_id
 p,AB,,,
 """)
@@ -48,7 +49,7 @@ p,AB,,,
         self.assertEqual(fr.contains, None)
 
     def test_import_fare_rules_txt_origin(self):
-        fare_rules_txt = StringIO.StringIO("""\
+        fare_rules_txt = StringIO("""\
 fare_id,route_id,origin_id
 p,,2
 """)
@@ -62,7 +63,7 @@ p,,2
         self.assertEqual(fr.contains, None)
 
     def test_import_fare_rules_txt_full(self):
-        fare_rules_txt = StringIO.StringIO("""\
+        fare_rules_txt = StringIO("""\
 fare_id,route_id,origin_id,destination_id,contains_id
 p,AB,1,2,12
 """)

@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Stop, Transfer
 
@@ -34,7 +35,7 @@ class TransferTest(TestCase):
         self.assertEqual(str(transfer), '%d-STOP1-STOP2' % self.feed.id)
 
     def test_import_transfers_txt_minimal(self):
-        transfers_txt = StringIO.StringIO("""\
+        transfers_txt = StringIO("""\
 from_stop_id,to_stop_id
 STOP1,STOP2
 """)
@@ -46,7 +47,7 @@ STOP1,STOP2
         self.assertEqual(transfer.min_transfer_time, None)
 
     def test_import_transfers_txt_maximal(self):
-        transfers_txt = StringIO.StringIO("""\
+        transfers_txt = StringIO("""\
 from_stop_id,to_stop_id,transfer_type,min_transfer_time
 STOP1,STOP2,2,5
 """)
@@ -58,7 +59,7 @@ STOP1,STOP2,2,5
         self.assertEqual(transfer.min_transfer_time, 5)
 
     def test_import_transfers_txt_omitted(self):
-        transfers_txt = StringIO.StringIO("""\
+        transfers_txt = StringIO("""\
 from_stop_id,to_stop_id,transfer_type,min_transfer_time
 STOP1,STOP2,,
 """)

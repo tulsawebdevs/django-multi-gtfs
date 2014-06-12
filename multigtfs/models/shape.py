@@ -80,16 +80,18 @@ like this:
     A_shp,37.64430,-122.41070,6,6.8310
     A_shp,37.65863,-122.30839,11,15.8765
 """
-
+from __future__ import unicode_literals
 import warnings
 
 from django.contrib.gis.geos import LineString
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Shape(Base):
     """The path the vehicle takes along the route"""
     feed = models.ForeignKey('Feed')
@@ -100,8 +102,8 @@ class Shape(Base):
         null=True, blank=True,
         help_text='Geometry cache of ShapePoints')
 
-    def __unicode__(self):
-        return u"%d-%s" % (self.feed.id, self.shape_id)
+    def __str__(self):
+        return "%d-%s" % (self.feed.id, self.shape_id)
 
     def update_geometry(self, update_parent=True):
         """Update the geometry from the related ShapePoints"""
@@ -123,6 +125,7 @@ class Shape(Base):
     _rel_to_feed = 'feed'
 
 
+@python_2_unicode_compatible
 class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey('Shape', related_name='points')
@@ -133,8 +136,8 @@ class ShapePoint(Base):
         null=True, blank=True,
         help_text='Distance of point from start of shape')
 
-    def __unicode__(self):
-        return u"%s-%d" % (self.shape, self.sequence)
+    def __str__(self):
+        return "%s-%d" % (self.shape, self.sequence)
 
     def getlon(self):
         return self.point[0] if self.point else 0.0

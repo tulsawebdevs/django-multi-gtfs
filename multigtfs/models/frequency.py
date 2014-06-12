@@ -79,11 +79,15 @@ equal to end_time, no trip must be scheduled. When exact_times is 1, care must
 be taken to choose an end_time value that is greater than the last desired trip
 start time but less than the last desired trip start time + headway_secs.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.fields import SecondsField
 
 
+@python_2_unicode_compatible
 class Frequency(Base):
     """Description of a trip that repeats without fixed stop times"""
     trip = models.ForeignKey('Trip')
@@ -99,8 +103,8 @@ class Frequency(Base):
                  (1, 'Trips are exactly scheduled from start time')),
         help_text="Should frequency-based trips be exactly scheduled?")
 
-    def __unicode__(self):
-        return unicode(self.trip)
+    def __str__(self):
+        return str(self.trip)
 
     class Meta:
         db_table = 'frequency'

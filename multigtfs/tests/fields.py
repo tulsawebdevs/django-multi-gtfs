@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
+
 from django.test import TestCase
 
 from multigtfs.models.fields import Seconds, SecondsField
@@ -21,8 +23,8 @@ from multigtfs.models.fields import Seconds, SecondsField
 class SecondsTest(TestCase):
 
     def test_string(self):
-        self.assertEqual(u'00:00:00', unicode(Seconds(0)))
-        self.assertEqual(u'24:00:00', unicode(Seconds(24 * 60 * 60)))
+        self.assertEqual('00:00:00', str(Seconds(0)))
+        self.assertEqual('24:00:00', str(Seconds(24 * 60 * 60)))
         self.assertEqual('12:34:56', str(Seconds(45296)))
 
     def test_negative_seconds_raises(self):
@@ -37,7 +39,7 @@ class SecondsTest(TestCase):
         seconds = Seconds(1000)
         self.assertNotEqual(seconds, 1000)
 
-    def test_ordering(self):
+    def test_comparison(self):
         one_minute = Seconds(60)
         one_hour = Seconds(3600)
         one_hour2 = Seconds(3600)
@@ -45,6 +47,9 @@ class SecondsTest(TestCase):
         self.assertFalse(one_hour > one_hour2)
         self.assertTrue(one_hour >= one_hour2)
         self.assertTrue(one_hour == one_hour2)
+        self.assertFalse(one_hour != one_hour2)
+        self.assertFalse(one_hour < one_hour2)
+        self.assertTrue(one_hour <= one_hour2)
 
 
 class SecondsFieldTest(TestCase):

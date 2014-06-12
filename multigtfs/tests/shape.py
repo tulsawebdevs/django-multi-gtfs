@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Route, Shape, ShapePoint, Trip
 
@@ -56,7 +57,7 @@ class ShapeTest(TestCase):
         self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
 
     def test_import_shape_minimal(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
 """)
@@ -72,7 +73,7 @@ S1,36.425288,-117.133162,1
         self.assertEqual(shape_pt.traveled, None)
 
     def test_import_shape_maximal(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,0
 """)
@@ -88,7 +89,7 @@ S1,36.425288,-117.133162,1,0
         self.assertEqual(shape_pt.traveled, 0)
 
     def test_import_shape_traveled_omitted(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,
 """)
