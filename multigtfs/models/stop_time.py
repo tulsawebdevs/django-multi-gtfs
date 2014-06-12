@@ -164,6 +164,9 @@ they cannot be used to show reverse travel along a route.
 The units used for shape_dist_traveled in the stop_times.txt file must match
 the units that are used for this field in the shapes.txt file.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.stop import Stop
@@ -171,6 +174,7 @@ from multigtfs.models.trip import Trip
 from multigtfs.models.fields import SecondsField
 
 
+@python_2_unicode_compatible
 class StopTime(Base):
     """A specific stop on a route on a trip."""
     trip = models.ForeignKey(Trip)
@@ -203,8 +207,8 @@ class StopTime(Base):
         null=True, blank=True,
         help_text='Distance of stop from start of shape')
 
-    def __unicode__(self):
-        return u"%s-%s-%s" % (self.trip, self.stop.stop_id, self.stop_sequence)
+    def __str__(self):
+        return "%s-%s-%s" % (self.trip, self.stop.stop_id, self.stop_sequence)
 
     class Meta:
         db_table = 'stop_time'

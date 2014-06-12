@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Agency, Route, Trip
 
@@ -26,10 +27,10 @@ class RouteTest(TestCase):
 
     def test_string(self):
         route = Route.objects.create(feed=self.feed, route_id='RTEST', rtype=3)
-        self.assertEqual(str(route), '1-RTEST')
+        self.assertEqual(str(route), '%d-RTEST' % self.feed.id)
 
     def test_import_routes_txt_minimal(self):
-        routes_txt = StringIO.StringIO("""\
+        routes_txt = StringIO("""\
 route_id,route_short_name,route_long_name,route_type
 AB,10,Airport - Bullfrog,3
 """)
@@ -47,7 +48,7 @@ AB,10,Airport - Bullfrog,3
         self.assertEqual(route.text_color, '')
 
     def test_import_routes_txt_maximal(self):
-        routes_txt = StringIO.StringIO("""\
+        routes_txt = StringIO("""\
 route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,\
 route_url,route_color,route_text_color
 AB,DTA,10,Airport - Bullfrog,"Our Airport Route", 3,http://example.com,\

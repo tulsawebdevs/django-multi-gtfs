@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Route, Shape, ShapePoint, Trip
 
@@ -27,10 +28,10 @@ class ShapeTest(TestCase):
 
     def test_string(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
-        self.assertEqual(str(shape), '1-S1')
+        self.assertEqual(str(shape), '%d-S1' % self.feed.id)
         shape_pt = ShapePoint.objects.create(
             shape=shape, point="POINT(-117.133162 36.425288)", sequence=1)
-        self.assertEqual(str(shape_pt), '1-S1-1')
+        self.assertEqual(str(shape_pt), '%d-S1-1' % self.feed.id)
 
     def test_legacy_lat_long(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='s1')
@@ -56,7 +57,7 @@ class ShapeTest(TestCase):
         self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
 
     def test_import_shape_minimal(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
 """)
@@ -72,7 +73,7 @@ S1,36.425288,-117.133162,1
         self.assertEqual(shape_pt.traveled, None)
 
     def test_import_shape_maximal(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,0
 """)
@@ -88,7 +89,7 @@ S1,36.425288,-117.133162,1,0
         self.assertEqual(shape_pt.traveled, 0)
 
     def test_import_shape_traveled_omitted(self):
-        shape_txt = StringIO.StringIO("""\
+        shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,
 """)
@@ -145,6 +146,28 @@ S1,36.425288,-117.133162,1,1.1
             ((-117.133162, 36.425288), (-117.13, 36.42)))
         self.assertEqual(trip.geometry, shape.geometry)
         self.assertEqual(route.geometry, MultiLineString(shape.geometry))
+
+    def test_update_geometry_no_parent(self):
+        shape = Shape.objects.create(feed=self.feed)
+        route = Route.objects.create(feed=self.feed, rtype=3)
+        trip = Trip.objects.create(shape=shape, route=route)
+        ShapePoint.objects.create(
+            shape=shape, point="POINT(-117.133162 36.425288)", sequence=1)
+        ShapePoint.objects.create(
+            shape=shape, point="POINT(-117.13 36.42)", sequence=2)
+
+        shape.geometry = None
+        shape.save()
+        trip.geometry = None
+        trip.save()
+        shape.update_geometry(update_parent=False)
+
+        shape = Shape.objects.get(id=shape.id)
+        trip = Trip.objects.get(id=trip.id)
+        self.assertEqual(
+            shape.geometry.coords,
+            ((-117.133162, 36.425288), (-117.13, 36.42)))
+        self.assertIsNone(trip.geometry, None)
 
     def test_shape_geometry_is_ordered(self):
         '''Shape geometry is ordered by ShapePoint sequence

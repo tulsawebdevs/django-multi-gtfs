@@ -129,10 +129,14 @@ included in the service interval.
 
 The end_date field's value should be in YYYYMMDD format.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Service(Base):
     """Dates that a route is active."""
 
@@ -164,8 +168,8 @@ class Service(Base):
     start_date = models.DateField()
     end_date = models.DateField()
 
-    def __unicode__(self):
-        return u"%d-%s" % (self.feed.id, self.service_id)
+    def __str__(self):
+        return "%d-%s" % (self.feed.id, self.service_id)
 
     class Meta:
         db_table = 'service'

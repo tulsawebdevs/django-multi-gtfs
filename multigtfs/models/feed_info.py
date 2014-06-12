@@ -73,10 +73,14 @@ of their GTFS feed. GTFS-consuming applications can display this value to help
 feed publishers determine whether the latest version of their feed has been
 incorporated.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class FeedInfo(Base):
     """Information about the feed"""
     feed = models.ForeignKey('Feed')
@@ -98,8 +102,8 @@ class FeedInfo(Base):
         max_length=255, blank=True,
         help_text="Version of feed.")
 
-    def __unicode__(self):
-        return u'%s-%s' % (self.feed.id, self.publisher_name)
+    def __str__(self):
+        return '%s-%s' % (self.feed.id, self.publisher_name)
 
     class Meta:
         db_table = 'feed_info'

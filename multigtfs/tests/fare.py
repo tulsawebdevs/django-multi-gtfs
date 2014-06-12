@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Fare
 
@@ -28,10 +29,10 @@ class FareTest(TestCase):
         fa = Fare.objects.create(
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0)
-        self.assertEqual(str(fa), '1-p(1.25 USD)')
+        self.assertEqual(str(fa), '%d-p(1.25 USD)' % self.feed.id)
 
     def test_import_fare_attributes_minimal(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers
 p,1.25,USD,0,0
 """)
@@ -39,14 +40,15 @@ p,1.25,USD,0,0
         fa = Fare.objects.get()
         self.assertEqual(fa.feed, self.feed)
         self.assertEqual(fa.fare_id, 'p')
-        self.assertEqual(str(fa.price), '1.25')
+        # 1.25 on sqlite, 1.2500 on postgis
+        self.assertEqual(str(fa.price)[:4], '1.25')
         self.assertEqual(fa.currency_type, 'USD')
         self.assertEqual(fa.payment_method, 0)
         self.assertEqual(fa.transfers, 0)
         self.assertEqual(fa.transfer_duration, None)
 
     def test_import_fare_attributes_maximal(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0,60
 """)
@@ -55,7 +57,7 @@ p,1.25,USD,0,0,60
         self.assertEqual(fa.transfer_duration, 60)
 
     def test_import_fare_attributes_omitted(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,0
 """)
@@ -65,7 +67,7 @@ p,1.25,USD,0,0
         self.assertEqual(fa.transfer_duration, None)
 
     def test_import_fare_attributes_unlimited_transfers(self):
-        fare_attributes_txt = StringIO.StringIO("""\
+        fare_attributes_txt = StringIO("""\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,1.25,USD,0,,3600
 """)
@@ -79,28 +81,31 @@ p,1.25,USD,0,,3600
         Fare.objects.create(
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0)
+        fare = Fare.objects.get()
         fare_txt = Fare.objects.in_feed(self.feed).export_txt()
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers
-p,1.25,USD,0,0
-""")
+p,%s,USD,0,0
+""" % fare.price)
 
     def test_export_fare_attributes_maximal(self):
         Fare.objects.create(
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0, transfer_duration=3600)
+        fare = Fare.objects.get()
         fare_txt = Fare.objects.in_feed(self.feed).export_txt()
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
-p,1.25,USD,0,0,3600
-""")
+p,%s,USD,0,0,3600
+""" % fare.price)
 
     def test_export_fare_attributes_unlimited_transfers(self):
         Fare.objects.create(
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=None, transfer_duration=3600)
+        fare = Fare.objects.get()
         fare_txt = Fare.objects.in_feed(self.feed).export_txt()
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
-p,1.25,USD,0,,3600
-""")
+p,%s,USD,0,,3600
+""" % fare.price)

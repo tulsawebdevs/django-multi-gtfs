@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 from datetime import time
-import StringIO
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip
 
@@ -36,10 +37,11 @@ class StopTimeTest(TestCase):
         stoptime = StopTime.objects.create(
             trip=self.trip, stop=self.stop, arrival_time=time(6),
             departure_time=time(6), stop_sequence=1)
-        self.assertEqual(str(stoptime), '1-R1-STBA-STAGECOACH-1')
+        self.assertEqual(
+            str(stoptime), '%d-R1-STBA-STAGECOACH-1' % self.feed.id)
 
     def test_import_stop_times_txt_minimal(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,6:00:00,6:00:00,STAGECOACH,1
 """)
@@ -56,7 +58,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
     def test_import_stop_times_txt_bad_column_empty_OK(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time
 STBA,6:00:00,6:00:00,STAGECOACH,1,
 """)
@@ -70,7 +72,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,
         self.assertEqual(stoptime.drop_off_type, '')
 
     def test_import_stop_times_txt_bad_column_populated_raises(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time
 STBA,6:00:00,6:00:00,STAGECOACH,1,1
 """)
@@ -78,7 +80,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,1
             ValueError, StopTime.import_txt, stop_times_txt, self.feed)
 
     def test_import_stop_times_txt_maximal(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
@@ -96,7 +98,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,"SC",2,1,5.25
         self.assertEqual(stoptime.shape_dist_traveled, 5.25)
 
     def test_import_stop_times_txt_empty_optional(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
 STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
@@ -114,7 +116,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
     def test_import_stop_times_txt_middle_times_optional(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,6:00:00,6:00:00,STAGECOACH,1
 STBA,,,STAGECOACH2,2
@@ -138,7 +140,7 @@ STBA,12:00:00,12:00:00,STAGECOACH3,3
         self.assertEqual(str(stoptime3.departure_time), '12:00:00')
 
     def test_import_stop_times_txt_tomorrow(self):
-        stop_times_txt = StringIO.StringIO("""\
+        stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,23:59:00,24:01:00,STAGECOACH,1
 """)

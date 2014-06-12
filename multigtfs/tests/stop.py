@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
+from django.utils.six import StringIO, text_type
 
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip, Zone
 
@@ -29,7 +30,7 @@ class StopTest(TestCase):
         stop = Stop.objects.create(
             feed=self.feed, stop_id='STEST',
             point="POINT(-117.133162 36.425288)")
-        self.assertEqual(str(stop), '1-STEST')
+        self.assertEqual(str(stop), '%d-STEST' % self.feed.id)
 
     def test_legacy_lat_long(self):
         stop1 = Stop(feed=self.feed, stop_id='STOP1')
@@ -54,14 +55,14 @@ class StopTest(TestCase):
         self.assertEqual(stop.point.coords, (-117.133162, 36.425288))
 
     def test_import_stops_txt_none(self):
-        stops_txt = StringIO.StringIO("""\
+        stops_txt = StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
 """)
         Stop.import_txt(stops_txt, self.feed)
         self.assertFalse(Stop.objects.exists())
 
     def test_import_stops_txt_minimal(self):
-        stops_txt = StringIO.StringIO("""\
+        stops_txt = StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
 FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
 """)
@@ -82,7 +83,7 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
         self.assertEqual(stop.wheelchair_boarding, '')
 
     def test_import_stops_txt_maximal(self):
-        stops_txt = StringIO.StringIO("""\
+        stops_txt = StringIO("""\
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
 location_type,parent_station,stop_timezone,wheelchair_boarding
 FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
@@ -128,7 +129,7 @@ http://example.com/fcr,0,FEZ_CREEK_STA,
 
     def test_import_stops_txt_stop_before_station(self):
         '''parent_station is set when the stop comes first'''
-        stops_txt = StringIO.StringIO("""\
+        stops_txt = StringIO("""\
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
 location_type,parent_station,stop_timezone
 FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
@@ -160,10 +161,12 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
     def test_export_stops_utf8(self):
         Stop.objects.create(
             feed=self.feed, stop_id=6071,
-            name='The Delta Caf\x82'.decode('latin1'),
+            name=b'The Delta Caf\x82'.decode('latin1'),
             point='POINT(-95.975834 36.114554)')
         stops_txt = Stop.objects.in_feed(self.feed).export_txt()
-        self.assertEqual(stops_txt, """\
+        if isinstance(stops_txt, text_type):
+            stops_txt = stops_txt.encode('utf-8')
+        self.assertEqual(stops_txt, b"""\
 stop_id,stop_name,stop_lat,stop_lon
 6071,The Delta Caf\xc2\x82,36.114554,-95.975834
 """)

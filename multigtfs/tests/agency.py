@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import StringIO
+from __future__ import unicode_literals
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Agency, Feed
 
@@ -26,12 +27,11 @@ class AgencyTest(TestCase):
         self.feed = Feed.objects.create()
 
     def test_string(self):
-        self.assertEqual(self.feed.id, 1)
         agency = Agency.objects.create(feed=self.feed, agency_id='TEST')
-        self.assertEqual(str(agency), '1-TEST')
+        self.assertEqual(str(agency), '%d-TEST' % self.feed.id)
 
     def test_import_minimal(self):
-        agency_txt = StringIO.StringIO("""\
+        agency_txt = StringIO("""\
 agency_name,agency_url,agency_timezone
 Demo Transit Authority,http://google.com,America/Los_Angeles
 """)
@@ -46,7 +46,7 @@ Demo Transit Authority,http://google.com,America/Los_Angeles
         self.assertEqual(agency.fare_url, '')
 
     def test_import_agency_maximal(self):
-        agency_txt = StringIO.StringIO("""\
+        agency_txt = StringIO("""\
 agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,\
 agency_fare_url
 DTA,"Demo Transit Authority",http://google.com,America/Los_Angeles,en,\

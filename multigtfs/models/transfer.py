@@ -62,10 +62,14 @@ schedule variance on each route.
 The min_transfer_time value must be entered in seconds, and must be a
 non-negative integer.
 """
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Transfer(Base):
     """Create additional rules for transfers between ambiguous stops"""
     from_stop = models.ForeignKey(
@@ -87,8 +91,8 @@ class Transfer(Base):
         null=True, blank=True,
         help_text="How many seconds are required to transfer?")
 
-    def __unicode__(self):
-        return u"%s-%s" % (self.from_stop, self.to_stop.stop_id)
+    def __str__(self):
+        return "%s-%s" % (self.from_stop, self.to_stop.stop_id)
 
     class Meta:
         db_table = 'transfer'

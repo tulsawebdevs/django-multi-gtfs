@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 from datetime import date
-import StringIO
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import Feed, FeedInfo
 
@@ -29,10 +30,10 @@ class FeedInfoTest(TestCase):
         feed_info = FeedInfo.objects.create(
             feed=self.feed, publisher_name='PTEST',
             publisher_url='http://example.com', lang='en')
-        self.assertEqual(str(feed_info), '1-PTEST')
+        self.assertEqual(str(feed_info), '%d-PTEST' % self.feed.id)
 
     def test_import_feed_info_txt_maximal(self):
-        feed_info_txt = StringIO.StringIO("""\
+        feed_info_txt = StringIO("""\
 feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,\
 feed_end_date,feed_version
 PTEST,http://example.com,en,20120414,20121231,FOO1
@@ -47,7 +48,7 @@ PTEST,http://example.com,en,20120414,20121231,FOO1
         self.assertEqual(feed_info.version, 'FOO1')
 
     def test_import_feed_info_txt_minimal(self):
-        feed_info_txt = StringIO.StringIO("""\
+        feed_info_txt = StringIO("""\
 feed_publisher_name,feed_publisher_url
 PTEST,http://example.com
 """)

@@ -62,9 +62,14 @@ you intend to use this field to indicate ticket validity, transfer_duration
 should be omitted or empty when transfers is set to 0.
 """
 
+from __future__ import unicode_literals
+
+from django.utils.encoding import python_2_unicode_compatible
+
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Fare(Base):
     """A fare class"""
 
@@ -94,7 +99,7 @@ class Fare(Base):
         null=True, blank=True,
         help_text="Time in seconds until a ticket or transfer expires")
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%d-%s(%s %s)" % (
             self.feed.id, self.fare_id, self.price, self.currency_type)
 

@@ -3,6 +3,7 @@
 [run]
 branch = True
 include = ./*
+omit = *migrations*
 
 [report]
 show_missing = True

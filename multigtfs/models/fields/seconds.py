@@ -15,7 +15,11 @@
 
 "Define model and field to represent time of day in GTFS feeds"
 
+from __future__ import unicode_literals
+
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
+from django.utils.six import integer_types, with_metaclass
 
 try:
     from south.modelsinspector import add_introspection_rules
@@ -28,6 +32,7 @@ else:
         [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
 
 
+@python_2_unicode_compatible
 class Seconds(object):
     '''A GTFS seconds value, formatted as HH:MM:SS in the GTFS feed'''
 
@@ -40,37 +45,47 @@ class Seconds(object):
     def from_hms(cls, hours=0, minutes=0, seconds=0):
         return Seconds((hours * 60 * 60) + (minutes * 60) + seconds)
 
-    def __unicode__(self):
+    def __str__(self):
         minutes, seconds = divmod(self.seconds, 60)
         hours, minutes = divmod(minutes, 60)
-        return u"%02d:%02d:%02d" % (hours, minutes, seconds)
+        return "%02d:%02d:%02d" % (hours, minutes, seconds)
 
-    def __str__(self):
-        return unicode(self).encode('utf-8')
+    def _compare(self, other, method):
+        try:
+            return method(self.seconds, other.seconds)
+        except (AttributeError, TypeError):
+            return NotImplemented
 
-    def __cmp__(self, other):
-        if isinstance(other, self.__class__):
-            return self.seconds.__cmp__(other.seconds)
-        else:
-            return -1
+    def __lt__(self, other):
+        return self._compare(other, lambda s, o: s < o)
+
+    def __le__(self, other):
+        return self._compare(other, lambda s, o: s <= o)
+
+    def __eq__(self, other):
+        return self._compare(other, lambda s, o: s == o)
+
+    def __ge__(self, other):
+        return self._compare(other, lambda s, o: s >= o)
+
+    def __gt__(self, other):
+        return self._compare(other, lambda s, o: s > o)
 
     def __ne__(self, other):
-        return not (self == other)
+        return self._compare(other, lambda s, o: s != o)
 
 
-class SecondsField(models.Field):
+class SecondsField(with_metaclass(models.SubfieldBase, models.Field)):
     '''A Model Field for storing Seconds'''
 
     description = 'Seconds since start of the day'
-
-    __metaclass__ = models.SubfieldBase
 
     def to_python(self, value):
         if isinstance(value, Seconds):
             return value
         if value is None:
             return None
-        if isinstance(value, (int, long)):
+        if isinstance(value, integer_types):
             return Seconds(value)
         svalue = str(value)
         colons = svalue.count(':')
@@ -98,4 +113,4 @@ class SecondsField(models.Field):
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
-        return str(value)
+        return value.__str__()

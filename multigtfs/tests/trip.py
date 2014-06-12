@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
 from datetime import date, time
-import StringIO
 
 from django.test import TestCase
+from django.utils.six import StringIO
 
 from multigtfs.models import (
     Block, Feed, Route, Service, Shape, Stop, StopTime, Trip)
@@ -30,10 +31,10 @@ class TripTest(TestCase):
 
     def test_string(self):
         trip = Trip.objects.create(route=self.route, trip_id='T1')
-        self.assertEqual(str(trip), '1-R1-T1')
+        self.assertEqual(str(trip), '%d-R1-T1' % self.feed.id)
 
     def test_import_trips_txt_minimal(self):
-        trips_txt = StringIO.StringIO("""\
+        trips_txt = StringIO("""\
 route_id,service_id,trip_id
 R1,S1,T1
 """)
@@ -54,7 +55,7 @@ R1,S1,T1
         self.assertEqual(trip.bikes_allowed, '')
 
     def test_import_trips_txt_maximal(self):
-        trips_txt = StringIO.StringIO("""\
+        trips_txt = StringIO("""\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
 block_id,shape_id,wheelchair_accessible,bikes_allowed
 R1,S1,T1,Headsign,HS,0,B1,S1,1,2
@@ -79,7 +80,7 @@ R1,S1,T1,Headsign,HS,0,B1,S1,1,2
 
     def test_import_trips_txt_multiple_services(self):
         '''If a trip is associated with several services, one is created'''
-        trips_txt = StringIO.StringIO("""\
+        trips_txt = StringIO("""\
 route_id,service_id,trip_id
 R1,S1,T1
 R1,S2,T1

@@ -97,12 +97,15 @@ define how a line should be drawn on the map to represent a trip.
         accommodate at least one bicycle
     * 2 - indicates that no bicycles are allowed on this trip
 """
+from __future__ import unicode_literals
 
 from django.contrib.gis.geos import LineString
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Trip(Base):
     """A trip along a route"""
 
@@ -160,8 +163,8 @@ class Trip(Base):
             if update_parent:
                 self.route.update_geometry()
 
-    def __unicode__(self):
-        return u"%s-%s" % (self.route, self.trip_id)
+    def __str__(self):
+        return "%s-%s" % (self.route, self.trip_id)
 
     class Meta:
         db_table = 'trip'

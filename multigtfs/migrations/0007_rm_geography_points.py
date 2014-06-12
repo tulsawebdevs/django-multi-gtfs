@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # flake8: noqa
+from __future__ import print_function
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import SchemaMigration
@@ -22,11 +23,38 @@ class Migration(SchemaMigration):
             field_type.db_type = db_type_for_postgis
         field = field_type()
 
+        migrate_issue = False
+
         # Changing field 'ShapePoint.point'
-        db.alter_column('shape_point', 'point', field)
+        try:
+            db.alter_column('shape_point', 'point', field)
+        except TypeError:
+            if db.backend_name == 'postgres':
+                migrate_issue = True
+                print("*** Unable to alter shape_point.point ***")
+            else:
+                raise
 
         # Changing field 'Stop.point'
-        db.alter_column('stop', 'point', field)
+        try:
+            db.alter_column('stop', 'point', field)
+        except TypeError:
+            if db.backend_name == 'postgres':
+                migrate_issue = True
+                print("*** Unable to alter stop.point ***")
+            else:
+                raise
+
+        if migrate_issue:
+            print("""\
+You may have an old PostGIS version (1.5)?  It may be safe to skip this
+migration, especially if you have no data in the database.  See the
+discussion for issue 27 at:
+
+https://github.com/tulsawebdevs/django-multi-gtfs/issues/27
+""")
+            raise Exception('Must manually skip migration')
+
 
     def backwards(self, orm):
 

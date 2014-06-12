@@ -110,11 +110,15 @@ specified, the default text color is black (000000).
 The color difference between route_color and route_text_color should provide
 sufficient contrast when viewed on a black and white screen.
 """
+from __future__ import unicode_literals
+
 from django.contrib.gis.geos import MultiLineString
+from django.utils.encoding import python_2_unicode_compatible
 
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Route(Base):
     """A transit route"""
 
@@ -170,8 +174,8 @@ class Route(Base):
         if self.geometry != original:
             self.save()
 
-    def __unicode__(self):
-        return u"%d-%s" % (self.feed.id, self.route_id)
+    def __str__(self):
+        return "%d-%s" % (self.feed.id, self.route_id)
 
     class Meta:
         db_table = 'route'

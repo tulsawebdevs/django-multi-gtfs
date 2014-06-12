@@ -13,11 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from __future__ import unicode_literals
+
 import os
 import tempfile
 import zipfile
 
 from django.test import TestCase
+from django.utils.six import text_type
 
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
@@ -38,18 +41,17 @@ class FeedTest(TestCase):
 
     def normalize(self, feed):
         '''Normalize a feed - line seperators, etc.'''
-        feed = feed.replace('\r\n', '\n').strip()
-        lines = feed.split('\n')
+        feed = feed.replace(b'\r\n', b'\n').strip()
+        lines = feed.split(b'\n')
         header = lines.pop(0)
         lines.sort()
-        return header + '\n' + '\n'.join(lines) + '\n'
+        return header + b'\n' + b'\n'.join(lines) + b'\n'
 
     def test_string(self):
         feed = Feed.objects.create()
-        self.assertEqual(feed.id, 1)
-        self.assertEqual(str(feed), '1')
+        self.assertEqual(str(feed), '%d' % feed.id)
         feed.name = 'Test'
-        self.assertEqual(str(feed), '1 Test')
+        self.assertEqual(str(feed), '%d Test' % feed.id)
 
     def test_import_gtfs_test1(self):
         '''Try importing test1.zip
@@ -167,7 +169,7 @@ class FeedTest(TestCase):
         self.assertFalse('feed/feed_info.txt' in z_out.namelist())
 
         freq_in = self.normalize(z_in.read('dv/frequencies.txt'))
-        self.assertEqual(freq_in, '''\
+        self.assertEqual(freq_in, b'''\
 trip_id,start_time,end_time,headway_secs
 CITY1,10:00:00,15:59:59,1800
 CITY1,16:00:00,18:59:59,600
@@ -183,7 +185,7 @@ STBA,6:00:00,22:00:00,1800
 ''')
         freq_out = self.normalize(z_out.read('frequencies.txt'))
         self.assertNotEqual(freq_out, "Le Freak, C'est Chic")
-        self.assertEqual(freq_out, '''\
+        self.assertEqual(freq_out, b'''\
 trip_id,start_time,end_time,headway_secs
 CITY1,06:00:00,07:59:59,1800
 CITY1,08:00:00,09:59:59,600
@@ -206,7 +208,7 @@ STBA,06:00:00,22:00:00,1800
         self.assertFalse('feed/shapes.txt' in z_out.namelist())
 
         stimes_in = self.normalize(z_in.read('dv/stop_times.txt'))
-        self.assertEqual(stimes_in, """\
+        self.assertEqual(stimes_in, b"""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 AAMV1,8:00:00,8:00:00,BEATTY_AIRPORT,1
 AAMV1,9:00:00,9:00:00,AMV,2
@@ -238,7 +240,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
 STBA,6:20:00,6:20:00,BEATTY_AIRPORT,2
 """)
         stimes_out = self.normalize(z_out.read('stop_times.txt'))
-        self.assertEqual(stimes_out, """\
+        self.assertEqual(stimes_out, b"""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 AAMV1,08:00:00,08:00:00,BEATTY_AIRPORT,1
 AAMV1,09:00:00,09:00:00,AMV,2
@@ -271,7 +273,7 @@ STBA,06:20:00,06:20:00,BEATTY_AIRPORT,2
 """)
 
         stops_in = self.normalize(z_in.read('dv/stops.txt'))
-        self.assertEqual(stops_in, """\
+        self.assertEqual(stops_in, b"""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
 AMV,Amargosa Valley (Demo),,36.641496,-116.40094
 BEATTY_AIRPORT,Nye County Airport (Demo),,36.868446,-116.784582
@@ -284,7 +286,7 @@ NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472
 STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677
 """)
         stops_out = self.normalize(z_out.read('stops.txt'))
-        self.assertEqual(stops_out, """\
+        self.assertEqual(stops_out, b"""\
 stop_id,stop_name,stop_lat,stop_lon
 AMV,Amargosa Valley (Demo),36.641496,-116.40094
 BEATTY_AIRPORT,Nye County Airport (Demo),36.868446,-116.784582
@@ -355,21 +357,26 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
 
         # source fare_attributes.txt has unneeded transfer_duration column
         fare_in = self.normalize(z_in.read('fare_attributes.txt'))
-        self.assertEqual(fare_in, '''\
+        self.assertEqual(fare_in, b'''\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 a,5.25,USD,0,0,
 p,1.25,USD,0,0,
 ''')
+        # Sometimes 5.2500, sometimes 5.25
+        fare_a = Fare.objects.get(fare_id='a')
+        fare_p = Fare.objects.get(fare_id='p')
+        s_fare_a = text_type(fare_a.price).encode('utf-8')
+        s_fare_p = text_type(fare_p.price).encode('utf-8')
         fare_out = z_out.read('fare_attributes.txt')
-        self.assertEqual(fare_out, '''\
+        self.assertEqual(fare_out, b'''\
 fare_id,price,currency_type,payment_method,transfers
-a,5.25,USD,0,0
-p,1.25,USD,0,0
+a,''' + s_fare_a + b''',USD,0,0
+p,''' + s_fare_p + b''',USD,0,0
 ''')
 
         # source fare_rules.txt has unneeded columns
         fare_rules_in = self.normalize(z_in.read('fare_rules.txt'))
-        self.assertEqual(fare_rules_in, '''\
+        self.assertEqual(fare_rules_in, b'''\
 fare_id,route_id,origin_id,destination_id,contains_id
 a,AAMV,,,
 p,AB,,,
@@ -377,7 +384,7 @@ p,BFC,,,
 p,STBA,,,
 ''')
         fare_rules_out = self.normalize(z_out.read('fare_rules.txt'))
-        self.assertEqual(fare_rules_out, '''\
+        self.assertEqual(fare_rules_out, b'''\
 fare_id,route_id
 a,AAMV
 p,AB
@@ -389,7 +396,7 @@ p,STBA
         self.assertFalse('feed/feed_info.txt' in z_out.namelist())
 
         freq_in = self.normalize(z_in.read('frequencies.txt'))
-        self.assertEqual(freq_in, '''\
+        self.assertEqual(freq_in, b'''\
 trip_id,start_time,end_time,headway_secs
 CITY1,10:00:00,15:59:59,1800
 CITY1,16:00:00,18:59:59,600
@@ -404,7 +411,7 @@ CITY2,8:00:00,9:59:59,600
 STBA,6:00:00,22:00:00,1800
 ''')
         freq_out = self.normalize(z_out.read('frequencies.txt'))
-        self.assertEqual(freq_out, '''\
+        self.assertEqual(freq_out, b'''\
 trip_id,start_time,end_time,headway_secs
 CITY1,06:00:00,07:59:59,1800
 CITY1,08:00:00,09:59:59,600
@@ -420,7 +427,7 @@ STBA,06:00:00,22:00:00,1800
 ''')
 
         routes_in = self.normalize(z_in.read('routes.txt'))
-        self.assertEqual(routes_in, """\
+        self.assertEqual(routes_in, b"""\
 route_id,agency_id,route_short_name,route_long_name,route_desc,route_type\
 ,route_url,route_color,route_text_color
 AAMV,DTA,50,Airport - Amargosa Valley,,3,,,
@@ -430,7 +437,7 @@ CITY,DTA,40,City,,3,,,
 STBA,DTA,30,Stagecoach - Airport Shuttle,,3,,,
 """)
         routes_out = self.normalize(z_out.read('routes.txt'))
-        self.assertEqual(routes_out, """\
+        self.assertEqual(routes_out, b"""\
 route_id,agency_id,route_short_name,route_long_name,route_type
 AAMV,DTA,50,Airport - Amargosa Valley,3
 AB,DTA,10,Airport - Bullfrog,3
@@ -440,14 +447,14 @@ STBA,DTA,30,Stagecoach - Airport Shuttle,3
 """)
 
         shapes_out = self.normalize(z_in.read('shapes.txt'))
-        self.assertEqual(shapes_out, '''\
+        self.assertEqual(shapes_out, b'''\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 
 ''')
         self.assertFalse('feed/shapes.txt' in z_out.namelist())
 
         stimes_in = self.normalize(z_in.read('stop_times.txt'))
-        self.assertEqual(stimes_in, """\
+        self.assertEqual(stimes_in, b"""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_time,shape_dist_traveled
 AAMV1,8:00:00,8:00:00,BEATTY_AIRPORT,1
@@ -480,7 +487,7 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,,,,
 STBA,6:20:00,6:20:00,BEATTY_AIRPORT,2,,,,
 """)
         stimes_out = self.normalize(z_out.read('stop_times.txt'))
-        self.assertEqual(stimes_out, """\
+        self.assertEqual(stimes_out, b"""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 AAMV1,08:00:00,08:00:00,BEATTY_AIRPORT,1
 AAMV1,09:00:00,09:00:00,AMV,2
@@ -513,7 +520,7 @@ STBA,06:20:00,06:20:00,BEATTY_AIRPORT,2
 """)
 
         stops_in = self.normalize(z_in.read('stops.txt'))
-        self.assertEqual(stops_in, """\
+        self.assertEqual(stops_in, b"""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url
 AMV,Amargosa Valley (Demo),,36.641496,-116.40094,,
 BEATTY_AIRPORT,Nye County Airport (Demo),,36.868446,-116.784582,,
@@ -526,7 +533,7 @@ NANAA,North Ave / N A Ave (Demo),,36.914944,-116.761472,,
 STAGECOACH,Stagecoach Hotel & Casino (Demo),,36.915682,-116.751677,,
 """)
         stops_out = self.normalize(z_out.read('stops.txt'))
-        self.assertEqual(stops_out, """\
+        self.assertEqual(stops_out, b"""\
 stop_id,stop_name,stop_lat,stop_lon
 AMV,Amargosa Valley (Demo),36.641496,-116.40094
 BEATTY_AIRPORT,Nye County Airport (Demo),36.868446,-116.784582
@@ -543,7 +550,7 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
         self.assertFalse('feed/transfers.txt' in z_out.namelist())
 
         trips_in = self.normalize(z_in.read('trips.txt'))
-        self.assertEqual(trips_in, """\
+        self.assertEqual(trips_in, b"""\
 route_id,service_id,trip_id,trip_headsign,direction_id,block_id,shape_id
 AAMV,WE,AAMV1,to Amargosa Valley,0,,
 AAMV,WE,AAMV2,to Airport,1,,
@@ -558,7 +565,7 @@ CITY,FULLW,CITY2,,1,,
 STBA,FULLW,STBA,Shuttle,,,
 """)
         trips_out = self.normalize(z_out.read('trips.txt'))
-        self.assertEqual(trips_out, """\
+        self.assertEqual(trips_out, b"""\
 route_id,service_id,trip_id,trip_headsign,direction_id,block_id
 AAMV,WE,AAMV1,to Amargosa Valley,0,
 AAMV,WE,AAMV2,to Airport,1,
