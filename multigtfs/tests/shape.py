@@ -147,6 +147,28 @@ S1,36.425288,-117.133162,1,1.1
         self.assertEqual(trip.geometry, shape.geometry)
         self.assertEqual(route.geometry, MultiLineString(shape.geometry))
 
+    def test_update_geometry_no_parent(self):
+        shape = Shape.objects.create(feed=self.feed)
+        route = Route.objects.create(feed=self.feed, rtype=3)
+        trip = Trip.objects.create(shape=shape, route=route)
+        ShapePoint.objects.create(
+            shape=shape, point="POINT(-117.133162 36.425288)", sequence=1)
+        ShapePoint.objects.create(
+            shape=shape, point="POINT(-117.13 36.42)", sequence=2)
+
+        shape.geometry = None
+        shape.save()
+        trip.geometry = None
+        trip.save()
+        shape.update_geometry(update_parent=False)
+
+        shape = Shape.objects.get(id=shape.id)
+        trip = Trip.objects.get(id=trip.id)
+        self.assertEqual(
+            shape.geometry.coords,
+            ((-117.133162, 36.425288), (-117.13, 36.42)))
+        self.assertIsNone(trip.geometry, None)
+
     def test_shape_geometry_is_ordered(self):
         '''Shape geometry is ordered by ShapePoint sequence
 
