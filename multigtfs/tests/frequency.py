@@ -33,8 +33,8 @@ class FrequencyTest(TestCase):
         self.service = Service.objects.create(
             feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
             end_date=date(2011, 12, 31))
-        self.trip = Trip.objects.create(route=self.route, trip_id='STBA')
-        self.trip.services.add(self.service)
+        self.trip = Trip.objects.create(
+            route=self.route, service=self.service, trip_id='STBA')
 
     def test_string(self):
         frequency = Frequency.objects.create(

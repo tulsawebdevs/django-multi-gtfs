@@ -110,7 +110,6 @@ class Trip(Base):
     """A trip along a route"""
 
     route = models.ForeignKey('Route')
-    services = models.ManyToManyField('Service', related_name='+')
     service = models.ForeignKey('Service', null=True, blank=True)
     trip_id = models.CharField(
         max_length=255, db_index=True,
