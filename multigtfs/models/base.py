@@ -15,6 +15,7 @@
 from __future__ import unicode_literals
 from csv import DictReader, writer
 from datetime import datetime, date
+from logging import getLogger
 import re
 
 from django.contrib.gis.db import models
@@ -22,7 +23,7 @@ from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type
 
-
+logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 
 
@@ -264,10 +265,12 @@ class Base(models.Model):
 
         # Read and convert the source txt
         reader = DictReader(txt_file)
+        unique_line = dict()
         for row in reader:
             fields = dict()
             m2ms = dict()
             point_coords = [None, None]
+            ukey_values = {}
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
             for column_name, value in row.items():
@@ -284,10 +287,27 @@ class Base(models.Model):
                     assert column_name in point_map
                     pos, converter = point_map[column_name]
                     point_coords[pos] = converter(value)
+
+                # Is it part of the unique key?
+                if column_name in cls._unique_fields:
+                    ukey_values[column_name] = value
+
+            # Join the lat/long into a point
             if point_map:
                 assert point_coords[0] and point_coords[1]
                 fields['point'] = "POINT(%s)" % (' '.join(point_coords))
 
+            # Is the item unique?
+            ukey = tuple(ukey_values.get(u) for u in cls._unique_fields)
+            if ukey in unique_line:
+                logger.warning(
+                    '%s line %d is a duplicate of line %d, not imported.',
+                    cls._filename, reader.line_num, unique_line[ukey])
+                continue
+            else:
+                unique_line[ukey] = reader.line_num
+
+            # Create the item
             if m2ms:
                 obj, created = cls.objects.get_or_create(**fields)
                 for field_name, value in m2ms.items():

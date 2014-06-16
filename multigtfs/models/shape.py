@@ -188,8 +188,10 @@ class ShapePoint(Base):
         ('shape_pt_sequence', 'sequence'),
         ('shape_dist_traveled', 'traveled')
     )
+    _filename = 'shapes.txt'
     _rel_to_feed = 'shape__feed'
     _sort_order = ('shape__shape_id', 'sequence')
+    _unique_fields = ('shape_id', 'sequence')
 
 
 @receiver(post_save, sender=ShapePoint, dispatch_uid="post_save_shapepoint")

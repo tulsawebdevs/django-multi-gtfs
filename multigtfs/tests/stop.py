@@ -82,6 +82,18 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
         self.assertEqual(stop.timezone, '')
         self.assertEqual(stop.wheelchair_boarding, '')
 
+    def test_import_stops_txt_duplicate(self):
+        stops_txt = StringIO("""\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon
+FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
+FUR_CREEK_RES,Furnace Creek Resort,,36.42,-117.13
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        stop = Stop.objects.get()
+        self.assertEqual(stop.feed, self.feed)
+        self.assertEqual(stop.stop_id, 'FUR_CREEK_RES')
+        self.assertEqual(stop.name, 'Furnace Creek Resort (Demo)')
+
     def test_import_stops_txt_maximal(self):
         stops_txt = StringIO("""\
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\

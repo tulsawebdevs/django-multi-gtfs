@@ -59,6 +59,19 @@ class FeedTest(TestCase):
         test1.zip was downloaded from
         http://timetablepublisher.googlecode.com/files/GTFS%20Test%20Data.zip
         on April 14th, 2012
+
+        dv/trips.txt contains multiple lines with trip id BFC1 and BFC2:
+
+        BFC,W,BFC1,to Furnace Creek Resort,0,1
+        BFC,W,BFC2,to Bullfrog,1,2
+        BFC,S,BFC1,to Furnace Creek Resort,0,1
+        BFC,S,BFC2,to Bullfrog,1,2
+        BFC,U,BFC1,to Furnace Creek Resort,0,1
+        BFC,U,BFC2,to Bullfrog,1,2
+
+        Before 0.4.0, these were imported with a many-to-many relation to
+        services table.  After 0.4.0, the service ID was changed to a single
+        foriegn key, so only the 'W' service is recorded.
         '''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
         feed = Feed.objects.create()
@@ -76,8 +89,8 @@ class FeedTest(TestCase):
         service_S = Service.objects.get(service_id='S')
         service_U = Service.objects.get(service_id='U')
         self.assertEqual(service_W.trip_set.count(), 9)
-        self.assertEqual(service_S.trip_set.count(), 4)
-        self.assertEqual(service_U.trip_set.count(), 2)
+        self.assertEqual(service_S.trip_set.count(), 2)  # 2 trips dropped
+        self.assertEqual(service_U.trip_set.count(), 0)  # 2 trips dropped
         self.assertEqual(ServiceDate.objects.count(), 1)
         self.assertEqual(Shape.objects.count(), 0)
         self.assertEqual(Stop.objects.count(), 9)
@@ -302,9 +315,22 @@ STAGECOACH,Stagecoach Hotel & Casino (Demo),36.915682,-116.751677
         self.assertFalse('dv/transfers.txt' in z_in.namelist())
         self.assertFalse('feed/transfers.txt' in z_out.namelist())
 
-        trips_in = self.normalize(z_in.read('dv/trips.txt'))
+        # Duplicate trips are dropped
         trips_out = self.normalize(z_out.read('trips.txt'))
-        self.assertEqual(trips_in, trips_out)
+        self.assertEqual(trips_out, b"""\
+route_id,service_id,trip_id,trip_headsign,direction_id,block_id
+AAMV,S,AAMV3,to Amargosa Valley,0,4
+AAMV,S,AAMV4,to Airport,1,4
+AAMV,W,AAMV1,to Amargosa Valley,0,3
+AAMV,W,AAMV2,to Airport,1,3
+AB,W,AB1,to Bullfrog,0,1
+AB,W,AB2,to Airport,1,2
+BFC,W,BFC1,to Furnace Creek Resort,0,1
+BFC,W,BFC2,to Bullfrog,1,2
+CITY,W,CITY1,to Somewhere,0,44
+CITY,W,CITY2,to Nowhere,1,45
+STBA,W,STBA,Shuttle,1,2
+""")
 
     def test_export_gtfs_test2(self):
         '''Try exporting test2.zip'''

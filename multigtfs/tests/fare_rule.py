@@ -79,6 +79,22 @@ p,AB,1,2,12
         self.assertEqual(fr.destination, zone2)
         self.assertEqual(fr.contains, zone12)
 
+    def test_import_fare_rules_txt_duplicate(self):
+        fare_rules_txt = StringIO("""\
+fare_id,route_id
+p,AB
+p,AB
+p,CD
+""")
+        route = Route.objects.create(feed=self.feed, route_id='AB', rtype=3)
+        route2 = Route.objects.create(feed=self.feed, route_id='CD', rtype=3)
+        FareRule.import_txt(fare_rules_txt, self.feed)
+        self.assertEqual(FareRule.objects.count(), 2)
+        fr = FareRule.objects.get(route=route)  # Just one
+        self.assertEqual(fr.fare, self.fare)
+        fr = FareRule.objects.get(route=route2)
+        self.assertEqual(fr.fare, self.fare)
+
     def test_export_fare_rules_empty(self):
         fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
         self.assertFalse(fare_rules_txt)

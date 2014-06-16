@@ -67,27 +67,15 @@ class Feed(models.Model):
         files = z.namelist()
 
         gtfs_order = (
-            ('agency.txt', Agency),
-            ('stops.txt', Stop),
-            ('routes.txt', Route),
-            ('calendar.txt', Service),
-            ('calendar_dates.txt', ServiceDate),
-            ('shapes.txt', ShapePoint),
-            ('trips.txt', Trip),
-            ('stop_times.txt', StopTime),
-            ('frequencies.txt', Frequency),
-            ('fare_attributes.txt', Fare),
-            ('fare_rules.txt', FareRule),
-            ('transfers.txt', Transfer),
-            ('feed_info.txt', FeedInfo),
+            Agency, Stop, Route, Service, ServiceDate, ShapePoint, Trip,
+            StopTime, Frequency, Fare, FareRule, Transfer, FeedInfo,
         )
-
         post_save.disconnect(dispatch_uid='post_save_shapepoint')
         post_save.disconnect(dispatch_uid='post_save_stop')
         try:
-            for table_name, klass in gtfs_order:
+            for klass in gtfs_order:
                 for f in files:
-                    if f.endswith(table_name):
+                    if f.endswith(klass._filename):
                         table = z.open(f)
                         if PY3:  # pragma: no cover
                             from io import TextIOWrapper
@@ -117,23 +105,12 @@ class Feed(models.Model):
         z = ZipFile(gtfs_file, 'w')
 
         gtfs_order = (
-            ('agency.txt', Agency),
-            ('calendar.txt', Service),
-            ('calendar_dates.txt', ServiceDate),
-            ('fare_attributes.txt', Fare),
-            ('fare_rules.txt', FareRule),
-            ('feed_info.txt', FeedInfo),
-            ('frequencies.txt', Frequency),
-            ('routes.txt', Route),
-            ('shapes.txt', ShapePoint),
-            ('stop_times.txt', StopTime),
-            ('stops.txt', Stop),
-            ('transfers.txt', Transfer),
-            ('trips.txt', Trip),
+            Agency, Service, ServiceDate, Fare, FareRule, FeedInfo, Frequency,
+            Route, ShapePoint, StopTime, Stop, Transfer, Trip,
         )
 
-        for filename, exporter in gtfs_order:
+        for exporter in gtfs_order:
             content = exporter.objects.in_feed(self).export_txt()
             if content:
-                z.writestr(filename, content)
+                z.writestr(exporter._filename, content)
         z.close()

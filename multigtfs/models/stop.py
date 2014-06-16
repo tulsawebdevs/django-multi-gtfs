@@ -244,6 +244,8 @@ class Stop(Base):
         ('stop_timezone', 'timezone'),
         ('wheelchair_boarding', 'wheelchair_boarding'),
     )
+    _filename = 'stops.txt'
+    _unique_fields = ('stop_id',)
 
     @classmethod
     def import_txt(cls, txt_file, feed):

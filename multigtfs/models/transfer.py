@@ -104,5 +104,7 @@ class Transfer(Base):
         ('transfer_type', 'transfer_type'),
         ('min_transfer_time', 'min_transfer_time')
     )
+    _filename = 'transfers.txt'
     _rel_to_feed = 'from_stop__feed'
     _sort_order = ('from_stop__stop_id', 'to_stop__stop_id')
+    _unique_fields = ('from_stop_id', 'to_stop_id')

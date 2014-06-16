@@ -54,6 +54,19 @@ R1,S1,T1
         self.assertEqual(trip.wheelchair_accessible, '')
         self.assertEqual(trip.bikes_allowed, '')
 
+    def test_import_trips_txt_duplicate(self):
+        trips_txt = StringIO("""\
+route_id,service_id,trip_id
+R1,S1,T1
+R1,S1,T1
+""")
+        Service.objects.create(
+            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
+            end_date=date(2011, 12, 31))
+        Trip.import_txt(trips_txt, self.feed)
+        trip = Trip.objects.get()  # Just one
+        self.assertEqual(trip.trip_id, 'T1')
+
     def test_import_trips_txt_maximal(self):
         trips_txt = StringIO("""\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
@@ -79,7 +92,12 @@ R1,S1,T1,Headsign,HS,0,B1,S1,1,2
         self.assertEqual(trip.bikes_allowed, '2')
 
     def test_import_trips_txt_multiple_services(self):
-        '''If a trip is associated with several services, one is created'''
+        '''
+        If a trip is associated with several services, only one is created
+
+        Before 0.4.0, the trip was related to both services
+        After 0.4.0, the trip is related to only the first service
+        '''
         trips_txt = StringIO("""\
 route_id,service_id,trip_id
 R1,S1,T1
@@ -95,9 +113,8 @@ R1,S2,T1
         Trip.import_txt(trips_txt, self.feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.route, self.route)
-        self.assertEqual(trip.services.count(), 2)
-        self.assertTrue(service1 in trip.services.all())
-        self.assertTrue(service2 in trip.services.all())
+        self.assertEqual(list(trip.services.all()), [service1])
+        self.assertFalse(service2.trip_set.exists())
 
     def test_export_trips_txt_empty(self):
         trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
@@ -131,22 +148,6 @@ R1,S1,T1
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
 block_id,shape_id,wheelchair_accessible,bikes_allowed
 R1,S1,T1,Headsign,HS,0,B1,S1,2,1
-""")
-
-    def test_export_trips_txt_multiple_services(self):
-        service1 = Service.objects.create(
-            feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
-            end_date=date(2011, 12, 31))
-        service2 = Service.objects.create(
-            feed=self.feed, service_id='S2', start_date=date(2012, 1, 1),
-            end_date=date(2012, 4, 14))
-        trip = Trip.objects.create(route=self.route, trip_id='T1')
-        trip.services.add(service1, service2)
-        trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
-        self.assertEqual(trips_txt, """\
-route_id,service_id,trip_id
-R1,S1,T1
-R1,S2,T1
 """)
 
     def test_update_geometry_no_shape_or_stoptime(self):

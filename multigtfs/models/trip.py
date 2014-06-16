@@ -182,5 +182,6 @@ class Trip(Base):
         ('wheelchair_accessible', 'wheelchair_accessible'),
         ('bikes_allowed', 'bikes_allowed'),
     )
-
+    _filename = 'trips.txt'
     _rel_to_feed = 'route__feed'
+    _unique_fields = ('trip_id',)

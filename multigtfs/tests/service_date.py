@@ -49,6 +49,18 @@ S1,20120414,2
         self.assertEqual(service_date.service, self.service)
         self.assertEqual(service_date.exception_type, 2)
 
+    def test_import_calendar_dates_duplicates(self):
+        calendar_dates_txt = StringIO("""\
+service_id,date,exception_type
+S1,20120414,2
+S1,20120414,1
+""")
+        ServiceDate.import_txt(calendar_dates_txt, self.feed)
+        service_date = ServiceDate.objects.get()  # Just one
+        self.assertEqual(service_date.date, date(2012, 4, 14))
+        self.assertEqual(service_date.service, self.service)
+        self.assertEqual(service_date.exception_type, 2)
+
     def test_export_calendar_dates_txt_none(self):
         cdates_txt = ServiceDate.objects.in_feed(self.feed).export_txt()
         self.assertFalse(cdates_txt)

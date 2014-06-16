@@ -47,6 +47,18 @@ AB,10,Airport - Bullfrog,3
         self.assertEqual(route.color, '')
         self.assertEqual(route.text_color, '')
 
+    def test_import_routes_txt_duplicate(self):
+        routes_txt = StringIO("""\
+route_id,route_short_name,route_long_name,route_type
+AB,10,Airport - Bullfrog,3
+AB,11,Airport Party Bus,3
+""")
+        Route.import_txt(routes_txt, self.feed)
+        route = Route.objects.get()  # Just one
+        self.assertEqual(route.feed, self.feed)
+        self.assertEqual(route.route_id, 'AB')
+        self.assertEqual(route.short_name, '10')
+
     def test_import_routes_txt_maximal(self):
         routes_txt = StringIO("""\
 route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,\

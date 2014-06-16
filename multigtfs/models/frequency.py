@@ -118,4 +118,6 @@ class Frequency(Base):
         ('end_time', 'end_time'),
         ('headway_secs', 'headway_secs'),
         ('exact_times', 'exact_times'))
+    _filename = 'frequencies.txt'
     _rel_to_feed = 'trip__route__feed'
+    _unique_fields = ('trip_id', 'start_time')

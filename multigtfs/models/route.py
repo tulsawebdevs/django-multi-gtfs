@@ -192,4 +192,6 @@ class Route(Base):
         ('route_color', 'color'),
         ('route_text_color', 'text_color')
     )
+    _filename = 'routes.txt'
     _sort_order = ('route_id', 'short_name')
+    _unique_fields = ('route_id',)

@@ -61,6 +61,17 @@ PTEST,http://example.com
         self.assertEqual(feed_info.end_date, None)
         self.assertEqual(feed_info.version, '')
 
+    def test_import_feed_info_txt_duplicate(self):
+        feed_info_txt = StringIO("""\
+feed_publisher_name,feed_publisher_url
+PTEST,http://example.com
+PTEST,http://www.example.com
+""")
+        FeedInfo.import_txt(feed_info_txt, feed=self.feed)
+        feed_info = FeedInfo.objects.get()  # Just one
+        self.assertEqual(feed_info.publisher_name, 'PTEST')
+        self.assertEqual(feed_info.publisher_url, 'http://example.com')
+
     def test_export_feed_info_txt_empty(self):
         feed_info_txt = FeedInfo.objects.in_feed(feed=self.feed).export_txt()
         self.assertFalse(feed_info_txt)

@@ -139,5 +139,8 @@ class FareRule(Base):
         ('destination_id', 'destination__zone_id'),
         ('contains_id', 'contains__zone_id')
     )
+    _filename = 'fare_rules.txt'
     _rel_to_feed = 'fare__feed'
     _sort_order = ('route__route_id', 'fare__fare_id')
+    _unique_fields = (
+        'fare_id', 'route_id', 'origin_id', 'destination_id', 'contains_id')

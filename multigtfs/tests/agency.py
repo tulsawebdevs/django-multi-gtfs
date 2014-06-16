@@ -45,6 +45,28 @@ Demo Transit Authority,http://google.com,America/Los_Angeles
         self.assertEqual(agency.phone, '')
         self.assertEqual(agency.fare_url, '')
 
+    def test_import_two_no_id(self):
+        agency_txt = StringIO("""\
+agency_name,agency_url,agency_timezone
+Demo Transit Authority,http://google.com,America/Los_Angeles
+Example Transit Authority,http://example.com,America/Los_Angeles
+""")
+        Agency.import_txt(agency_txt, self.feed)
+        agency = Agency.objects.get()  # Just one
+        self.assertEqual(agency.agency_id, '')
+        self.assertEqual(agency.name, 'Demo Transit Authority')
+
+    def test_import_two_same_id(self):
+        agency_txt = StringIO("""\
+agency_id,agency_name,agency_url,agency_timezone
+DTA,Demo Transit Authority,http://google.com,America/Los_Angeles
+DTA,Example Transit Authority,http://example.com,America/Los_Angeles
+""")
+        Agency.import_txt(agency_txt, self.feed)
+        agency = Agency.objects.get()  # Just one
+        self.assertEqual(agency.agency_id, 'DTA')
+        self.assertEqual(agency.name, 'Demo Transit Authority')
+
     def test_import_agency_maximal(self):
         agency_txt = StringIO("""\
 agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,\

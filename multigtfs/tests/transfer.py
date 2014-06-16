@@ -46,6 +46,17 @@ STOP1,STOP2
         self.assertEqual(transfer.transfer_type, 0)
         self.assertEqual(transfer.min_transfer_time, None)
 
+    def test_import_transfers_txt_duplicate(self):
+        transfers_txt = StringIO("""\
+from_stop_id,to_stop_id
+STOP1,STOP2
+STOP1,STOP2
+""")
+        Transfer.import_txt(transfers_txt, self.feed)
+        transfer = Transfer.objects.get()  # Just one
+        self.assertEqual(transfer.from_stop, self.stop1)
+        self.assertEqual(transfer.to_stop, self.stop2)
+
     def test_import_transfers_txt_maximal(self):
         transfers_txt = StringIO("""\
 from_stop_id,to_stop_id,transfer_type,min_transfer_time

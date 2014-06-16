@@ -52,6 +52,18 @@ W,1,0,1,0,1,0,1,20120414,20121231
         self.assertEqual(service.start_date, date(2012, 4, 14))
         self.assertEqual(service.end_date, date(2012, 12, 31))
 
+    def test_import_calendar_duplicate(self):
+        calendar_txt = StringIO("""\
+service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,\
+start_date,end_date
+W,1,0,1,0,1,0,1,20120414,20121231
+W,0,1,0,1,0,1,0,20120414,20121231
+""")
+        Service.import_txt(calendar_txt, self.feed)
+        service = Service.objects.get()  # Only one
+        self.assertEqual(service.feed, self.feed)
+        self.assertEqual(service.service_id, 'W')
+
     def test_export_calendar_txt_none(self):
         calendar_txt = Service.objects.in_feed(self.feed).export_txt()
         self.assertFalse(calendar_txt)

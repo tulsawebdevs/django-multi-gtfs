@@ -72,6 +72,22 @@ S1,36.425288,-117.133162,1
         self.assertEqual(shape_pt.sequence, 1)
         self.assertEqual(shape_pt.traveled, None)
 
+    def test_import_shape_duplicate(self):
+        shape_txt = StringIO("""\
+shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
+S1,36.425288,-117.133162,1
+S1,36.42,-117.13,1
+""")
+        ShapePoint.import_txt(shape_txt, self.feed)
+        shape = Shape.objects.get()  # Just one
+        self.assertEqual(shape.feed, self.feed)
+        self.assertEqual(shape.shape_id, 'S1')
+        self.assertEqual(shape.geometry, None)
+        shape_pt = ShapePoint.objects.get()  # Just one
+        self.assertEqual(shape_pt.shape, shape)
+        self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
+        self.assertEqual(shape_pt.sequence, 1)
+
     def test_import_shape_maximal(self):
         shape_txt = StringIO("""\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled

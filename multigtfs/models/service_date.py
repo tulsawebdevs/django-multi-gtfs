@@ -98,5 +98,7 @@ class ServiceDate(Base):
         ('service_id', 'service__service_id'),
         ('date', 'date'),
         ('exception_type', 'exception_type'))
+    _filename = 'calendar_dates.txt'
     _rel_to_feed = 'service__feed'
     _sort_order = ('date', 'exception_type')
+    _unique_fields = ('service_id', 'date')

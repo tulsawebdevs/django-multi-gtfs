@@ -116,3 +116,5 @@ class Fare(Base):
         ('transfers', 'transfers'),
         ('transfer_duration', 'transfer_duration')
     )
+    _filename = 'fare_attributes.txt'
+    _unique_fields = ('fare_id',)

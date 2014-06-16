@@ -57,6 +57,17 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
         self.assertEqual(stoptime.drop_off_type, '')
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
+    def test_import_stop_times_txt_duplicate(self):
+        stop_times_txt = StringIO("""\
+trip_id,arrival_time,departure_time,stop_id,stop_sequence
+STBA,6:00:00,6:00:00,STAGECOACH,1
+STBA,7:00:00,7:00:00,XXX,1
+""")
+        StopTime.import_txt(stop_times_txt, self.feed)
+        stoptime = StopTime.objects.get()  # Just one
+        self.assertEqual(stoptime.trip, self.trip)
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+
     def test_import_stop_times_txt_bad_column_empty_OK(self):
         stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time

@@ -118,3 +118,5 @@ class FeedInfo(Base):
         ('feed_end_date', 'end_date'),
         ('feed_version', 'version')
     )
+    _filename = 'feed_info.txt'
+    _unique_fields = ('publisher_name',)

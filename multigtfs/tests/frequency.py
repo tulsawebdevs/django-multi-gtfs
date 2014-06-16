@@ -55,6 +55,25 @@ STBA,6:00:00,22:00:00,1800
         self.assertEqual(frequency.headway_secs, 1800)
         self.assertEqual(frequency.exact_times, '')
 
+    def test_import_frequencies_txt_duplicate(self):
+        frequencies_txt = StringIO("""\
+trip_id,start_time,end_time,headway_secs
+STBA,6:00:00,8:00:00,1800
+STBA,6:00:00,10:00:00,1200
+STBA,10:00:00,12:00:00,1500
+""")
+        Frequency.import_txt(frequencies_txt, self.feed)
+        self.assertEqual(2, Frequency.objects.count())
+        freq1, freq2 = Frequency.objects.order_by('start_time')
+        self.assertEqual(freq1.trip, self.trip)
+        self.assertEqual(freq1.start_time, Seconds.from_hms(hours=6))
+        self.assertEqual(freq1.end_time, Seconds.from_hms(hours=8))
+        self.assertEqual(freq1.headway_secs, 1800)
+        self.assertEqual(freq2.trip, self.trip)
+        self.assertEqual(freq2.start_time, Seconds.from_hms(hours=10))
+        self.assertEqual(freq2.end_time, Seconds.from_hms(hours=12))
+        self.assertEqual(freq2.headway_secs, 1500)
+
     def test_import_frequencies_txt_maximal(self):
         frequencies_txt = StringIO("""\
 trip_id,start_time,end_time,headway_secs,exact_times

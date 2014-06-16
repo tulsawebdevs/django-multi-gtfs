@@ -119,3 +119,5 @@ class Agency(Base):
         ('agency_phone', 'phone'),
         ('agency_fare_url', 'fare_url')
     )
+    _filename = 'agency.txt'
+    _unique_fields = ('agency_id',)
