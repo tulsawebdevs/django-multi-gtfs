@@ -110,7 +110,8 @@ class Trip(Base):
     """A trip along a route"""
 
     route = models.ForeignKey('Route')
-    services = models.ManyToManyField('Service')
+    services = models.ManyToManyField('Service', related_name='+')
+    service = models.ForeignKey('Service', null=True, blank=True)
     trip_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a trip.")
@@ -172,7 +173,7 @@ class Trip(Base):
 
     _column_map = (
         ('route_id', 'route__route_id'),
-        ('service_id', 'services__service_id'),
+        ('service_id', 'service__service_id'),
         ('trip_id', 'trip_id'),
         ('trip_headsign', 'headsign'),
         ('trip_short_name', 'short_name'),

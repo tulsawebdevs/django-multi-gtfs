@@ -44,7 +44,7 @@ R1,S1,T1
         Trip.import_txt(trips_txt, self.feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.route, self.route)
-        self.assertEqual(list(trip.services.all()), [service])
+        self.assertEqual(trip.service, service)
         self.assertEqual(trip.trip_id, 'T1')
         self.assertEqual(trip.headsign, '')
         self.assertEqual(trip.short_name, '')
@@ -81,7 +81,7 @@ R1,S1,T1,Headsign,HS,0,B1,S1,1,2
         Trip.import_txt(trips_txt, self.feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.route, self.route)
-        self.assertEqual(list(trip.services.all()), [service])
+        self.assertEqual(trip.service, service)
         self.assertEqual(trip.trip_id, 'T1')
         self.assertEqual(trip.headsign, 'Headsign')
         self.assertEqual(trip.short_name, 'HS')
@@ -113,7 +113,7 @@ R1,S2,T1
         Trip.import_txt(trips_txt, self.feed)
         trip = Trip.objects.get()
         self.assertEqual(trip.route, self.route)
-        self.assertEqual(list(trip.services.all()), [service1])
+        self.assertEqual(trip.service, service1)
         self.assertFalse(service2.trip_set.exists())
 
     def test_export_trips_txt_empty(self):
@@ -124,8 +124,7 @@ R1,S2,T1
         service = Service.objects.create(
             feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
             end_date=date(2011, 12, 31))
-        trip = Trip.objects.create(route=self.route, trip_id='T1')
-        trip.services.add(service)
+        Trip.objects.create(route=self.route, service=service, trip_id='T1')
         trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
         self.assertEqual(trips_txt, """\
 route_id,service_id,trip_id
@@ -138,11 +137,10 @@ R1,S1,T1
             end_date=date(2011, 12, 31))
         block = Block.objects.create(feed=self.feed, block_id='B1')
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
-        trip = Trip.objects.create(
-            route=self.route, trip_id='T1', headsign='Headsign',
-            short_name='HS', direction=0, block=block, shape=shape,
-            wheelchair_accessible='2', bikes_allowed='1')
-        trip.services.add(service)
+        Trip.objects.create(
+            route=self.route, service=service, trip_id='T1',
+            headsign='Headsign', short_name='HS', direction=0, block=block,
+            shape=shape, wheelchair_accessible='2', bikes_allowed='1')
         trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
         self.assertEqual(trips_txt, """\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
