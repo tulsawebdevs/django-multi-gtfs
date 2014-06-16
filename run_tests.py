@@ -69,8 +69,15 @@ def main():
 
     settings.configure(**config)
 
+    # Extract non-options from command line
+    # Options (-sx, --ipdb) will be parsed inside call_command
+    paths = []
+    for arg in sys.argv[1:]:
+        if not arg.startswith('-'):
+            paths.append(arg)
+
     from django.core import management
-    failures = management.call_command('test')  # Will pull sysv args itself
+    failures = management.call_command('test', *paths)
     sys.exit(failures)
 
 
