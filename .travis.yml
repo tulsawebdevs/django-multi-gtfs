@@ -11,4 +11,4 @@ env:
 install:
   - "pip install tox"
 script:
-  - "REUSE_DB=1 tox -e $TOX_ENV"
+  - "tox -e $TOX_ENV"
