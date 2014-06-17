@@ -1,6 +1,9 @@
 multigtfs: GTFS as a Django app
 ===============================
 
+.. image:: https://travis-ci.org/tulsawebdevs/django-multi-gtfs.svg?branch=master
+    :target: https://travis-ci.org/tulsawebdevs/django-multi-gtfs
+
 **multigtfs** is an `Apache 2.0`_-licensed Django app that supports importing
 and exporting of GTFS feeds.  All features of the `June 20, 2012 reference`_
 are supported, including `all changes`_ up to February 17, 2014.

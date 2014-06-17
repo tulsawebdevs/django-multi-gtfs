@@ -7,6 +7,8 @@ before_script:
     - psql -U postgres -d multigtfs -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology;"
 env:
   - TOX_ENV=py27-django15-south08-postgis
+  - TOX_ENV=py27-django16-south08-postgis
+  - TOX_ENV=py34-django16-south08-postgis
 install:
   - "pip install tox"
 script:
