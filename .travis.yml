@@ -2,11 +2,9 @@ language: python
 python: 2.7
 before_script:
     - cp t_overrides.travis.py t_overrides.py
-    - psql -U postgres -c "DROP DATABASE IF EXISTS template_postgis;"
-    - psql -U postgres -c "CREATE DATABASE template_postgis;"
-    - psql -U postgres -d template_postgis -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology;"
-    - psql -U postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
-    - psql -U postgres -c "CREATE DATABASE multigtfs WITH TEMPLATE template_postgis;"
+    - psql -U postgres -c "DROP DATABASE IF EXISTS multigtfs"
+    - psql -U postgres -c "CREATE DATABASE multigtfs"
+    - psql -U postgres -d multigtfs -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology;"
 env:
   - TOX_ENV=py27-django15-south08-postgis
 install:
