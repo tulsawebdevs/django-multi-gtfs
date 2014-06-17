@@ -119,4 +119,4 @@ class FeedInfo(Base):
         ('feed_version', 'version')
     )
     _filename = 'feed_info.txt'
-    _unique_fields = ('publisher_name',)
+    _unique_fields = ('feed_publisher_name',)

@@ -77,16 +77,20 @@ S1,36.425288,-117.133162,1
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
 S1,36.42,-117.13,1
+S1,36.43,-117.14,2
 """)
         ShapePoint.import_txt(shape_txt, self.feed)
         shape = Shape.objects.get()  # Just one
         self.assertEqual(shape.feed, self.feed)
         self.assertEqual(shape.shape_id, 'S1')
-        self.assertEqual(shape.geometry, None)
-        shape_pt = ShapePoint.objects.get()  # Just one
+        self.assertEqual(2, ShapePoint.objects.count())
+        shape_pt, shape_pt2 = ShapePoint.objects.order_by('sequence')
         self.assertEqual(shape_pt.shape, shape)
         self.assertEqual(shape_pt.point.coords, (-117.133162, 36.425288))
         self.assertEqual(shape_pt.sequence, 1)
+        self.assertEqual(shape_pt2.shape, shape)
+        self.assertEqual(shape_pt2.point.coords, (-117.14, 36.43))
+        self.assertEqual(shape_pt2.sequence, 2)
 
     def test_import_shape_maximal(self):
         shape_txt = StringIO("""\

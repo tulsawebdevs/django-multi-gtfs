@@ -214,6 +214,12 @@ class Base(models.Model):
                     return None
             return get_instance
 
+        # Check unique fields
+        column_names = [c for c, _ in cls._column_map]
+        for unique_field in cls._unique_fields:
+            assert unique_field in column_names, \
+                '{} not in {}'.format(unique_field, column_names)
+
         # Map of field_name to converters from GTFS to Django format
         val_map = dict()
         m2m_map = dict()
