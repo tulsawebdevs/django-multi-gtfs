@@ -65,19 +65,6 @@ class FrequencyByTripListView(ListView):
         return Frequency.objects.filter(trip=self.kwargs['trip_id'])
 
 
-class ServicesByTripListView(ListView):
-    model = Service
-
-    def get_context_data(self, **kwargs):
-        context = super(ServicesByTripListView, self).get_context_data(
-            **kwargs)
-        context['trip'] = Trip.objects.get(id=self.kwargs['trip_id'])
-        return context
-
-    def get_queryset(self, **kwargs):
-        return Service.objects.filter(trip=self.kwargs['trip_id'])
-
-
 class ServiceDateByServiceListView(ListView):
     model = ServiceDate
 

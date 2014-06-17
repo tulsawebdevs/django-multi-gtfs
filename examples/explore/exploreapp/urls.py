@@ -5,9 +5,8 @@ from multigtfs.models import (
     Shape, ShapePoint, Stop, StopTime, Trip, Zone)
 
 from exploreapp.views import (
-    ByFeedListView,
-    FareRuleByFareListView, FareRuleByRouteListView, FrequencyByTripListView,
-    ServicesByTripListView, ServiceDateByServiceListView,
+    ByFeedListView, FareRuleByFareListView, FareRuleByRouteListView,
+    FrequencyByTripListView, ServiceDateByServiceListView,
     ShapePointByShapeListView, StopTimeByStopListView, StopTimeByTripListView,
     TripByBlockListView, TripByRouteListView, TripByServiceListView,
     TripByShapeListView)
@@ -34,8 +33,6 @@ urlpatterns = patterns(
         DetailView.as_view(model=StopTime), name='stoptime_detail'),
     url(r'feed/(?P<feed_id>\d+)/trip/(?P<pk>\d+)/$',
         DetailView.as_view(model=Trip), name='trip_detail'),
-    url(r'feed/(?P<feed_id>\d+)/trip/(?P<trip_id>\d+)/service/$',
-        ServicesByTripListView.as_view(), name='service_by_trip_list'),
     url(r'feed/(?P<feed_id>\d+)/trip/(?P<trip_id>\d+)/frequency/$',
         FrequencyByTripListView.as_view(), name='frequency_by_trip_list'),
     url(r'feed/(?P<feed_id>\d+)/trip/(?P<trip_id>\d+)/stoptime/$',
