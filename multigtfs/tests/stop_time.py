@@ -58,6 +58,9 @@ STBA,6:00:00,6:00:00,STAGECOACH,1
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
     def test_import_stop_times_txt_duplicate(self):
+        Stop.objects.create(
+            feed=self.feed, stop_id='XXX',
+            point="POINT(-117.133 36.425)")
         stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,6:00:00,6:00:00,STAGECOACH,1
