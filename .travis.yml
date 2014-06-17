@@ -6,6 +6,7 @@ before_script:
     - psql -U postgres -c "CREATE DATABASE template_postgis;"
     - psql -U postgres -d template_postgis -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology;"
     - psql -U postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';"
+    - psql -U postgres -c "CREATE DATABASE multigtfs WITH TEMPLATE template_postgis;"
 env:
   - TOX_ENV=py27-django15-south08-postgis
 install:
