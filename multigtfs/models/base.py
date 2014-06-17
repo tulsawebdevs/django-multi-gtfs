@@ -84,25 +84,20 @@ class BaseQuerySet(GeoQuerySet):
                 if point_match:
                     continue
                 field_type = self.model._meta.get_field_by_name(base_field)[0]
-                if not isinstance(field_type, ManyToManyField):
-                    sort_fields.append(field)
+                assert not isinstance(field_type, ManyToManyField)
+                sort_fields.append(field)
 
         rows = [[text_type(c) for c in columns]]
         for item in self.order_by(*sort_fields):
             row = []
-            many_pos = None
             for csv_name, field_name in csv_names:
                 obj = item
                 while obj and '__' in field_name:
                     parent_field, field_name = field_name.split('__', 1)
                     obj = getattr(obj, parent_field)
                 point_match = re_point.match(field_name)
-                if hasattr(obj, 'all'):
-                    assert many_pos is None
-                    many_pos = len(row)
-                    many = [str(getattr(o, field_name)) for o in obj.all()]
-                    row.append(many)
-                elif point_match:
+                assert not hasattr(obj, 'all')
+                if point_match:
                     name, index = point_match.groups()
                     field = getattr(obj, name)
                     row.append(field.coords[int(index)])
@@ -117,14 +112,8 @@ class BaseQuerySet(GeoQuerySet):
                         row.append(u'')
                     else:
                         row.append(text_type(field))
-            if many_pos:
-                many = row[many_pos]
-                for m in sorted(many):
-                    new_row = row[:]
-                    new_row[many_pos] = m
-                    rows.append(new_row)
-            else:
-                rows.append(row)
+            rows.append(row)
+
         out = StringIO()
         csv_writer = writer(out, lineterminator='\n')
         for row in rows:
@@ -222,7 +211,6 @@ class Base(models.Model):
 
         # Map of field_name to converters from GTFS to Django format
         val_map = dict()
-        m2m_map = dict()
         name_map = dict()
         point_map = dict()
         for csv_name, field_pattern in cls._column_map:
@@ -242,7 +230,6 @@ class Base(models.Model):
                 field = cls._meta.get_field_by_name(field_name)[0]
 
             # Pick a conversion function for the field
-            is_m2m = False
             if point_match:
                 converter = point_convert
             elif isinstance(field, models.DateField):
@@ -253,7 +240,7 @@ class Base(models.Model):
                 converter = char_convert
             elif field.rel:
                 converter = instance_convert(field, feed, rel_name)
-                is_m2m = isinstance(field, models.ManyToManyField)
+                assert not isinstance(field, models.ManyToManyField)
             elif field.null:
                 converter = null_convert
             elif field.has_default():
@@ -261,9 +248,7 @@ class Base(models.Model):
             else:
                 converter = no_convert
 
-            if is_m2m:
-                m2m_map[csv_name] = converter
-            elif point_match:
+            if point_match:
                 index = int(point_match.group('index'))
                 point_map[csv_name] = (index, converter)
             else:
@@ -274,7 +259,6 @@ class Base(models.Model):
         unique_line = dict()
         for row in reader:
             fields = dict()
-            m2ms = dict()
             point_coords = [None, None]
             ukey_values = {}
             if cls._rel_to_feed == 'feed':
@@ -287,8 +271,6 @@ class Base(models.Model):
                             ' %s' % (column_name, row, name_map.keys()))
                 elif column_name in val_map:
                     fields[name_map[column_name]] = val_map[column_name](value)
-                elif column_name in m2m_map:
-                    m2ms[name_map[column_name]] = m2m_map[column_name](value)
                 else:
                     assert column_name in point_map
                     pos, converter = point_map[column_name]
@@ -314,9 +296,4 @@ class Base(models.Model):
                 unique_line[ukey] = reader.line_num
 
             # Create the item
-            if m2ms:
-                obj, created = cls.objects.get_or_create(**fields)
-                for field_name, value in m2ms.items():
-                    getattr(obj, field_name).add(value)
-            else:
-                cls.objects.create(**fields)
+            cls.objects.create(**fields)
