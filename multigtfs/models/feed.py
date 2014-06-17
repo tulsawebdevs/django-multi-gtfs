@@ -19,6 +19,7 @@ from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import PY3
+from jsonfield import JSONField
 
 from .agency import Agency
 from .fare import Fare
@@ -44,6 +45,7 @@ class Feed(models.Model):
     """
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
+    meta = JSONField(default={})
 
     class Meta:
         db_table = 'feed'
@@ -109,7 +111,9 @@ class Feed(models.Model):
         )
 
         for exporter in gtfs_order:
-            content = exporter.objects.in_feed(self).export_txt()
+            extra_columns = self.meta.get(
+                'extra_columns', {}).get(exporter.__name__, [])
+            content = exporter.objects.in_feed(self).export_txt(extra_columns)
             if content:
                 z.writestr(exporter._filename, content)
         z.close()

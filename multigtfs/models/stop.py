@@ -192,7 +192,7 @@ class Stop(Base):
         help_text='Is wheelchair boarding possible?')
 
     def __str__(self):
-        return "%d-%s" % (self.feed.id, self.stop_id)
+        return "%d-%s" % (self.feed_id, self.stop_id)
 
     def getlon(self):
         return self.point[0] if self.point else 0.0
@@ -262,14 +262,24 @@ class Stop(Base):
             writer.writerow(dict((fn, fn) for fn in writer.fieldnames))
 
         txt = txt_file.read()
-        fieldnames, _ = zip(*cls._column_map)
+        reader = DictReader(StringIO(txt))
+
+        # Find extra fieldnames
+        fieldnames = [c for c, _ in cls._column_map]
+        for fieldname in reader.fieldnames:
+            if fieldname not in fieldnames:
+                fieldnames.append(fieldname)
+
+        # Setup filtered CSVs
         has_stations = False
         stations_csv = StringIO()
         stations = DictWriter(stations_csv, fieldnames)
         has_stops = False
         stops_csv = StringIO()
         stops = DictWriter(stops_csv, fieldnames)
-        for row in DictReader(StringIO(txt)):
+
+        # Filter rows into stations and stops
+        for row in reader:
             if row.get('location_type') == '1':
                 if not has_stations:
                     writeheader(stations)
@@ -280,6 +290,8 @@ class Stop(Base):
                     writeheader(stops)
                     has_stops = True
                 stops.writerow(row)
+
+        # Read ordered CSVs with standard importer
         if has_stations:
             super(Stop, cls).import_txt(
                 StringIO(stations_csv.getvalue()), feed)

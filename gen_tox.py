@@ -80,6 +80,7 @@ exclude = .tox/*
 deps=
     nose
     django-nose
+    jsonfield
 commands=./run_tests.py
 """.format(env_names_out))
 

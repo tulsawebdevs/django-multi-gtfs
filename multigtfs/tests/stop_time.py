@@ -84,14 +84,22 @@ STBA,6:00:00,6:00:00,STAGECOACH,1,
         self.assertEqual(stoptime.stop, self.stop)
         self.assertEqual(stoptime.stop_sequence, 1)
         self.assertEqual(stoptime.drop_off_type, '')
+        self.assertEqual(stoptime.extra_data, {})
 
-    def test_import_stop_times_txt_bad_column_populated_raises(self):
+    def test_import_stop_times_txt_bad_column_populated_OK(self):
         stop_times_txt = StringIO("""\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,drop_off_time
 STBA,6:00:00,6:00:00,STAGECOACH,1,1
 """)
-        self.assertRaises(
-            ValueError, StopTime.import_txt, stop_times_txt, self.feed)
+        StopTime.import_txt(stop_times_txt, self.feed)
+        stoptime = StopTime.objects.get()
+        self.assertEqual(stoptime.trip, self.trip)
+        self.assertEqual(str(stoptime.arrival_time), '06:00:00')
+        self.assertEqual(str(stoptime.departure_time), '06:00:00')
+        self.assertEqual(stoptime.stop, self.stop)
+        self.assertEqual(stoptime.stop_sequence, 1)
+        self.assertEqual(stoptime.drop_off_type, '')
+        self.assertEqual(stoptime.extra_data, {'drop_off_time': '1'})
 
     def test_import_stop_times_txt_maximal(self):
         stop_times_txt = StringIO("""\

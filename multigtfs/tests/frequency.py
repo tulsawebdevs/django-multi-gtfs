@@ -134,6 +134,7 @@ STBA,05:00:00,25:00:00,1800
             u"model": u"multigtfs.frequency",
             u"fields": {
                 u"exact_times": u"",
+                u"extra_data": u"{}",
                 u"start_time": u"05:00:00",
                 u"headway_secs": 1800,
                 u"trip": self.trip.id,

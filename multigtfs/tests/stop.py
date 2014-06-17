@@ -82,6 +82,30 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
         self.assertEqual(stop.timezone, '')
         self.assertEqual(stop.wheelchair_boarding, '')
 
+    def test_import_stops_txt_extra_columns(self):
+        stops_txt = StringIO("""\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,platform_code
+FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162,7
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        stop = Stop.objects.get()
+        self.assertEqual(stop.feed, self.feed)
+        self.assertEqual(stop.stop_id, 'FUR_CREEK_RES')
+        self.assertEqual(stop.code, '')
+        self.assertEqual(stop.name, 'Furnace Creek Resort (Demo)')
+        self.assertEqual(stop.desc, '')
+        self.assertEqual(str(stop.lat), '36.425288')
+        self.assertEqual(str(stop.lon), '-117.133162')
+        self.assertEqual(stop.zone, None)
+        self.assertEqual(stop.url, '')
+        self.assertEqual(stop.location_type, '')
+        self.assertEqual(stop.parent_station, None)
+        self.assertEqual(stop.timezone, '')
+        self.assertEqual(stop.wheelchair_boarding, '')
+        self.assertEqual({'platform_code': '7'}, stop.extra_data)
+        expected = {'extra_columns': {'Stop': ['platform_code']}}
+        self.assertEqual(expected, self.feed.meta)
+
     def test_import_stops_txt_duplicate(self):
         stops_txt = StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon
@@ -155,6 +179,25 @@ http://example.com,1,,America/Los_Angeles
         stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
         self.assertEqual(stop.parent_station, station)
 
+    def test_import_stops_txt_stop_before_station_plus_extra(self):
+        stops_txt = StringIO("""\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,parent_station,stop_timezone,extra
+FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
+http://example.com/fcr,0,FUR_CREEK_STA,,a stop
+FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
+http://example.com,1,,America/Los_Angeles,a station
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        self.assertEqual(Stop.objects.count(), 2)
+        station = Stop.objects.get(stop_id='FUR_CREEK_STA')
+        stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
+        self.assertEqual(stop.parent_station, station)
+        self.assertEqual(stop.extra_data, {'extra': 'a stop'})
+        self.assertEqual(station.extra_data, {'extra': 'a station'})
+        expected = {'extra_columns': {'Stop': ['extra']}}
+        self.assertEqual(expected, self.feed.meta)
+
     def test_export_stops_txt_none(self):
         stops_txt = Stop.objects.in_feed(self.feed).export_txt()
         self.assertFalse(stops_txt)
@@ -181,6 +224,21 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
         self.assertEqual(stops_txt, b"""\
 stop_id,stop_name,stop_lat,stop_lon
 6071,The Delta Caf\xc2\x82,36.114554,-95.975834
+""")
+
+    def test_export_stops_extra_data(self):
+        self.feed.meta = {'extra_columns': {'Stop': ['extra']}}
+        self.feed.save()
+        Stop.objects.create(
+            feed=self.feed, stop_id='FUR_CREEK_RES',
+            name='Furnace Creek Resort (Demo)',
+            point="POINT(-117.133162 36.425288)",
+            extra_data={'extra': '7'})
+        stops_txt = Stop.objects.in_feed(
+            self.feed).export_txt(extra_columns=['extra'])
+        self.assertEqual(stops_txt, """\
+stop_id,stop_name,stop_lat,stop_lon,extra
+FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162,7
 """)
 
     def test_update_geometry_on_stop_save(self):

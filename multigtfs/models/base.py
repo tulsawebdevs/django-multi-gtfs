@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
+from collections import defaultdict
 from csv import DictReader, writer
 from datetime import datetime, date
 from logging import getLogger
@@ -22,13 +23,14 @@ from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type
+from jsonfield import JSONField
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 
 
 class BaseQuerySet(GeoQuerySet):
-    def export_txt(self):
+    def export_txt(self, extra_columns=None):
         '''Export records as a GTFS comma-separated file'''
         # If no records, return None
         if not self.exists():
@@ -59,19 +61,22 @@ class BaseQuerySet(GeoQuerySet):
                     csv_names.append((csv_name, field_pattern))
             else:
                 csv_names.append((csv_name, field_pattern))
-        # Create and return the CSV
-        return self.create_csv(csv_names)
 
-    def create_csv(self, csv_names):
+        # Create and return the CSV
+        return self.create_csv(csv_names, extra_columns)
+
+    def create_csv(self, csv_names, extra_columns=None):
         """Turn a queryset into a CSV export
 
         Keyword Arguments:
-        queryset -- A queryset with at least one record
+        self -- A queryset with at least one record
         csv_names -- A sequence of (csv column, field name) pairs
+        extra_columns -- Extra columns stored in extra_data
 
         A field name can follow relations, such as 'field1__subfield2'
         """
         columns, fields = zip(*csv_names)
+        extra_columns = extra_columns or []
 
         # Avoid ordering by ManyToManyFields, which result in duplicate objects
         if hasattr(self.model, '_sort_order'):
@@ -86,8 +91,10 @@ class BaseQuerySet(GeoQuerySet):
                 field_type = self.model._meta.get_field_by_name(base_field)[0]
                 assert not isinstance(field_type, ManyToManyField)
                 sort_fields.append(field)
+        header_row = [text_type(c) for c in columns]
+        header_row.extend(extra_columns)
+        rows = [header_row]
 
-        rows = [[text_type(c) for c in columns]]
         for item in self.order_by(*sort_fields):
             row = []
             for csv_name, field_name in csv_names:
@@ -112,6 +119,8 @@ class BaseQuerySet(GeoQuerySet):
                         row.append(u'')
                     else:
                         row.append(text_type(field))
+            for col in extra_columns:
+                row.append(obj.extra_data.get(col, u''))
             rows.append(row)
 
         out = StringIO()
@@ -169,6 +178,8 @@ class Base(models.Model):
         app_label = 'multigtfs'
 
     objects = BaseManager()
+
+    extra_data = JSONField(default={})
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'
@@ -257,6 +268,7 @@ class Base(models.Model):
         # Read and convert the source txt
         reader = DictReader(txt_file)
         unique_line = dict()
+        extra_counts = defaultdict(int)
         for row in reader:
             fields = dict()
             point_coords = [None, None]
@@ -265,10 +277,10 @@ class Base(models.Model):
                 fields['feed'] = feed
             for column_name, value in row.items():
                 if column_name not in name_map:
-                    if value:
-                        raise ValueError(
-                            'Unexpected column name %s in row %s, expecting'
-                            ' %s' % (column_name, row, name_map.keys()))
+                    val = null_convert(value)
+                    if val is not None:
+                        fields.setdefault('extra_data', {})[column_name] = val
+                        extra_counts[column_name] += 1
                 elif column_name in val_map:
                     fields[name_map[column_name]] = val_map[column_name](value)
                 else:
@@ -297,3 +309,12 @@ class Base(models.Model):
 
             # Create the item
             cls.objects.create(**fields)
+
+        # Take note of extra fields
+        if extra_counts:
+            extra_columns = feed.meta.setdefault(
+                'extra_columns', {}).setdefault(cls.__name__, [])
+            for column in extra_counts:
+                if column not in extra_columns:
+                    extra_columns.append(column)
+            feed.save()
