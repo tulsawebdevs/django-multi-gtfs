@@ -2,3 +2,18 @@ GTFS test data from:
 
 test1.zip - http://timetablepublisher.googlecode.com/files/GTFS%20Test%20Data.zip downloaded on Apr 14th, 2012
 test2.zip - https://developers.google.com/transit/gtfs/examples/sample-feed.zip on Apr 14th, 2012
+test3.zip - http://www.tulsatransit.org/gtfs/google_transit.zip, around Feb 2013
+
+test1.zip doesn't pass validation, because of the directory structure.  It
+has multiple trip_ids, assigned to different service_ids.  multigtfs will
+import the feed, and (as of v0.4.0) will discard the duplicate trip IDs
+with a warning.
+
+test2.zip has some validation issues as well, with a mispelled column name
+(drop_off_time vs drop_off_type) and inconsistant commas.  multigtfs will
+import the feed, and (as of v0.4.0) will import the drop_off_type as an
+unknown extra column.
+
+test3.zip is a minimized version of an official feed.  The only validation
+error is that the last service date is in the past.  multigtfs will
+import and export the feed with no changes.

@@ -86,8 +86,7 @@ class Feed(models.Model):
             post_save.connect(post_save_stop, sender=Stop)
 
         # Update geometries
-        # TODO: Add test feed that includes shapes (issue #20)
-        for shape in self.shape_set.all():  # pragma: no cover
+        for shape in self.shape_set.all():
             shape.update_geometry(update_parent=False)
         for trip in Trip.objects.in_feed(self):
             trip.update_geometry(update_parent=False)

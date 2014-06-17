@@ -24,7 +24,8 @@ from django.utils.six import text_type
 
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
-    Route, Service, ServiceDate, Shape, Stop, StopTime, Transfer, Trip, Zone)
+    Route, Service, ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer,
+    Trip, Zone)
 
 my_dir = os.path.dirname(__file__)
 fixtures_dir = os.path.join(my_dir, 'fixtures')
@@ -125,6 +126,35 @@ class FeedTest(TestCase):
         self.assertEqual(StopTime.objects.count(), 28)
         self.assertEqual(Transfer.objects.count(), 0)
         self.assertEqual(Trip.objects.count(), 11)
+        self.assertEqual(Zone.objects.count(), 0)
+
+    def test_import_gtfs_test3(self):
+        '''Try importing test3.zip
+
+        test3.zip is a version of the GTFS feed from
+        http://www.tulsatransit.org/gtfs/google_transit.zip
+        as it was around February 2013.  It has been reduced to one route,
+        trip, and shape, along with associated stops and other records.
+        '''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test3.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        self.assertEqual(Agency.objects.count(), 1)
+        self.assertEqual(Block.objects.count(), 0)
+        self.assertEqual(Fare.objects.count(), 1)
+        self.assertEqual(FareRule.objects.count(), 1)
+        self.assertEqual(Feed.objects.count(), 1)
+        self.assertEqual(FeedInfo.objects.count(), 1)
+        self.assertEqual(Frequency.objects.count(), 0)
+        self.assertEqual(Route.objects.count(), 1)
+        self.assertEqual(Service.objects.count(), 1)
+        self.assertEqual(ServiceDate.objects.count(), 7)
+        self.assertEqual(Shape.objects.count(), 1)
+        self.assertEqual(ShapePoint.objects.count(), 61)
+        self.assertEqual(Stop.objects.count(), 24)
+        self.assertEqual(StopTime.objects.count(), 25)
+        self.assertEqual(Transfer.objects.count(), 0)
+        self.assertEqual(Trip.objects.count(), 1)
         self.assertEqual(Zone.objects.count(), 0)
 
     def test_export_gtfs_test1(self):
@@ -605,3 +635,101 @@ CITY,FULLW,CITY1,,0,
 CITY,FULLW,CITY2,,1,
 STBA,FULLW,STBA,Shuttle,,
 """)
+
+    def test_export_gtfs_test3(self):
+        '''Try exporting test3.zip'''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test3.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        file_id, self.temp_path = tempfile.mkstemp()
+        os.close(file_id)
+        feed.export_gtfs(self.temp_path)
+        z_in = zipfile.ZipFile(test_path, 'r')
+        z_out = zipfile.ZipFile(self.temp_path, 'r')
+
+        self.assertEqual(
+            z_in.namelist(),
+            ['agency.txt',
+             'calendar.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'feed_info.txt',
+             'routes.txt',
+             'shapes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'trips.txt'])
+        self.assertEqual(
+            z_out.namelist(),
+            ['agency.txt',
+             'calendar.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'feed_info.txt',
+             'routes.txt',
+             'shapes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'trips.txt'])
+
+        agency_in = self.normalize(z_in.read('agency.txt'))
+        agency_out = self.normalize(z_out.read('agency.txt'))
+        self.assertEqual(agency_in, agency_out)
+
+        calendar_in = self.normalize(z_in.read('calendar.txt'))
+        calendar_out = self.normalize(z_out.read('calendar.txt'))
+        self.assertEqual(calendar_in, calendar_out)
+
+        cdates_in = self.normalize(z_in.read('calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('calendar_dates.txt'))
+        self.assertEqual(cdates_in, cdates_out)
+
+        fare_in = self.normalize(z_in.read('fare_attributes.txt'))
+        self.assertEqual(fare_in, b'''\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+adult,1.5000,USD,0,,7200
+''')
+        # Sometimes 1.5000, sometimes 1.5
+        fare_a = Fare.objects.get(fare_id='adult')
+        s_fare_a = text_type(fare_a.price).encode('utf-8')
+        fare_out = z_out.read('fare_attributes.txt')
+        self.assertEqual(fare_out, b'''\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+adult,''' + s_fare_a + b''',USD,0,,7200
+''')
+
+        fare_rules_in = self.normalize(z_in.read('fare_rules.txt'))
+        fare_rules_out = self.normalize(z_out.read('fare_rules.txt'))
+        self.assertEqual(fare_rules_in, fare_rules_out)
+
+        feed_info_in = self.normalize(z_in.read('feed_info.txt'))
+        feed_info_out = self.normalize(z_out.read('feed_info.txt'))
+        self.assertEqual(feed_info_in, feed_info_out)
+
+        self.assertFalse('frequencies.txt' in z_in.namelist())
+        self.assertFalse('frequencies.txt' in z_out.namelist())
+
+        routes_in = self.normalize(z_in.read('routes.txt'))
+        routes_out = self.normalize(z_out.read('routes.txt'))
+        self.assertEqual(routes_in, routes_out)
+
+        shapes_in = self.normalize(z_in.read('shapes.txt'))
+        shapes_out = self.normalize(z_out.read('shapes.txt'))
+        self.assertEqual(shapes_in, shapes_out)
+
+        stop_times_in = self.normalize(z_in.read('stop_times.txt'))
+        stop_times_out = self.normalize(z_out.read('stop_times.txt'))
+        self.assertEqual(stop_times_in, stop_times_out)
+
+        stops_in = self.normalize(z_in.read('stops.txt'))
+        stops_out = self.normalize(z_out.read('stops.txt'))
+        self.assertEqual(stops_in, stops_out)
+
+        self.assertFalse('transfers.txt' in z_in.namelist())
+        self.assertFalse('feed/transfers.txt' in z_out.namelist())
+
+        trips_in = self.normalize(z_in.read('trips.txt'))
+        trips_out = self.normalize(z_out.read('trips.txt'))
+        self.assertEqual(trips_in, trips_out)
