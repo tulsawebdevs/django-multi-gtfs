@@ -4,6 +4,8 @@ before_script:
     - cp t_overrides.travis.py t_overrides.py
     - psql -U postgres -c "CREATE DATABASE test_multigtfs;"
     - psql -U postgres -d test_multigtfs -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
+    - psql -U postgres -c "CREATE DATABASE multigtfs;"
+    - psql -U postgres -d multigtfs -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
 env:
   - TOX_ENV=py27-django15-south08-postgis
 install:
