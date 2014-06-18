@@ -20,6 +20,7 @@ A <strong>Service</strong> is one or more days with the same schedule.
     <dt>start_date</dt><dd>{{object.start_date}}</dd>
     <dt>end_date</dt><dd>{{object.end_date}}</dd>
 </dl>
+{% include "multigtfs/extra_data.html" %}
 <h2>Related Objects</h2>
 <ul>
     <li><a href="{% url 'servicedate_by_service_list' feed_id=object.id service_id=object.id %}">{{object.servicedate_set.count}} ServiceDate{{ object.servicedate_set.count|pluralize }}</a></li>

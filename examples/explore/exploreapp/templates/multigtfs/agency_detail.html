@@ -17,4 +17,5 @@ An <strong>Agency</strong> represents a transit agency.
     <dt>phone</dt><dd>{{object.phone|default:'<em>Not set</em>'}}</dd>
     <dt>fare_url</dt><dd>{% if object.fare_url %}<a href="{{object.fare_url}}">{{object.fare_url}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
 </dl>
+{% include "multigtfs/extra_data.html" %}
 {% endblock %}

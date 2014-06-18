@@ -40,6 +40,7 @@ A <strong>Route</strong> is a named route in the schedule
     <dt>text_color</dt><dd>{{object.text_color|default:'<em>Not set</em>'}}</dd>
     {% if object.color and object.text_color %}<dt><em>(Sample Coloring)</em></dt><dd><span style="color:#{{object.text_color}}; background-color:#{{object.color}};">{{object.short_name}} {{object.long_name}}</span></dd>{% endif %}
 </dl>
+{% include "multigtfs/extra_data.html" %}
 <h2>Related Objects</h2>
 <ul>
     <li><a href="{% url 'farerule_by_route_list' feed_id=object.id route_id=object.id %}">{{object.farerule_set.count}} FareRule{{ object.FareRule_set.count|pluralize }}</a></li>

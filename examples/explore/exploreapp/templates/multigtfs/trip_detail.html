@@ -40,6 +40,7 @@ A <strong>Trip</strong> is a single run of a Route
     <dt>wheelchair_accessible</dt><dd>{{object.get_wheelchair_accessible_display|default:'<em>Not set</em>'}}</dd>
     <dt>bikes_allowed</dt><dd>{{object.get_bikes_allowed_display|default:'<em>Not set</em>'}}</dd>
 </dl>
+{% include "multigtfs/extra_data.html" %}
 <h2>Related Objects</h2>
 <ul>
     <li><a href="{% url 'frequency_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.frequency_set.count}} Frequenc{{ object.frequency_set.count|pluralize:"y,ies" }}</a></li>

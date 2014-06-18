@@ -13,4 +13,5 @@ A <strong>FareRule</strong> is the intersection between a Route and a Fare
     <dt>destination</dt><dd>{% if object.destination_id %}<a href="{% url 'zone_detail' feed_id=object.id destination_id=object.destination_id %}">Zone {{object.destination}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
     <dt>contains</dt><dd>{% if object.contains_id %}<a href="{% url 'zone_detail' feed_id=object.id contains_id=object.contains_id %}">Zone {{object.contains}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
 </dl>
+{% include "multigtfs/extra_data.html" %}
 {% endblock %}
