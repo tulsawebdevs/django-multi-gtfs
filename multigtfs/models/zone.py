@@ -14,9 +14,12 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
+from django.utils.encoding import python_2_unicode_compatible
+
 from multigtfs.models.base import models, Base
 
 
+@python_2_unicode_compatible
 class Zone(Base):
     """Represents a fare zone.
 
@@ -27,6 +30,9 @@ class Zone(Base):
     zone_id = models.CharField(
         max_length=10, db_index=True,
         help_text="Unique identifier for a zone.")
+
+    def __str__(self):
+        return "%d-%s" % (self.feed_id, self.zone_id)
 
     class Meta:
         db_table = 'zone'
