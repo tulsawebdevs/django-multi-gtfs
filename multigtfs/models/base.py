@@ -18,6 +18,7 @@ from csv import DictReader, writer
 from datetime import datetime, date
 from logging import getLogger
 import re
+import time
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
@@ -270,6 +271,7 @@ class Base(models.Model):
         unique_line = dict()
         count = 0
         extra_counts = defaultdict(int)
+        new_objects = []
         for row in reader:
             fields = dict()
             point_coords = [None, None]
@@ -308,14 +310,21 @@ class Base(models.Model):
             else:
                 unique_line[ukey] = reader.line_num
 
-            # Create the item
-            cls.objects.create(**fields)
+            new_objects.append(cls(**fields))
 
             count += 1
-            if count % 100 == 0:
+            if count % 1000 == 0:
                 logger.info(
                     "Imported %d %s",
                     count, cls._meta.verbose_name_plural)
+
+        logger.info(
+            "Creating %d %s...",
+            len(new_objects), cls._meta.verbose_name_plural)
+        start_time = time.time()
+        cls.objects.bulk_create(new_objects)
+        end_time = time.time()
+        logger.info("Created in %0.1f seconds", end_time - start_time)
 
         # Take note of extra fields
         if extra_counts:
