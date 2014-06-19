@@ -14,6 +14,8 @@
 # limitations under the License.
 from __future__ import unicode_literals
 from zipfile import ZipFile
+import logging
+import time
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
@@ -34,6 +36,8 @@ from .stop import Stop, post_save_stop
 from .stop_time import StopTime
 from .transfer import Transfer
 from .trip import Trip
+
+logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -65,6 +69,7 @@ class Feed(models.Model):
 
         Returns is a list of objects imported
         """
+        total_start = time.time()
         z = ZipFile(gtfs_file, 'r')
         files = z.namelist()
 
@@ -78,22 +83,51 @@ class Feed(models.Model):
             for klass in gtfs_order:
                 for f in files:
                     if f.endswith(klass._filename):
+                        start_time = time.time()
                         table = z.open(f)
                         if PY3:  # pragma: no cover
                             from io import TextIOWrapper
                             table = TextIOWrapper(table)
-                        klass.import_txt(table, self)
+                        count = klass.import_txt(table, self) or 0
+                        end_time = time.time()
+                        logger.info(
+                            'Imported %s (%d %s) in %0.1f seconds',
+                            klass._filename, count,
+                            klass._meta.verbose_name_plural,
+                            end_time - start_time)
+
         finally:
             post_save.connect(post_save_shapepoint, sender=ShapePoint)
             post_save.connect(post_save_stop, sender=Stop)
 
         # Update geometries
+        start_time = time.time()
         for shape in self.shape_set.all():
             shape.update_geometry(update_parent=False)
+        end_time = time.time()
+        logger.info(
+            "Updated geometries for %d shapes in %0.1f seconds",
+            self.shape_set.count(), end_time - start_time)
+
+        start_time = time.time()
         for trip in Trip.objects.in_feed(self):
             trip.update_geometry(update_parent=False)
+        end_time = time.time()
+        logger.info(
+            "Updated geometries for %d trips in %0.1f seconds",
+            self.shape_set.count(), end_time - start_time)
+
+        start_time = time.time()
         for route in self.route_set.all():
             route.update_geometry()
+        end_time = time.time()
+        logger.info(
+            "Updated geometries for %d routes in %0.1f seconds",
+            self.shape_set.count(), end_time - start_time)
+
+        total_end = time.time()
+        logger.info(
+            "Import completed in %0.1f seconds.", total_end - total_start)
 
     def export_gtfs(self, gtfs_file):
         """Export a GTFS file as feed

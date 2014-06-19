@@ -141,6 +141,7 @@ additional semantics:
 """
 from __future__ import unicode_literals
 from csv import DictReader, DictWriter
+from logging import getLogger
 import warnings
 
 from django.db.models.signals import post_save
@@ -149,6 +150,9 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import StringIO
 
 from multigtfs.models.base import models, Base
+
+
+logger = getLogger(__name__)
 
 
 @python_2_unicode_compatible
@@ -292,12 +296,16 @@ class Stop(Base):
                 stops.writerow(row)
 
         # Read ordered CSVs with standard importer
+        total = 0
         if has_stations:
-            super(Stop, cls).import_txt(
+            logger.info("Importing station stops")
+            total += super(Stop, cls).import_txt(
                 StringIO(stations_csv.getvalue()), feed)
         if has_stops:
-            super(Stop, cls).import_txt(
+            logger.info("Importing non-station stops")
+            total += super(Stop, cls).import_txt(
                 StringIO(stops_csv.getvalue()), feed)
+        return total
 
 
 @receiver(post_save, sender=Stop, dispatch_uid="post_save_stop")

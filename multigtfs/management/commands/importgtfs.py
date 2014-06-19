@@ -15,7 +15,10 @@
 from __future__ import unicode_literals
 from datetime import datetime
 from optparse import make_option
+import logging
 
+from django.db import connection
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
 from multigtfs.models.feed import Feed
@@ -36,6 +39,33 @@ class Command(BaseCommand):
             raise CommandError('You can only import one feed at a time.')
         gtfs_feed = args[0]
         name = options.get('name') or 'Imported at %s' % datetime.now()
+
+        # Setup logging
+        verbosity = int(options['verbosity'])
+        console = logging.StreamHandler(self.stderr)
+        console.setFormatter(
+            logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+        if verbosity == 0:
+            level = logging.WARNING
+            logger_name = 'multigtfs'
+        elif verbosity == 1:
+            level = logging.INFO
+            logger_name = 'multigtfs'
+        elif verbosity == 2:
+            level = logging.DEBUG
+            logger_name = 'multigtfs'
+        else:
+            level = logging.DEBUG
+            logger_name = ''
+        console.setLevel(level)
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(level)
+        logger.addHandler(console)
+
+        # Disable database query logging
+        if settings.DEBUG:
+            connection.use_debug_cursor = False
+
         feed = Feed.objects.create(name=name)
         feed.import_gtfs(gtfs_feed)
         self.stdout.write("Successfully imported Feed %s\n" % (feed))

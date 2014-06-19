@@ -14,7 +14,10 @@
 # limitations under the License.
 from __future__ import unicode_literals
 from optparse import make_option
+import logging
 
+from django.db import connection
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.template.defaultfilters import slugify
 
@@ -34,6 +37,33 @@ class Command(BaseCommand):
             raise CommandError('You must pass in feed ID to export.')
         if len(args) > 1:
             raise CommandError('You can only export one feed at a time.')
+
+        # Setup logging
+        verbosity = int(options['verbosity'])
+        console = logging.StreamHandler(self.stderr)
+        console.setFormatter(
+            logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+        if verbosity == 0:
+            level = logging.WARNING
+            logger_name = 'multigtfs'
+        elif verbosity == 1:
+            level = logging.INFO
+            logger_name = 'multigtfs'
+        elif verbosity == 2:
+            level = logging.DEBUG
+            logger_name = 'multigtfs'
+        else:
+            level = logging.DEBUG
+            logger_name = ''
+        console.setLevel(level)
+        logger = logging.getLogger(logger_name)
+        logger.setLevel(level)
+        logger.addHandler(console)
+
+        # Disable database query logging
+        if settings.DEBUG:
+            connection.use_debug_cursor = False
+
         try:
             feed_id = int(args[0])
         except ValueError:

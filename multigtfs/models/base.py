@@ -268,6 +268,7 @@ class Base(models.Model):
         # Read and convert the source txt
         reader = DictReader(txt_file)
         unique_line = dict()
+        count = 0
         extra_counts = defaultdict(int)
         for row in reader:
             fields = dict()
@@ -310,6 +311,12 @@ class Base(models.Model):
             # Create the item
             cls.objects.create(**fields)
 
+            count += 1
+            if count % 100 == 0:
+                logger.info(
+                    "Imported %d %s",
+                    count, cls._meta.verbose_name_plural)
+
         # Take note of extra fields
         if extra_counts:
             extra_columns = feed.meta.setdefault(
@@ -318,3 +325,5 @@ class Base(models.Model):
                 if column not in extra_columns:
                     extra_columns.append(column)
             feed.save()
+
+        return len(unique_line)
