@@ -18,7 +18,6 @@ from csv import DictReader, writer
 from datetime import datetime, date
 from logging import getLogger
 import re
-import time
 
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
@@ -197,6 +196,7 @@ class Base(models.Model):
         char_convert = lambda value: value or ''
         null_convert = lambda value: value or None
         point_convert = lambda value: value or 0.0
+        cache = {}
 
         def default_convert(field):
             def get_value_or_default(value):
@@ -209,8 +209,24 @@ class Base(models.Model):
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
                 if value:
-                    kwargs = {field.rel.to._rel_to_feed: feed, rel_name: value}
-                    return field.rel.to.objects.get_or_create(**kwargs)[0]
+                    key1 = "{}:{}".format(field.rel.to.__name__, rel_name)
+                    key2 = str(value)
+
+                    # Load existing objects
+                    if key1 not in cache:
+                        pairs = field.rel.to.objects.filter(
+                            **{field.rel.to._rel_to_feed: feed}).values_list(
+                            rel_name, 'id')
+                        cache[key1] = dict((str(x), i) for x, i in pairs)
+
+                    # Create new?
+                    if key2 not in cache[key1]:
+                        kwargs = {
+                            field.rel.to._rel_to_feed: feed,
+                            rel_name: value}
+                        cache[key1][key2] = field.rel.to.objects.create(
+                            **kwargs).id
+                    return cache[key1][key2]
                 else:
                     return None
             return get_instance
@@ -228,9 +244,10 @@ class Base(models.Model):
         for csv_name, field_pattern in cls._column_map:
             # Separate the local field name from foreign columns
             if '__' in field_pattern:
-                field_name, rel_name = field_pattern.split('__', 1)
+                field_base, rel_name = field_pattern.split('__', 1)
+                field_name = field_base + '_id'
             else:
-                field_name, rel_name = (field_pattern, None)
+                field_name = field_base = field_pattern
             # Use the field name in the name mapping
             name_map[csv_name] = field_name
 
@@ -239,7 +256,7 @@ class Base(models.Model):
             if point_match:
                 field = None
             else:
-                field = cls._meta.get_field_by_name(field_name)[0]
+                field = cls._meta.get_field_by_name(field_base)[0]
 
             # Pick a conversion function for the field
             if point_match:
@@ -310,21 +327,19 @@ class Base(models.Model):
             else:
                 unique_line[ukey] = reader.line_num
 
+            # Create after accumulating 1000
             new_objects.append(cls(**fields))
-
-            count += 1
-            if count % 1000 == 0:
+            if len(new_objects) % 1000 == 0:  # pragma: no cover
+                cls.objects.bulk_create(new_objects)
+                count += len(new_objects)
                 logger.info(
                     "Imported %d %s",
                     count, cls._meta.verbose_name_plural)
+                new_objects = []
 
-        logger.info(
-            "Creating %d %s...",
-            len(new_objects), cls._meta.verbose_name_plural)
-        start_time = time.time()
-        cls.objects.bulk_create(new_objects)
-        end_time = time.time()
-        logger.info("Created in %0.1f seconds", end_time - start_time)
+        # Create remaining objects
+        if new_objects:
+            cls.objects.bulk_create(new_objects)
 
         # Take note of extra fields
         if extra_counts:
@@ -334,5 +349,4 @@ class Base(models.Model):
                 if column not in extra_columns:
                     extra_columns.append(column)
             feed.save()
-
         return len(unique_line)

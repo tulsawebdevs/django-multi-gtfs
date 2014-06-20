@@ -110,20 +110,22 @@ class Feed(models.Model):
             self.shape_set.count(), end_time - start_time)
 
         start_time = time.time()
-        for trip in Trip.objects.in_feed(self):
+        trips = Trip.objects.in_feed(self)
+        for trip in trips:
             trip.update_geometry(update_parent=False)
         end_time = time.time()
         logger.info(
             "Updated geometries for %d trips in %0.1f seconds",
-            self.shape_set.count(), end_time - start_time)
+            trips.count(), end_time - start_time)
 
         start_time = time.time()
-        for route in self.route_set.all():
+        routes = self.route_set.all()
+        for route in routes:
             route.update_geometry()
         end_time = time.time()
         logger.info(
             "Updated geometries for %d routes in %0.1f seconds",
-            self.shape_set.count(), end_time - start_time)
+            routes.count(), end_time - start_time)
 
         total_end = time.time()
         logger.info(
