@@ -116,67 +116,84 @@ class BaseQuerySet(GeoQuerySet):
                             new_row.append(item)
                     csv_writer.writerow(new_row)
 
+        total = self.count()
         logger.info(
-            '%d %s to export...',
-            self.count(),
-            self.model._meta.verbose_name_plural)
+            '%d %s to export...', total, self.model._meta.verbose_name_plural)
 
-        for item in self.order_by(*sort_fields):
-            row = []
-            for csv_name, field_name in csv_names:
-                obj = item
-                point_match = re_point.match(field_name)
-                if '__' in field_name:
-                    # Return relations from cache
-                    local_field_name, subfield_name = field_name.split('__', 1)
-                    field_id = getattr(obj, local_field_name + '_id')
-                    if field_name not in cache:
-                        # Get the feed
-                        if feed is None:
-                            feed_path = self.model._rel_to_feed
-                            feed_obj = obj
-                            while '__' in feed_path:
-                                feed_field, feed_path = feed_path.split(
-                                    '__', 1)
-                                feed_obj = getattr(feed_obj, feed_field)
-                            feed = getattr(feed_obj, feed_path)
+        # For large querysets, break it up
+        if total < 100000:
+            querysets = [self.order_by(*sort_fields)]
+        else:  # pragma: no cover
+            field1_raw = sort_fields[0]
+            assert '__' in field1_raw
+            field1 = field1_raw.split('__', 1)[0]
+            field1_id = field1 + '_id'
+            querysets = []
+            unique = self.order_by(
+                field1_raw).values_list(field1_id, flat=True).distinct()
+            for field1_val in unique:
+                qs = self.filter(
+                    **{field1: field1_val}).order_by(*sort_fields[1:])
+                querysets.append(qs)
 
-                        # Get all the objects
-                        field = obj._meta.get_field_by_name(
-                            local_field_name)[0]
-                        field_type = field.rel.to
-                        pairs = field_type.objects.filter(
-                            **{field_type._rel_to_feed: feed}).values_list(
-                                'id', subfield_name)
-                        cache[field_name] = dict(
-                            (i, text_type(x)) for i, x in pairs)
-                        cache[field_name][None] = u''
-                    row.append(cache[field_name][field_id])
-                elif point_match:
-                    name, index = point_match.groups()
-                    field = getattr(obj, name)
-                    row.append(field.coords[int(index)])
-                else:
-                    field = getattr(obj, field_name) if obj else ''
-                    if isinstance(field, date):
-                        formatted = field.strftime(u'%Y%m%d')
-                        row.append(text_type(formatted))
-                    elif isinstance(field, bool):
-                        row.append(1 if field else 0)
-                    elif field is None:
-                        row.append(u'')
+        for queryset in querysets:
+            for item in queryset.order_by(*sort_fields):
+                row = []
+                for csv_name, field_name in csv_names:
+                    obj = item
+                    point_match = re_point.match(field_name)
+                    if '__' in field_name:
+                        # Return relations from cache
+                        local_field_name, subfield_name = field_name.split(
+                            '__', 1)
+                        field_id = getattr(obj, local_field_name + '_id')
+                        if field_name not in cache:
+                            # Get the feed
+                            if feed is None:
+                                feed_path = self.model._rel_to_feed
+                                feed_obj = obj
+                                while '__' in feed_path:
+                                    feed_field, feed_path = feed_path.split(
+                                        '__', 1)
+                                    feed_obj = getattr(feed_obj, feed_field)
+                                feed = getattr(feed_obj, feed_path)
+
+                            # Get all the objects
+                            field = obj._meta.get_field_by_name(
+                                local_field_name)[0]
+                            field_type = field.rel.to
+                            pairs = field_type.objects.filter(
+                                **{field_type._rel_to_feed: feed}).values_list(
+                                    'id', subfield_name)
+                            cache[field_name] = dict(
+                                (i, text_type(x)) for i, x in pairs)
+                            cache[field_name][None] = u''
+                        row.append(cache[field_name][field_id])
+                    elif point_match:
+                        name, index = point_match.groups()
+                        field = getattr(obj, name)
+                        row.append(field.coords[int(index)])
                     else:
-                        row.append(text_type(field))
-            for col in extra_columns:
-                row.append(obj.extra_data.get(col, u''))
-            rows.append(row)
-            if len(rows) % batch_size == 0:  # pragma: no cover
-                write_rows()
-                count += len(rows)
-                logger.info(
-                    "Exported %d %s",
-                    count, self.model._meta.verbose_name_plural)
-                rows = []
+                        field = getattr(obj, field_name) if obj else ''
+                        if isinstance(field, date):
+                            formatted = field.strftime(u'%Y%m%d')
+                            row.append(text_type(formatted))
+                        elif isinstance(field, bool):
+                            row.append(1 if field else 0)
+                        elif field is None:
+                            row.append(u'')
+                        else:
+                            row.append(text_type(field))
+                for col in extra_columns:
+                    row.append(obj.extra_data.get(col, u''))
+                rows.append(row)
+                if len(rows) % batch_size == 0:  # pragma: no cover
+                    write_rows()
+                    count += len(rows)
+                    logger.info(
+                        "Exported %d %s",
+                        count, self.model._meta.verbose_name_plural)
+                    rows = []
 
         # Write rows smaller than batch size
         write_rows()
