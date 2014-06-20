@@ -98,6 +98,8 @@ class BaseQuerySet(GeoQuerySet):
         out = StringIO()
         csv_writer = writer(out, lineterminator='\n')
         count = 0
+        cache = {}
+        feed = None
 
         def write_rows():
             '''Write a batch of row data to the csv'''
@@ -123,12 +125,34 @@ class BaseQuerySet(GeoQuerySet):
             row = []
             for csv_name, field_name in csv_names:
                 obj = item
-                while obj and '__' in field_name:
-                    parent_field, field_name = field_name.split('__', 1)
-                    obj = getattr(obj, parent_field)
                 point_match = re_point.match(field_name)
-                assert not hasattr(obj, 'all')
-                if point_match:
+                if '__' in field_name:
+                    # Return relations from cache
+                    local_field_name, subfield_name = field_name.split('__', 1)
+                    field_id = getattr(obj, local_field_name + '_id')
+                    if field_name not in cache:
+                        # Get the feed
+                        if feed is None:
+                            feed_path = self.model._rel_to_feed
+                            feed_obj = obj
+                            while '__' in feed_path:
+                                feed_field, feed_path = feed_path.split(
+                                    '__', 1)
+                                feed_obj = getattr(feed_obj, feed_field)
+                            feed = getattr(feed_obj, feed_path)
+
+                        # Get all the objects
+                        field = obj._meta.get_field_by_name(
+                            local_field_name)[0]
+                        field_type = field.rel.to
+                        pairs = field_type.objects.filter(
+                            **{field_type._rel_to_feed: feed}).values_list(
+                                'id', subfield_name)
+                        cache[field_name] = dict(
+                            (i, text_type(x)) for i, x in pairs)
+                        cache[field_name][None] = u''
+                    row.append(cache[field_name][field_id])
+                elif point_match:
                     name, index = point_match.groups()
                     field = getattr(obj, name)
                     row.append(field.coords[int(index)])
@@ -229,14 +253,14 @@ class Base(models.Model):
             def get_instance(value):
                 if value:
                     key1 = "{}:{}".format(field.rel.to.__name__, rel_name)
-                    key2 = str(value)
+                    key2 = text_type(value)
 
                     # Load existing objects
                     if key1 not in cache:
                         pairs = field.rel.to.objects.filter(
                             **{field.rel.to._rel_to_feed: feed}).values_list(
                             rel_name, 'id')
-                        cache[key1] = dict((str(x), i) for x, i in pairs)
+                        cache[key1] = dict((text_type(x), i) for x, i in pairs)
 
                     # Create new?
                     if key2 not in cache[key1]:
