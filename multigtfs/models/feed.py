@@ -139,6 +139,7 @@ class Feed(models.Model):
 
         This function will close the file in order to finalize it.
         """
+        total_start = time.time()
         z = ZipFile(gtfs_file, 'w')
 
         gtfs_order = (
@@ -146,10 +147,20 @@ class Feed(models.Model):
             Route, ShapePoint, StopTime, Stop, Transfer, Trip,
         )
 
-        for exporter in gtfs_order:
+        for klass in gtfs_order:
+            start_time = time.time()
             extra_columns = self.meta.get(
-                'extra_columns', {}).get(exporter.__name__, [])
-            content = exporter.objects.in_feed(self).export_txt(extra_columns)
+                'extra_columns', {}).get(klass.__name__, [])
+            content = klass.objects.in_feed(self).export_txt(extra_columns)
             if content:
-                z.writestr(exporter._filename, content)
+                z.writestr(klass._filename, content)
+                end_time = time.time()
+                logger.info(
+                    'Exported %s (%d %s) in %0.1f seconds',
+                    klass._filename, content.count('\n') - 1,
+                    klass._meta.verbose_name_plural,
+                    end_time - start_time)
         z.close()
+        total_end = time.time()
+        logger.info(
+            'Export completed in %0.1f seconds.', total_end - total_start)

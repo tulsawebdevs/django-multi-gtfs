@@ -27,6 +27,7 @@ from jsonfield import JSONField
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
+batch_size = 1000
 
 
 class BaseQuerySet(GeoQuerySet):
@@ -94,6 +95,29 @@ class BaseQuerySet(GeoQuerySet):
         header_row = [text_type(c) for c in columns]
         header_row.extend(extra_columns)
         rows = [header_row]
+        out = StringIO()
+        csv_writer = writer(out, lineterminator='\n')
+        count = 0
+
+        def write_rows():
+            '''Write a batch of row data to the csv'''
+            for row in rows:
+                try:
+                    csv_writer.writerow(row)
+                except UnicodeEncodeError:  # pragma: no cover
+                    # Python 2 csv does badly with unicode outside of ASCII
+                    new_row = []
+                    for item in row:
+                        if isinstance(item, text_type):
+                            new_row.append(item.encode('utf-8'))
+                        else:
+                            new_row.append(item)
+                    csv_writer.writerow(new_row)
+
+        logger.info(
+            '%d %s to export...',
+            self.count(),
+            self.model._meta.verbose_name_plural)
 
         for item in self.order_by(*sort_fields):
             row = []
@@ -122,21 +146,16 @@ class BaseQuerySet(GeoQuerySet):
             for col in extra_columns:
                 row.append(obj.extra_data.get(col, u''))
             rows.append(row)
+            if len(rows) % batch_size == 0:  # pragma: no cover
+                write_rows()
+                count += len(rows)
+                logger.info(
+                    "Exported %d %s",
+                    count, self.model._meta.verbose_name_plural)
+                rows = []
 
-        out = StringIO()
-        csv_writer = writer(out, lineterminator='\n')
-        for row in rows:
-            try:
-                csv_writer.writerow(row)
-            except UnicodeEncodeError:  # pragma: no cover
-                # Python 2 csv does badly with unicode outside of ASCII
-                new_row = []
-                for item in row:
-                    if isinstance(item, text_type):
-                        new_row.append(item.encode('utf-8'))
-                    else:
-                        new_row.append(item)
-                csv_writer.writerow(new_row)
+        # Write rows smaller than batch size
+        write_rows()
         return out.getvalue()
 
 
@@ -327,9 +346,9 @@ class Base(models.Model):
             else:
                 unique_line[ukey] = reader.line_num
 
-            # Create after accumulating 1000
+            # Create after accumulating a batch
             new_objects.append(cls(**fields))
-            if len(new_objects) % 1000 == 0:  # pragma: no cover
+            if len(new_objects) % batch_size == 0:  # pragma: no cover
                 cls.objects.bulk_create(new_objects)
                 count += len(new_objects)
                 logger.info(
