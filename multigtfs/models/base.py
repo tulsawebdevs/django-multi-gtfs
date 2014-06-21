@@ -20,7 +20,6 @@ from logging import getLogger
 import re
 
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type
 from jsonfield import JSONField
@@ -30,181 +29,7 @@ re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
 
 
-class BaseQuerySet(GeoQuerySet):
-    def export_txt(self, extra_columns=None):
-        '''Export records as a GTFS comma-separated file'''
-        # If no records, return None
-        if not self.exists():
-            return
-        csv_names = []
-        for csv_name, field_pattern in self.model._column_map:
-            # Separate the local field name from foreign columns
-            if '__' in field_pattern:
-                field_name = field_pattern.split('__', 1)[0]
-            else:
-                field_name = field_pattern
-
-            # Handle point fields
-            point_match = re_point.match(field_name)
-            if point_match:
-                field = None
-            else:
-                field = self.model._meta.get_field_by_name(field_name)[0]
-
-            # Only add optional columns if they are used in the records
-            if field and field.blank and not field.has_default():
-                if field.null:
-                    blank = None
-                else:
-                    blank = field.value_to_string(None)
-                kwargs = {field_name: blank}
-                if self.exclude(**kwargs).exists():
-                    csv_names.append((csv_name, field_pattern))
-            else:
-                csv_names.append((csv_name, field_pattern))
-
-        # Create and return the CSV
-        return self.create_csv(csv_names, extra_columns)
-
-    def create_csv(self, csv_names, extra_columns=None):
-        """Turn a queryset into a CSV export
-
-        Keyword Arguments:
-        self -- A queryset with at least one record
-        csv_names -- A sequence of (csv column, field name) pairs
-        extra_columns -- Extra columns stored in extra_data
-
-        A field name can follow relations, such as 'field1__subfield2'
-        """
-        columns, fields = zip(*csv_names)
-        extra_columns = extra_columns or []
-
-        # Avoid ordering by ManyToManyFields, which result in duplicate objects
-        if hasattr(self.model, '_sort_order'):
-            sort_fields = self.model._sort_order
-        else:
-            sort_fields = []
-            for field in fields:
-                base_field = field.split('__', 1)[0]
-                point_match = re_point.match(base_field)
-                if point_match:
-                    continue
-                field_type = self.model._meta.get_field_by_name(base_field)[0]
-                assert not isinstance(field_type, ManyToManyField)
-                sort_fields.append(field)
-        header_row = [text_type(c) for c in columns]
-        header_row.extend(extra_columns)
-        rows = [header_row]
-        out = StringIO()
-        csv_writer = writer(out, lineterminator='\n')
-        count = 0
-        cache = {}
-        feed = None
-
-        def write_rows():
-            '''Write a batch of row data to the csv'''
-            for row in rows:
-                try:
-                    csv_writer.writerow(row)
-                except UnicodeEncodeError:  # pragma: no cover
-                    # Python 2 csv does badly with unicode outside of ASCII
-                    new_row = []
-                    for item in row:
-                        if isinstance(item, text_type):
-                            new_row.append(item.encode('utf-8'))
-                        else:
-                            new_row.append(item)
-                    csv_writer.writerow(new_row)
-
-        total = self.count()
-        logger.info(
-            '%d %s to export...', total, self.model._meta.verbose_name_plural)
-
-        # For large querysets, break it up
-        if total < 100000:
-            querysets = [self.order_by(*sort_fields)]
-        else:  # pragma: no cover
-            field1_raw = sort_fields[0]
-            assert '__' in field1_raw
-            field1 = field1_raw.split('__', 1)[0]
-            field1_id = field1 + '_id'
-            querysets = []
-            unique = self.order_by(
-                field1_raw).values_list(field1_id, flat=True).distinct()
-            for field1_val in unique:
-                qs = self.filter(
-                    **{field1: field1_val}).order_by(*sort_fields[1:])
-                querysets.append(qs)
-
-        for queryset in querysets:
-            for item in queryset.order_by(*sort_fields):
-                row = []
-                for csv_name, field_name in csv_names:
-                    obj = item
-                    point_match = re_point.match(field_name)
-                    if '__' in field_name:
-                        # Return relations from cache
-                        local_field_name, subfield_name = field_name.split(
-                            '__', 1)
-                        field_id = getattr(obj, local_field_name + '_id')
-                        if field_name not in cache:
-                            # Get the feed
-                            if feed is None:
-                                feed_path = self.model._rel_to_feed
-                                feed_obj = obj
-                                while '__' in feed_path:
-                                    feed_field, feed_path = feed_path.split(
-                                        '__', 1)
-                                    feed_obj = getattr(feed_obj, feed_field)
-                                feed = getattr(feed_obj, feed_path)
-
-                            # Get all the objects
-                            field = obj._meta.get_field_by_name(
-                                local_field_name)[0]
-                            field_type = field.rel.to
-                            pairs = field_type.objects.filter(
-                                **{field_type._rel_to_feed: feed}).values_list(
-                                    'id', subfield_name)
-                            cache[field_name] = dict(
-                                (i, text_type(x)) for i, x in pairs)
-                            cache[field_name][None] = u''
-                        row.append(cache[field_name][field_id])
-                    elif point_match:
-                        name, index = point_match.groups()
-                        field = getattr(obj, name)
-                        row.append(field.coords[int(index)])
-                    else:
-                        field = getattr(obj, field_name) if obj else ''
-                        if isinstance(field, date):
-                            formatted = field.strftime(u'%Y%m%d')
-                            row.append(text_type(formatted))
-                        elif isinstance(field, bool):
-                            row.append(1 if field else 0)
-                        elif field is None:
-                            row.append(u'')
-                        else:
-                            row.append(text_type(field))
-                for col in extra_columns:
-                    row.append(obj.extra_data.get(col, u''))
-                rows.append(row)
-                if len(rows) % batch_size == 0:  # pragma: no cover
-                    write_rows()
-                    count += len(rows)
-                    logger.info(
-                        "Exported %d %s",
-                        count, self.model._meta.verbose_name_plural)
-                    rows = []
-
-        # Write rows smaller than batch size
-        write_rows()
-        return out.getvalue()
-
-
 class BaseManager(models.GeoManager):
-
-    def get_query_set(self):
-        return BaseQuerySet(self.model)
-
     def in_feed(self, feed):
         '''Return the objects in the target feed'''
         kwargs = {self.model._rel_to_feed: feed}
@@ -410,3 +235,165 @@ class Base(models.Model):
                     extra_columns.append(column)
             feed.save()
         return len(unique_line)
+
+    @classmethod
+    def export_txt(cls, feed):
+        '''Export records as a GTFS comma-separated file'''
+        objects = cls.objects.in_feed(feed)
+
+        # If no records, return None
+        if not objects.exists():
+            return
+        csv_names = []
+        for csv_name, field_pattern in objects.model._column_map:
+            # Separate the local field name from foreign columns
+            if '__' in field_pattern:
+                field_name = field_pattern.split('__', 1)[0]
+            else:
+                field_name = field_pattern
+
+            # Handle point fields
+            point_match = re_point.match(field_name)
+            if point_match:
+                field = None
+            else:
+                field = objects.model._meta.get_field_by_name(field_name)[0]
+
+            # Only add optional columns if they are used in the records
+            if field and field.blank and not field.has_default():
+                if field.null:
+                    blank = None
+                else:
+                    blank = field.value_to_string(None)
+                kwargs = {field_name: blank}
+                if objects.exclude(**kwargs).exists():
+                    csv_names.append((csv_name, field_pattern))
+            else:
+                csv_names.append((csv_name, field_pattern))
+
+        # Create the CSV file
+        columns, fields = zip(*csv_names)
+        extra_columns = feed.meta.get(
+            'extra_columns', {}).get(cls.__name__, [])
+
+        # Avoid ordering by ManyToManyFields, which result in duplicate objects
+        if hasattr(objects.model, '_sort_order'):
+            sort_fields = objects.model._sort_order
+        else:
+            sort_fields = []
+            for field in fields:
+                base_field = field.split('__', 1)[0]
+                point_match = re_point.match(base_field)
+                if point_match:
+                    continue
+                field_type = objects.model._meta.get_field_by_name(
+                    base_field)[0]
+                assert not isinstance(field_type, ManyToManyField)
+                sort_fields.append(field)
+        header_row = [text_type(c) for c in columns]
+        header_row.extend(extra_columns)
+        rows = [header_row]
+        out = StringIO()
+        csv_writer = writer(out, lineterminator='\n')
+        count = 0
+        cache = {}
+        feed = None
+
+        def write_rows():
+            '''Write a batch of row data to the csv'''
+            for row in rows:
+                try:
+                    csv_writer.writerow(row)
+                except UnicodeEncodeError:  # pragma: no cover
+                    # Python 2 csv does badly with unicode outside of ASCII
+                    new_row = []
+                    for item in row:
+                        if isinstance(item, text_type):
+                            new_row.append(item.encode('utf-8'))
+                        else:
+                            new_row.append(item)
+                    csv_writer.writerow(new_row)
+
+        total = objects.count()
+        logger.info(
+            '%d %s to export...',
+            total, objects.model._meta.verbose_name_plural)
+
+        # For large querysets, break it up
+        if total < 100000:
+            querysets = [objects.order_by(*sort_fields)]
+        else:  # pragma: no cover
+            field1_raw = sort_fields[0]
+            assert '__' in field1_raw
+            field1 = field1_raw.split('__', 1)[0]
+            field1_id = field1 + '_id'
+            querysets = []
+            unique = objects.order_by(
+                field1_raw).values_list(field1_id, flat=True).distinct()
+            for field1_val in unique:
+                qs = objects.filter(
+                    **{field1: field1_val}).order_by(*sort_fields[1:])
+                querysets.append(qs)
+
+        for queryset in querysets:
+            for item in queryset.order_by(*sort_fields):
+                row = []
+                for csv_name, field_name in csv_names:
+                    obj = item
+                    point_match = re_point.match(field_name)
+                    if '__' in field_name:
+                        # Return relations from cache
+                        local_field_name, subfield_name = field_name.split(
+                            '__', 1)
+                        field_id = getattr(obj, local_field_name + '_id')
+                        if field_name not in cache:
+                            # Get the feed
+                            if feed is None:
+                                feed_path = objects.model._rel_to_feed
+                                feed_obj = obj
+                                while '__' in feed_path:
+                                    feed_field, feed_path = feed_path.split(
+                                        '__', 1)
+                                    feed_obj = getattr(feed_obj, feed_field)
+                                feed = getattr(feed_obj, feed_path)
+
+                            # Get all the objects
+                            field = obj._meta.get_field_by_name(
+                                local_field_name)[0]
+                            field_type = field.rel.to
+                            pairs = field_type.objects.filter(
+                                **{field_type._rel_to_feed: feed}).values_list(
+                                    'id', subfield_name)
+                            cache[field_name] = dict(
+                                (i, text_type(x)) for i, x in pairs)
+                            cache[field_name][None] = u''
+                        row.append(cache[field_name][field_id])
+                    elif point_match:
+                        name, index = point_match.groups()
+                        field = getattr(obj, name)
+                        row.append(field.coords[int(index)])
+                    else:
+                        field = getattr(obj, field_name) if obj else ''
+                        if isinstance(field, date):
+                            formatted = field.strftime(u'%Y%m%d')
+                            row.append(text_type(formatted))
+                        elif isinstance(field, bool):
+                            row.append(1 if field else 0)
+                        elif field is None:
+                            row.append(u'')
+                        else:
+                            row.append(text_type(field))
+                for col in extra_columns:
+                    row.append(obj.extra_data.get(col, u''))
+                rows.append(row)
+                if len(rows) % batch_size == 0:  # pragma: no cover
+                    write_rows()
+                    count += len(rows)
+                    logger.info(
+                        "Exported %d %s",
+                        count, objects.model._meta.verbose_name_plural)
+                    rows = []
+
+        # Write rows smaller than batch size
+        write_rows()
+        return out.getvalue()

@@ -96,13 +96,13 @@ p,CD
         self.assertEqual(fr.fare, self.fare)
 
     def test_export_fare_rules_empty(self):
-        fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
+        fare_rules_txt = FareRule.export_txt(self.feed)
         self.assertFalse(fare_rules_txt)
 
     def test_export_fare_rules_degraded(self):
         # This is possible, but pointless
         FareRule.objects.create(fare=self.fare)
-        fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
+        fare_rules_txt = FareRule.export_txt(self.feed)
         self.assertEqual(fare_rules_txt, '''\
 fare_id
 p
@@ -111,7 +111,7 @@ p
     def test_export_fare_rules_route_id(self):
         route = Route.objects.create(feed=self.feed, route_id='AB', rtype=3)
         FareRule.objects.create(fare=self.fare, route=route)
-        fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
+        fare_rules_txt = FareRule.export_txt(self.feed)
         self.assertEqual(fare_rules_txt, '''\
 fare_id,route_id
 p,AB
@@ -120,7 +120,7 @@ p,AB
     def test_export_fare_rules_contains(self):
         zone12 = Zone.objects.create(feed=self.feed, zone_id='12')
         FareRule.objects.create(fare=self.fare, contains=zone12)
-        fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
+        fare_rules_txt = FareRule.export_txt(self.feed)
         self.assertEqual(fare_rules_txt, '''\
 fare_id,contains_id
 p,12
@@ -134,7 +134,7 @@ p,12
         FareRule.objects.create(
             fare=self.fare, route=route, origin=zone1, destination=zone2,
             contains=zone12)
-        fare_rules_txt = FareRule.objects.in_feed(self.feed).export_txt()
+        fare_rules_txt = FareRule.export_txt(self.feed)
         self.assertEqual(fare_rules_txt, '''\
 fare_id,route_id,origin_id,destination_id,contains_id
 p,AB,1,2,12

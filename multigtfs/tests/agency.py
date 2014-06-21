@@ -85,14 +85,14 @@ DTA,"Demo Transit Authority",http://google.com,America/Los_Angeles,en,\
         self.assertEqual(agency.fare_url, 'http://google.com')
 
     def test_export_agency_none(self):
-        agency_txt = Agency.objects.in_feed(self.feed).export_txt()
+        agency_txt = Agency.export_txt(self.feed)
         self.assertFalse(agency_txt)
 
     def test_export_agency_minimal(self):
         Agency.objects.create(
             feed=self.feed, name='Demo Transit Authority',
             url='http://google.com', timezone='America/Los_Angeles')
-        agency_txt = Agency.objects.in_feed(self.feed).export_txt()
+        agency_txt = Agency.export_txt(self.feed)
         self.assertEqual(agency_txt, """\
 agency_name,agency_url,agency_timezone
 Demo Transit Authority,http://google.com,America/Los_Angeles
@@ -103,7 +103,7 @@ Demo Transit Authority,http://google.com,America/Los_Angeles
             feed=self.feed, agency_id='DTA', name='Demo Transit Authority',
             url='http://google.com', timezone='America/Los_Angeles',
             lang='en', phone='555-555-TEST', fare_url='http://google.com')
-        agency_txt = Agency.objects.in_feed(self.feed).export_txt()
+        agency_txt = Agency.export_txt(self.feed)
         self.assertEqual(agency_txt, """\
 agency_id,agency_name,agency_url,agency_timezone,agency_lang,agency_phone,\
 agency_fare_url

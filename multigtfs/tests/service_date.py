@@ -62,7 +62,7 @@ S1,20120414,1
         self.assertEqual(service_date.exception_type, 2)
 
     def test_export_calendar_dates_txt_none(self):
-        cdates_txt = ServiceDate.objects.in_feed(self.feed).export_txt()
+        cdates_txt = ServiceDate.export_txt(self.feed)
         self.assertFalse(cdates_txt)
 
     def test_export_calendar_dates_txt(self):
@@ -70,7 +70,7 @@ S1,20120414,1
             date=date(2012, 8, 31), service=self.service, exception_type=2)
         ServiceDate.objects.create(
             date=date(2012, 9, 1), service=self.service, exception_type=1)
-        cdates_txt = ServiceDate.objects.in_feed(self.feed).export_txt()
+        cdates_txt = ServiceDate.export_txt(self.feed)
         self.assertEqual(cdates_txt, """\
 service_id,date,exception_type
 S1,20120831,2

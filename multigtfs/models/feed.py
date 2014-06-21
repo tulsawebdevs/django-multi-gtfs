@@ -149,9 +149,7 @@ class Feed(models.Model):
 
         for klass in gtfs_order:
             start_time = time.time()
-            extra_columns = self.meta.get(
-                'extra_columns', {}).get(klass.__name__, [])
-            content = klass.objects.in_feed(self).export_txt(extra_columns)
+            content = klass.export_txt(self)
             if content:
                 z.writestr(klass._filename, content)
                 end_time = time.time()

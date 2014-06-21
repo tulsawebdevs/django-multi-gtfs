@@ -117,7 +117,7 @@ R1,S2,T1
         self.assertFalse(service2.trip_set.exists())
 
     def test_export_trips_txt_empty(self):
-        trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
+        trips_txt = Trip.export_txt(self.feed)
         self.assertFalse(trips_txt)
 
     def test_export_trips_txt_minimal(self):
@@ -125,7 +125,7 @@ R1,S2,T1
             feed=self.feed, service_id='S1', start_date=date(2011, 4, 14),
             end_date=date(2011, 12, 31))
         Trip.objects.create(route=self.route, service=service, trip_id='T1')
-        trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
+        trips_txt = Trip.export_txt(self.feed)
         self.assertEqual(trips_txt, """\
 route_id,service_id,trip_id
 R1,S1,T1
@@ -141,7 +141,7 @@ R1,S1,T1
             route=self.route, service=service, trip_id='T1',
             headsign='Headsign', short_name='HS', direction=0, block=block,
             shape=shape, wheelchair_accessible='2', bikes_allowed='1')
-        trips_txt = Trip.objects.in_feed(feed=self.feed).export_txt()
+        trips_txt = Trip.export_txt(self.feed)
         self.assertEqual(trips_txt, """\
 route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
 block_id,shape_id,wheelchair_accessible,bikes_allowed

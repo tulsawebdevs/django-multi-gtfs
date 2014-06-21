@@ -125,14 +125,14 @@ S1,36.425288,-117.133162,1,
         self.assertEqual(shape_pt.traveled, None)
 
     def test_export_shape_empty(self):
-        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        shape_txt = ShapePoint.export_txt(self.feed)
         self.assertFalse(shape_txt)
 
     def test_export_shape_minimal(self):
         shape = Shape.objects.create(feed=self.feed, shape_id='S1')
         ShapePoint.objects.create(
             shape=shape, point="POINT(-117.133162 36.425288)", sequence=1)
-        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        shape_txt = ShapePoint.export_txt(self.feed)
         self.assertEqual(shape_txt, """\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence
 S1,36.425288,-117.133162,1
@@ -143,7 +143,7 @@ S1,36.425288,-117.133162,1
         ShapePoint.objects.create(
             shape=shape, point="POINT(-117.133162 36.425288)", sequence=1,
             traveled=1.1)
-        shape_txt = ShapePoint.objects.in_feed(self.feed).export_txt()
+        shape_txt = ShapePoint.export_txt(self.feed)
         self.assertEqual(shape_txt, """\
 shape_id,shape_pt_lat,shape_pt_lon,shape_pt_sequence,shape_dist_traveled
 S1,36.425288,-117.133162,1,1.1

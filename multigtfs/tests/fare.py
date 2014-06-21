@@ -93,7 +93,7 @@ p,1.25,USD,0,,3600
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0)
         fare = Fare.objects.get()
-        fare_txt = Fare.objects.in_feed(self.feed).export_txt()
+        fare_txt = Fare.export_txt(self.feed)
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers
 p,%s,USD,0,0
@@ -104,7 +104,7 @@ p,%s,USD,0,0
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=0, transfer_duration=3600)
         fare = Fare.objects.get()
-        fare_txt = Fare.objects.in_feed(self.feed).export_txt()
+        fare_txt = Fare.export_txt(self.feed)
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,%s,USD,0,0,3600
@@ -115,7 +115,7 @@ p,%s,USD,0,0,3600
             feed=self.feed, fare_id='p', price='1.25', currency_type='USD',
             payment_method=0, transfers=None, transfer_duration=3600)
         fare = Fare.objects.get()
-        fare_txt = Fare.objects.in_feed(self.feed).export_txt()
+        fare_txt = Fare.export_txt(self.feed)
         self.assertEqual(fare_txt, """\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
 p,%s,USD,0,,3600

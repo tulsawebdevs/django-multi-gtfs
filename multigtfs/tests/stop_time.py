@@ -179,14 +179,14 @@ STBA,23:59:00,24:01:00,STAGECOACH,1
         self.assertEqual(stoptime.shape_dist_traveled, None)
 
     def test_export_stop_times_none(self):
-        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        stop_times_txt = StopTime.export_txt(self.feed)
         self.assertFalse(stop_times_txt)
 
     def test_export_stop_times_minimal(self):
         StopTime.objects.create(
             trip=self.trip, arrival_time='6:00:00', departure_time='6:00:00',
             stop=self.stop, stop_sequence=1)
-        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        stop_times_txt = StopTime.export_txt(self.feed)
         self.assertEqual(stop_times_txt, """\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence
 STBA,06:00:00,06:00:00,STAGECOACH,1
@@ -197,7 +197,7 @@ STBA,06:00:00,06:00:00,STAGECOACH,1
             trip=self.trip, arrival_time='6:00:00', departure_time='6:00:00',
             stop=self.stop, stop_sequence=1, stop_headsign='SC',
             pickup_type=2, drop_off_type=1, shape_dist_traveled=5.25)
-        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        stop_times_txt = StopTime.export_txt(self.feed)
         self.assertEqual(stop_times_txt, """\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled
@@ -221,7 +221,7 @@ STBA,06:00:00,06:00:00,STAGECOACH,1,SC,2,1,5.25
         StopTime.objects.create(
             trip=self.trip, arrival_time='7:00:00', departure_time='7:00:00',
             stop=stop4, stop_sequence=4, stop_headsign='MORT')
-        stop_times_txt = StopTime.objects.in_feed(self.feed).export_txt()
+        stop_times_txt = StopTime.export_txt(self.feed)
         self.assertEqual(stop_times_txt, """\
 trip_id,arrival_time,departure_time,stop_id,stop_sequence,stop_headsign,\
 pickup_type,drop_off_type,shape_dist_traveled

@@ -100,14 +100,14 @@ STBA,00:50:00,24:10:00,1800,
         self.assertEqual(frequency.exact_times, '')
 
     def test_export_frequencies_txt_none(self):
-        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        frequencies_txt = Frequency.export_txt(self.feed)
         self.assertEqual(frequencies_txt, None)
 
     def test_export_frequencies_txt_minimal(self):
         Frequency.objects.create(
             trip=self.trip, start_time=Seconds.from_hms(hours=6),
             end_time=Seconds.from_hms(hours=22), headway_secs=1800)
-        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        frequencies_txt = Frequency.export_txt(self.feed)
         self.assertEqual(frequencies_txt, """\
 trip_id,start_time,end_time,headway_secs
 STBA,06:00:00,22:00:00,1800
@@ -117,7 +117,7 @@ STBA,06:00:00,22:00:00,1800
         Frequency.objects.create(
             trip=self.trip, start_time='05:00', end_time='25:00',
             headway_secs=1800)
-        frequencies_txt = Frequency.objects.in_feed(self.feed).export_txt()
+        frequencies_txt = Frequency.export_txt(self.feed)
         self.assertEqual(frequencies_txt, """\
 trip_id,start_time,end_time,headway_secs
 STBA,05:00:00,25:00:00,1800

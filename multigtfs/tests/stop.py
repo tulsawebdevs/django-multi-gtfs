@@ -199,7 +199,7 @@ http://example.com,1,,America/Los_Angeles,a station
         self.assertEqual(expected, self.feed.meta)
 
     def test_export_stops_txt_none(self):
-        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        stops_txt = Stop.export_txt(self.feed)
         self.assertFalse(stops_txt)
 
     def test_export_stops_txt_minimal(self):
@@ -207,7 +207,7 @@ http://example.com,1,,America/Los_Angeles,a station
             feed=self.feed, stop_id='FUR_CREEK_RES',
             name='Furnace Creek Resort (Demo)',
             point="POINT(-117.133162 36.425288)")
-        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        stops_txt = Stop.export_txt(self.feed)
         self.assertEqual(stops_txt, """\
 stop_id,stop_name,stop_lat,stop_lon
 FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
@@ -218,7 +218,7 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
             feed=self.feed, stop_id=6071,
             name=b'The Delta Caf\x82'.decode('latin1'),
             point='POINT(-95.975834 36.114554)')
-        stops_txt = Stop.objects.in_feed(self.feed).export_txt()
+        stops_txt = Stop.export_txt(self.feed)
         if isinstance(stops_txt, text_type):
             stops_txt = stops_txt.encode('utf-8')
         self.assertEqual(stops_txt, b"""\
@@ -234,8 +234,7 @@ stop_id,stop_name,stop_lat,stop_lon
             name='Furnace Creek Resort (Demo)',
             point="POINT(-117.133162 36.425288)",
             extra_data={'extra': '7'})
-        stops_txt = Stop.objects.in_feed(
-            self.feed).export_txt(extra_columns=['extra'])
+        stops_txt = Stop.export_txt(self.feed)
         self.assertEqual(stops_txt, """\
 stop_id,stop_name,stop_lat,stop_lon,extra
 FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162,7

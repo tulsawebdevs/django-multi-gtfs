@@ -65,7 +65,7 @@ W,0,1,0,1,0,1,0,20120414,20121231
         self.assertEqual(service.service_id, 'W')
 
     def test_export_calendar_txt_none(self):
-        calendar_txt = Service.objects.in_feed(self.feed).export_txt()
+        calendar_txt = Service.export_txt(self.feed)
         self.assertFalse(calendar_txt)
 
     def test_export_calendar_txt(self):
@@ -74,7 +74,7 @@ W,0,1,0,1,0,1,0,20120414,20121231
             wednesday=True, thursday=False, friday=True, saturday=False,
             sunday=True, start_date=date(2012, 7, 17),
             end_date=date(2013, 7, 17))
-        calendar_txt = Service.objects.in_feed(self.feed).export_txt()
+        calendar_txt = Service.export_txt(self.feed)
         self.assertEqual(calendar_txt, """\
 service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,\
 start_date,end_date
