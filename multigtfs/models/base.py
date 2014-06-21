@@ -308,7 +308,6 @@ class Base(models.Model):
         csv_writer = writer(out, lineterminator='\n')
         count = 0
         cache = {}
-        feed = None
 
         total = objects.count()
         logger.info(
@@ -343,23 +342,12 @@ class Base(models.Model):
                             '__', 1)
                         field_id = getattr(obj, local_field_name + '_id')
                         if field_name not in cache:
-                            # Get the feed
-                            if feed is None:
-                                feed_path = objects.model._rel_to_feed
-                                feed_obj = obj
-                                while '__' in feed_path:
-                                    feed_field, feed_path = feed_path.split(
-                                        '__', 1)
-                                    feed_obj = getattr(feed_obj, feed_field)
-                                feed = getattr(feed_obj, feed_path)
-
                             # Get all the objects
                             field = obj._meta.get_field_by_name(
                                 local_field_name)[0]
                             field_type = field.rel.to
-                            pairs = field_type.objects.filter(
-                                **{field_type._rel_to_feed: feed}).values_list(
-                                    'id', subfield_name)
+                            pairs = field_type.objects.in_feed(
+                                feed).values_list('id', subfield_name)
                             cache[field_name] = dict(
                                 (i, text_type(x)) for i, x in pairs)
                             cache[field_name][None] = u''
