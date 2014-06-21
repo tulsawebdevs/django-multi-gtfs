@@ -310,21 +310,6 @@ class Base(models.Model):
         cache = {}
         feed = None
 
-        def write_rows():
-            '''Write a batch of row data to the csv'''
-            for row in rows:
-                try:
-                    csv_writer.writerow(row)
-                except UnicodeEncodeError:  # pragma: no cover
-                    # Python 2 csv does badly with unicode outside of ASCII
-                    new_row = []
-                    for item in row:
-                        if isinstance(item, text_type):
-                            new_row.append(item.encode('utf-8'))
-                        else:
-                            new_row.append(item)
-                    csv_writer.writerow(new_row)
-
         total = objects.count()
         logger.info(
             '%d %s to export...',
@@ -398,7 +383,7 @@ class Base(models.Model):
                     row.append(obj.extra_data.get(col, u''))
                 rows.append(row)
                 if len(rows) % batch_size == 0:  # pragma: no cover
-                    write_rows()
+                    write_rows(csv_writer, rows)
                     count += len(rows)
                     logger.info(
                         "Exported %d %s",
@@ -406,5 +391,21 @@ class Base(models.Model):
                     rows = []
 
         # Write rows smaller than batch size
-        write_rows()
+        write_rows(csv_writer, rows)
         return out.getvalue()
+
+
+def write_rows(writer, rows):
+    '''Write a batch of row data to the csv'''
+    for row in rows:
+        try:
+            writer.writerow(row)
+        except UnicodeEncodeError:  # pragma: no cover
+            # Python 2 csv does badly with unicode outside of ASCII
+            new_row = []
+            for item in row:
+                if isinstance(item, text_type):
+                    new_row.append(item.encode('utf-8'))
+                else:
+                    new_row.append(item)
+            writer.writerow(new_row)
