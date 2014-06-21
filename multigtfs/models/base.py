@@ -28,6 +28,7 @@ from jsonfield import JSONField
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
+large_queryset_size = 100000
 
 
 class BaseQuerySet(GeoQuerySet):
@@ -282,14 +283,15 @@ class Base(models.Model):
         if not objects.exists():
             return
 
+        # Get the columns used in the dataset
         column_map = objects.populated_column_map()
         columns, fields = zip(*column_map)
         extra_columns = feed.meta.get(
             'extra_columns', {}).get(cls.__name__, [])
 
-        # Avoid ordering by ManyToManyFields, which result in duplicate objects
-        if hasattr(objects.model, '_sort_order'):
-            sort_fields = objects.model._sort_order
+        # Get sort order
+        if hasattr(cls, '_sort_order'):
+            sort_fields = cls._sort_order
         else:
             sort_fields = []
             for field in fields:
@@ -297,25 +299,48 @@ class Base(models.Model):
                 point_match = re_point.match(base_field)
                 if point_match:
                     continue
-                field_type = objects.model._meta.get_field_by_name(
+                field_type = cls._meta.get_field_by_name(
                     base_field)[0]
                 assert not isinstance(field_type, ManyToManyField)
                 sort_fields.append(field)
-        header_row = [text_type(c) for c in columns]
-        header_row.extend(extra_columns)
-        rows = [header_row]
+
+        # Create CSV writer
         out = StringIO()
         csv_writer = writer(out, lineterminator='\n')
-        count = 0
+
+        # Write header row
+        header_row = [text_type(c) for c in columns]
+        header_row.extend(extra_columns)
+        write_rows(csv_writer, [header_row])
+
+        # Populate related items cache
+        model_to_field_name = {}
         cache = {}
+        for field_name in fields:
+            if '__' in field_name:
+                local_field_name, subfield_name = field_name.split('__', 1)
+                field = cls._meta.get_field_by_name(local_field_name)[0]
+                field_type = field.rel.to
+                model_name = field_type.__name__
+                if model_name in model_to_field_name:
+                    # Already loaded this model under a different field name
+                    cache[field_name] = cache[model_to_field_name[model_name]]
+                else:
+                    # Load all feed data for this model
+                    pairs = field_type.objects.in_feed(
+                        feed).values_list('id', subfield_name)
+                    cache[field_name] = dict(
+                        (i, text_type(x)) for i, x in pairs)
+                    cache[field_name][None] = u''
+                    model_to_field_name[model_name] = field_name
 
         total = objects.count()
         logger.info(
             '%d %s to export...',
-            total, objects.model._meta.verbose_name_plural)
+            total, cls._meta.verbose_name_plural)
 
-        # For large querysets, break it up
-        if total < 100000:
+        # For large querysets, break up by the first field
+        if total < large_queryset_size:
             querysets = [objects.order_by(*sort_fields)]
         else:  # pragma: no cover
             field1_raw = sort_fields[0]
@@ -330,6 +355,9 @@ class Base(models.Model):
                     **{field1: field1_val}).order_by(*sort_fields[1:])
                 querysets.append(qs)
 
+        # Assemble the rows, writing when we hit batch size
+        count = 0
+        rows = []
         for queryset in querysets:
             for item in queryset.order_by(*sort_fields):
                 row = []
@@ -338,19 +366,8 @@ class Base(models.Model):
                     point_match = re_point.match(field_name)
                     if '__' in field_name:
                         # Return relations from cache
-                        local_field_name, subfield_name = field_name.split(
-                            '__', 1)
+                        local_field_name = field_name.split('__', 1)[0]
                         field_id = getattr(obj, local_field_name + '_id')
-                        if field_name not in cache:
-                            # Get all the objects
-                            field = obj._meta.get_field_by_name(
-                                local_field_name)[0]
-                            field_type = field.rel.to
-                            pairs = field_type.objects.in_feed(
-                                feed).values_list('id', subfield_name)
-                            cache[field_name] = dict(
-                                (i, text_type(x)) for i, x in pairs)
-                            cache[field_name][None] = u''
                         row.append(cache[field_name][field_id])
                     elif point_match:
                         name, index = point_match.groups()
@@ -375,7 +392,7 @@ class Base(models.Model):
                     count += len(rows)
                     logger.info(
                         "Exported %d %s",
-                        count, objects.model._meta.verbose_name_plural)
+                        count, cls._meta.verbose_name_plural)
                     rows = []
 
         # Write rows smaller than batch size
