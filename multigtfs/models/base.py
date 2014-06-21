@@ -313,6 +313,12 @@ class Base(models.Model):
         header_row.extend(extra_columns)
         write_rows(csv_writer, [header_row])
 
+        # Report the work to be done
+        total = objects.count()
+        logger.info(
+            '%d %s to export...',
+            total, cls._meta.verbose_name_plural)
+
         # Populate related items cache
         model_to_field_name = {}
         cache = {}
@@ -334,26 +340,28 @@ class Base(models.Model):
                     cache[field_name][None] = u''
                     model_to_field_name[model_name] = field_name
 
-        total = objects.count()
-        logger.info(
-            '%d %s to export...',
-            total, cls._meta.verbose_name_plural)
-
         # For large querysets, break up by the first field
         if total < large_queryset_size:
             querysets = [objects.order_by(*sort_fields)]
         else:  # pragma: no cover
             field1_raw = sort_fields[0]
             assert '__' in field1_raw
+            assert field1_raw in cache
             field1 = field1_raw.split('__', 1)[0]
             field1_id = field1 + '_id'
+
+            # Sort field1 ids by field1 values
+            val_to_id = dict((v, k) for k, v in cache[field1_raw].items())
+            assert len(val_to_id) == len(cache[field1_raw])
+            sorted_vals = sorted(val_to_id.keys())
+
             querysets = []
-            unique = objects.order_by(
-                field1_raw).values_list(field1_id, flat=True).distinct()
-            for field1_val in unique:
-                qs = objects.filter(
-                    **{field1: field1_val}).order_by(*sort_fields[1:])
-                querysets.append(qs)
+            for val in sorted_vals:
+                fid = val_to_id[val]
+                if fid:
+                    qs = objects.filter(
+                        **{field1_id: fid}).order_by(*sort_fields[1:])
+                    querysets.append(qs)
 
         # Assemble the rows, writing when we hit batch size
         count = 0
@@ -370,10 +378,12 @@ class Base(models.Model):
                         field_id = getattr(obj, local_field_name + '_id')
                         row.append(cache[field_name][field_id])
                     elif point_match:
+                        # Get the lat or long from the point
                         name, index = point_match.groups()
                         field = getattr(obj, name)
                         row.append(field.coords[int(index)])
                     else:
+                        # Handle other field types
                         field = getattr(obj, field_name) if obj else ''
                         if isinstance(field, date):
                             formatted = field.strftime(u'%Y%m%d')
@@ -401,7 +411,7 @@ class Base(models.Model):
 
 
 def write_rows(writer, rows):
-    '''Write a batch of row data to the csv'''
+    '''Write a batch of row data to the csv writer'''
     for row in rows:
         try:
             writer.writerow(row)
