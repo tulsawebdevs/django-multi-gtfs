@@ -41,21 +41,21 @@ class Command(BaseCommand):
         # Setup logging
         verbosity = int(options['verbosity'])
         console = logging.StreamHandler(self.stderr)
-        console.setFormatter(
-            logging.Formatter('%(name)s - %(levelname)s - %(message)s'))
+        formatter = logging.Formatter('%(levelname)s - %(message)s')
+        logger_name = 'multigtfs'
         if verbosity == 0:
             level = logging.WARNING
-            logger_name = 'multigtfs'
         elif verbosity == 1:
             level = logging.INFO
-            logger_name = 'multigtfs'
         elif verbosity == 2:
             level = logging.DEBUG
-            logger_name = 'multigtfs'
         else:
             level = logging.DEBUG
             logger_name = ''
+            formatter = logging.Formatter(
+                '%(name)s - %(levelname)s - %(message)s')
         console.setLevel(level)
+        console.setFormatter(formatter)
         logger = logging.getLogger(logger_name)
         logger.setLevel(level)
         logger.addHandler(console)
