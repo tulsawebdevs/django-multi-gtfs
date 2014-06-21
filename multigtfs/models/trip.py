@@ -118,7 +118,7 @@ class Trip(Base):
         max_length=255, blank=True,
         help_text="Destination identification for passengers.")
     short_name = models.CharField(
-        max_length=10, blank=True,
+        max_length=63, blank=True,
         help_text="Short name used in schedules and signboards.")
     direction = models.CharField(
         max_length=1, blank=True,

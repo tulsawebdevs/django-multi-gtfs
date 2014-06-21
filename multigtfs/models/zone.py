@@ -28,7 +28,7 @@ class Zone(Base):
     """
     feed = models.ForeignKey('Feed')
     zone_id = models.CharField(
-        max_length=10, db_index=True,
+        max_length=63, db_index=True,
         help_text="Unique identifier for a zone.")
 
     def __str__(self):

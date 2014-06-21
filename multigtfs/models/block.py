@@ -29,7 +29,7 @@ class Block(Base):
     """
     feed = models.ForeignKey('Feed')
     block_id = models.CharField(
-        max_length=10, db_index=True,
+        max_length=63, db_index=True,
         help_text="Unique identifier for a block.")
 
     def __str__(self):
