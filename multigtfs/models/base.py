@@ -20,6 +20,7 @@ from logging import getLogger
 import re
 
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type
 from jsonfield import JSONField
@@ -29,7 +30,43 @@ re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
 
 
+class BaseQuerySet(GeoQuerySet):
+    def populated_column_map(self):
+        '''Return the _column_map without unused optional fields'''
+        column_map = []
+        cls = self.model
+        for csv_name, field_pattern in cls._column_map:
+            # Separate the local field name from foreign columns
+            if '__' in field_pattern:
+                field_name = field_pattern.split('__', 1)[0]
+            else:
+                field_name = field_pattern
+
+            # Handle point fields
+            point_match = re_point.match(field_name)
+            if point_match:
+                field = None
+            else:
+                field = cls._meta.get_field_by_name(field_name)[0]
+
+            # Only add optional columns if they are used in the records
+            if field and field.blank and not field.has_default():
+                if field.null:
+                    blank = None
+                else:
+                    blank = field.value_to_string(None)
+                kwargs = {field_name: blank}
+                if self.exclude(**kwargs).exists():
+                    column_map.append((csv_name, field_pattern))
+            else:
+                column_map.append((csv_name, field_pattern))
+        return column_map
+
+
 class BaseManager(models.GeoManager):
+    def get_query_set(self):
+        return BaseQuerySet(self.model)
+
     def in_feed(self, feed):
         '''Return the objects in the target feed'''
         kwargs = {self.model._rel_to_feed: feed}
@@ -244,35 +281,9 @@ class Base(models.Model):
         # If no records, return None
         if not objects.exists():
             return
-        csv_names = []
-        for csv_name, field_pattern in objects.model._column_map:
-            # Separate the local field name from foreign columns
-            if '__' in field_pattern:
-                field_name = field_pattern.split('__', 1)[0]
-            else:
-                field_name = field_pattern
 
-            # Handle point fields
-            point_match = re_point.match(field_name)
-            if point_match:
-                field = None
-            else:
-                field = objects.model._meta.get_field_by_name(field_name)[0]
-
-            # Only add optional columns if they are used in the records
-            if field and field.blank and not field.has_default():
-                if field.null:
-                    blank = None
-                else:
-                    blank = field.value_to_string(None)
-                kwargs = {field_name: blank}
-                if objects.exclude(**kwargs).exists():
-                    csv_names.append((csv_name, field_pattern))
-            else:
-                csv_names.append((csv_name, field_pattern))
-
-        # Create the CSV file
-        columns, fields = zip(*csv_names)
+        column_map = objects.populated_column_map()
+        columns, fields = zip(*column_map)
         extra_columns = feed.meta.get(
             'extra_columns', {}).get(cls.__name__, [])
 
@@ -338,7 +349,7 @@ class Base(models.Model):
         for queryset in querysets:
             for item in queryset.order_by(*sort_fields):
                 row = []
-                for csv_name, field_name in csv_names:
+                for csv_name, field_name in column_map:
                     obj = item
                     point_match = re_point.match(field_name)
                     if '__' in field_name:
