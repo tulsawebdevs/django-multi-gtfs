@@ -21,7 +21,7 @@ import sys
 from django.conf import settings
 
 
-def main():
+def main(*paths):
     # Dynamically configure the Django settings with the minimum necessary to
     # get Django running tests
     config = {
@@ -69,6 +69,13 @@ def main():
 
     settings.configure(**config)
 
+    from django.core import management
+    failures = management.call_command('test', *paths)
+    sys.exit(failures)
+
+
+if __name__ == '__main__':
+
     # Extract non-options from command line
     # Options (-sx, --ipdb) will be parsed inside call_command
     paths = []
@@ -76,10 +83,4 @@ def main():
         if not arg.startswith('-'):
             paths.append(arg)
 
-    from django.core import management
-    failures = management.call_command('test', *paths)
-    sys.exit(failures)
-
-
-if __name__ == '__main__':
-    main()
+    main(*paths)
