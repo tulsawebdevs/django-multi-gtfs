@@ -1,6 +1,28 @@
 Changelog
 =========
 
+0.4.0 (2014-06-21)
+------------------
+This release was generously sponsored by MRCagney.
+
+* Import and export are 17-21x faster.  Very large feeds (~20MB) can now be
+  imported and exported without running out of memory (4 GB of RAM
+  recommended).  When running management commands, increasing verbosity
+  ('-v 1' or -v 2') will print useful status messages.
+* Additional columns not in the current GTFS spec are now imported into
+  'extra_data', a new JSON field.  The columns are noted in the Feed's new
+  JSON field, 'meta'.  These addition items appear in the example project,
+  and are exported after standard columns in the exported feed.
+* Added Python 3 compatibility
+* Extend more fields for real-world data (Trip.short_name,
+  Zone.zone_id, and Block.block_id)
+* On import, if two rows have duplicate unique ID (trip_id, stop_id, etc.),
+  then only the first will be imported.  A warning will printed to stderr.
+  Previously, both may have been imported, with unknown consequences.
+* Dropped support for South 0.7.x (not Python 3 compatible)
+* Trips now have a single Service.  Extra services will be detected by
+  migration 0018, and will have to be manually removed.
+
 0.3.3 (2014-03-28)
 ------------------
 * Add new optional fields (issue #23):
