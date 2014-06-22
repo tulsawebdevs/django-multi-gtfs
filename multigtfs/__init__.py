@@ -12,5 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+from __future__ import unicode_literals
 
-__version__ = b'0.4.0'  # pyroma insists it must be a bytestring
+__version__ = '0.4.0'
