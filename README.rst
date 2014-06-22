@@ -79,8 +79,8 @@ GTFS effort.  `Tulsa's bus schedule appeared on
 Google Maps in July 2013`_, after a two-year effort.  The Tulsa Web Devs
 founded `Code for Tulsa`_ to collaborate on future civic tech projects.
 
-The conversion to GeoDjango_ in February 2014 was generously sponsored by
-MRCagney_.
+Several features, including GeoDjango_ support and much faster feed imports,
+were generously sponsored by MRCagney_.
 
 Future
 ------
@@ -88,7 +88,6 @@ Upcoming features include:
 
 - Validating the feed against Google's requirements
 - More documentation
-- More flexible GTFS imports and exports (longer values, extra columns)
 
 See the `issues list`_ for more details.
 

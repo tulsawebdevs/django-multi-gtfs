@@ -1,5 +1,7 @@
 include *.py
 exclude t_overrides.py
+exclude *.pyc
+exclude .travis.yml
 include *.rst
 include COPYING.txt
 include qa_check.sh
@@ -9,3 +11,5 @@ include requirements.txt
 include requirements.dev.txt
 include multigtfs/tests/fixtures/*
 graft examples
+exclude examples/explore/db.sqlite3
+exclude examples/explore/exploreproj/local_settings.py
