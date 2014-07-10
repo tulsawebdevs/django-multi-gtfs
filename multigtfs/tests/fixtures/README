@@ -14,6 +14,7 @@ test2.zip has some validation issues as well, with a mispelled column name
 import the feed, and (as of v0.4.0) will import the drop_off_type as an
 unknown extra column.
 
-test3.zip is a minimized version of an official feed.  The only validation
-error is that the last service date is in the past.  multigtfs will
-import and export the feed with no changes.
+test3.zip is a minimized version of an official feed.  It has one quirk - a
+utf-8 encoded control character in the stop description of stop 5640.
+The only validation error is that the last service date is in the past.
+multigtfs will import and export the feed with no changes.

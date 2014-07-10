@@ -153,9 +153,10 @@ class Feed(models.Model):
             if content:
                 z.writestr(klass._filename, content)
                 end_time = time.time()
+                record_count = content.count(type(content)('\n')) - 1
                 logger.info(
                     'Exported %s (%d %s) in %0.1f seconds',
-                    klass._filename, content.count('\n') - 1,
+                    klass._filename, record_count,
                     klass._meta.verbose_name_plural,
                     end_time - start_time)
         z.close()
