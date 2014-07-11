@@ -65,6 +65,7 @@ non-negative integer.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -90,6 +91,7 @@ class Transfer(Base):
     min_transfer_time = models.IntegerField(
         null=True, blank=True,
         help_text="How many seconds are required to transfer?")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return "%s-%s" % (self.from_stop, self.to_stop.stop_id)

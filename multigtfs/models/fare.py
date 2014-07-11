@@ -65,6 +65,7 @@ should be omitted or empty when transfers is set to 0.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -98,6 +99,7 @@ class Fare(Base):
     transfer_duration = models.IntegerField(
         null=True, blank=True,
         help_text="Time in seconds until a ticket or transfer expires")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return u"%d-%s(%s %s)" % (

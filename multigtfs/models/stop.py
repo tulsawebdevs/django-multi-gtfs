@@ -148,6 +148,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import StringIO
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -169,6 +170,7 @@ class Stop(Base):
         max_length=255,
         help_text="Name of stop in local vernacular.")
     desc = models.CharField(
+        "description",
         max_length=255, blank=True,
         help_text='Description of a stop.')
     point = models.PointField(
@@ -194,6 +196,7 @@ class Stop(Base):
             ('1', 'Some wheelchair boarding'),
             ('2', 'No wheelchair boarding')),
         help_text='Is wheelchair boarding possible?')
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return "%d-%s" % (self.feed_id, self.stop_id)

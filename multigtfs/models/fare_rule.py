@@ -97,6 +97,7 @@ project wiki:
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -120,6 +121,7 @@ class FareRule(Base):
         'Zone', null=True, blank=True,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         u = "%d-%s" % (self.fare.feed.id, self.fare.fare_id)

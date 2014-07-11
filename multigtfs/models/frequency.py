@@ -82,6 +82,7 @@ start time but less than the last desired trip start time + headway_secs.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.fields import SecondsField
@@ -102,6 +103,7 @@ class Frequency(Base):
         choices=((0, 'Trips are not exactly scheduled'),
                  (1, 'Trips are exactly scheduled from start time')),
         help_text="Should frequency-based trips be exactly scheduled?")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return str(self.trip)

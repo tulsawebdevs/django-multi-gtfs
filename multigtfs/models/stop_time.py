@@ -167,6 +167,7 @@ the units that are used for this field in the shapes.txt file.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.stop import Stop
@@ -204,8 +205,10 @@ class StopTime(Base):
                  ('3', 'Must coordinate with driver to arrange drop off')),
         help_text="How passengers are picked up")
     shape_dist_traveled = models.FloatField(
+        "shape distance traveled",
         null=True, blank=True,
         help_text='Distance of stop from start of shape')
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return "%s-%s-%s" % (self.trip, self.stop.stop_id, self.stop_sequence)

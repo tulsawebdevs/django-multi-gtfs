@@ -73,6 +73,7 @@ for a description of how to create fully qualified URL values.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -100,6 +101,7 @@ class Agency(Base):
         help_text="Voice telephone number")
     fare_url = models.URLField(
         blank=True, help_text="URL for purchasing tickets online")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return u"%d-%s" % (self.feed.id, self.agency_id)

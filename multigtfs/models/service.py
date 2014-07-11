@@ -132,6 +132,7 @@ The end_date field's value should be in YYYYMMDD format.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -167,6 +168,7 @@ class Service(Base):
         help_text="Is the route active on Sunday?")
     start_date = models.DateField()
     end_date = models.DateField()
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return "%d-%s" % (self.feed.id, self.service_id)

@@ -23,7 +23,6 @@ from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type
-from jsonfield import JSONField
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
@@ -101,8 +100,6 @@ class Base(models.Model):
         app_label = 'multigtfs'
 
     objects = BaseManager()
-
-    extra_data = JSONField(default={})
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'
