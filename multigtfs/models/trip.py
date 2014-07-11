@@ -123,7 +123,7 @@ class Trip(Base):
         help_text="Short name used in schedules and signboards.")
     direction = models.CharField(
         max_length=1, blank=True,
-        choices=(('0', 'Outbound'), ('1', 'Inbound')),
+        choices=(('0', '0'), ('1', '1')),
         help_text="Direction for bi-directional routes.")
     block = models.ForeignKey(
         'Block', null=True, blank=True,
