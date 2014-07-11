@@ -24,20 +24,84 @@ from multigtfs.models import (
 geo_admin = admin.OSMGeoAdmin if MULTIGTFS_OSMADMIN else admin.GeoModelAdmin
 
 
-admin.site.register(Agency)
-admin.site.register(Block)
-admin.site.register(Fare)
-admin.site.register(FareRule)
+class AgencyAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+class BlockAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+class FareAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+class FareRuleAdmin(admin.ModelAdmin):
+    raw_id_fields = ('fare', 'route', 'origin', 'destination', 'contains')
+
+
+class FeedInfoAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+class FrequencyAdmin(admin.ModelAdmin):
+    raw_id_fields = ('trip', )
+
+
+class RouteAdmin(geo_admin):
+    raw_id_fields = ('feed', 'agency')
+
+
+class ServiceAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+class ServiceDateAdmin(admin.ModelAdmin):
+    raw_id_fields = ('service', )
+
+
+class ShapeAdmin(geo_admin):
+    raw_id_fields = ('feed', )
+
+
+class ShapePointAdmin(geo_admin):
+    raw_id_fields = ('shape', )
+
+
+class StopAdmin(geo_admin):
+    raw_id_fields = ('feed', 'zone', 'parent_station')
+
+
+class StopTimeAdmin(admin.ModelAdmin):
+    raw_id_fields = ('stop', 'trip')
+
+
+class TransferAdmin(admin.ModelAdmin):
+    raw_id_fields = ('from_stop', 'to_stop')
+
+
+class TripAdmin(geo_admin):
+    raw_id_fields = ('route', 'service', 'block', 'shape')
+
+
+class ZoneAdmin(admin.ModelAdmin):
+    raw_id_fields = ('feed', )
+
+
+admin.site.register(Agency, AgencyAdmin)
+admin.site.register(Block, BlockAdmin)
+admin.site.register(Fare, FareAdmin)
+admin.site.register(FareRule, FareRuleAdmin)
 admin.site.register(Feed)
-admin.site.register(FeedInfo)
-admin.site.register(Frequency)
-admin.site.register(Route, geo_admin)
-admin.site.register(Service)
-admin.site.register(ServiceDate)
-admin.site.register(Shape, geo_admin)
-admin.site.register(ShapePoint, geo_admin)
-admin.site.register(Stop, geo_admin)
-admin.site.register(StopTime)
-admin.site.register(Transfer)
-admin.site.register(Trip, geo_admin)
-admin.site.register(Zone)
+admin.site.register(FeedInfo, FeedInfoAdmin)
+admin.site.register(Frequency, FrequencyAdmin)
+admin.site.register(Route, RouteAdmin)
+admin.site.register(Service, ServiceAdmin)
+admin.site.register(ServiceDate, ServiceDateAdmin)
+admin.site.register(Shape, ShapeAdmin)
+admin.site.register(ShapePoint, ShapePointAdmin)
+admin.site.register(Stop, StopAdmin)
+admin.site.register(StopTime, StopTimeAdmin)
+admin.site.register(Transfer, TransferAdmin)
+admin.site.register(Trip, TripAdmin)
+admin.site.register(Zone, ZoneAdmin)
