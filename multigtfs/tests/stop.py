@@ -14,10 +14,11 @@
 # limitations under the License.
 
 from __future__ import unicode_literals
+from codecs import BOM_UTF8
 
 from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
-from django.utils.six import StringIO, text_type
+from django.utils.six import StringIO, text_type, PY3
 
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip, Zone
 
@@ -197,6 +198,32 @@ http://example.com,1,,America/Los_Angeles,a station
         self.assertEqual(station.extra_data, {'extra': 'a station'})
         expected = {'extra_columns': {'Stop': ['extra']}}
         self.assertEqual(expected, self.feed.meta)
+
+    def test_import_stops_txt_bom(self):
+        if PY3:  # pragma: no cover
+            text = (BOM_UTF8.decode('utf-8') + """\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,parent_station,stop_timezone
+FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
+http://example.com/fcr,0,FUR_CREEK_STA,
+FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
+http://example.com,1,,America/Los_Angeles
+""")
+        else:
+            text = (BOM_UTF8 + b"""\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,parent_station,stop_timezone
+FUR_CREEK_RES,FC,Furnace Creek Resort,,36.425288,-117.133162,A,\
+http://example.com/fcr,0,FUR_CREEK_STA,
+FUR_CREEK_STA,,Furnace Creek Station,"Our Station",36.425288,-117.133162,A,\
+http://example.com,1,,America/Los_Angeles
+""")
+        stops_txt = StringIO(text)
+        Stop.import_txt(stops_txt, self.feed)
+        self.assertEqual(Stop.objects.count(), 2)
+        station = Stop.objects.get(stop_id='FUR_CREEK_STA')
+        stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
+        self.assertEqual(stop.parent_station, station)
 
     def test_export_stops_txt_none(self):
         stops_txt = Stop.export_txt(self.feed)

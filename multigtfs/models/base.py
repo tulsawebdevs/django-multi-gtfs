@@ -106,7 +106,7 @@ class Base(models.Model):
     _rel_to_feed = 'feed'
 
     @classmethod
-    def import_txt(cls, txt_file, feed):
+    def import_txt(cls, txt_file, feed, filter_func=None):
         '''Import from the GTFS text file'''
 
         # Setup the conversion from GTFS to Django Format
@@ -222,6 +222,9 @@ class Base(models.Model):
                 if columns[0].startswith(bom):
                     columns[0] = columns[0][len(bom):]
                 first = False
+                continue
+
+            if filter_func and not filter_func(zip(columns, row)):
                 continue
 
             # Read a data row
