@@ -140,7 +140,6 @@ additional semantics:
         specific stop / platform
 """
 from __future__ import unicode_literals
-from csv import DictReader, DictWriter
 from logging import getLogger
 import warnings
 
@@ -148,6 +147,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import StringIO
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -169,6 +169,7 @@ class Stop(Base):
         max_length=255,
         help_text="Name of stop in local vernacular.")
     desc = models.CharField(
+        "description",
         max_length=255, blank=True,
         help_text='Description of a stop.')
     point = models.PointField(
@@ -194,6 +195,7 @@ class Stop(Base):
             ('1', 'Some wheelchair boarding'),
             ('2', 'No wheelchair boarding')),
         help_text='Is wheelchair boarding possible?')
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return "%d-%s" % (self.feed_id, self.stop_id)
@@ -257,55 +259,31 @@ class Stop(Base):
 
         Stations need to be imported before stops
         '''
-        def writeheader(writer):
-            '''
-            Write the header row for a DictWriter CSV file
-
-            This is a member function of DictWriter in Python 2.7
-            '''
-            writer.writerow(dict((fn, fn) for fn in writer.fieldnames))
 
         txt = txt_file.read()
-        reader = DictReader(StringIO(txt))
 
-        # Find extra fieldnames
-        fieldnames = [c for c, _ in cls._column_map]
-        for fieldname in reader.fieldnames:
-            if fieldname not in fieldnames:
-                fieldnames.append(fieldname)
+        def is_station(pairs):
+            '''Does the row represent a station?'''
+            for name, val in pairs:
+                if name == 'location_type':
+                    return val == '1'
+            return False
 
-        # Setup filtered CSVs
-        has_stations = False
-        stations_csv = StringIO()
-        stations = DictWriter(stations_csv, fieldnames)
-        has_stops = False
-        stops_csv = StringIO()
-        stops = DictWriter(stops_csv, fieldnames)
+        logger.info("Importing station stops")
+        stations = super(Stop, cls).import_txt(StringIO(txt), feed, is_station)
+        logger.info("Imported %d station stops", stations)
 
-        # Filter rows into stations and stops
-        for row in reader:
-            if row.get('location_type') == '1':
-                if not has_stations:
-                    writeheader(stations)
-                    has_stations = True
-                stations.writerow(row)
-            else:
-                if not has_stops:
-                    writeheader(stops)
-                    has_stops = True
-                stops.writerow(row)
+        def is_stop(pairs):
+            '''Does the row represent a stop?'''
+            for name, val in pairs:
+                if name == 'location_type':
+                    return val != '1'
+            return True
 
-        # Read ordered CSVs with standard importer
-        total = 0
-        if has_stations:
-            logger.info("Importing station stops")
-            total += super(Stop, cls).import_txt(
-                StringIO(stations_csv.getvalue()), feed)
-        if has_stops:
-            logger.info("Importing non-station stops")
-            total += super(Stop, cls).import_txt(
-                StringIO(stops_csv.getvalue()), feed)
-        return total
+        logger.info("Importing non-station stops")
+        stops = super(Stop, cls).import_txt(StringIO(txt), feed, is_stop)
+        logger.info("Imported %d non-station stops", stops)
+        return stations + stops
 
 
 @receiver(post_save, sender=Stop, dispatch_uid="post_save_stop")

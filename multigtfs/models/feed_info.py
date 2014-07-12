@@ -76,6 +76,7 @@ incorporated.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -90,6 +91,7 @@ class FeedInfo(Base):
     publisher_url = models.URLField(
         help_text="URL of the feed publisher's organization.")
     lang = models.CharField(
+        "language",
         max_length=20,
         help_text="IETF BCP 47 language code for text in field.")
     start_date = models.DateField(
@@ -101,6 +103,7 @@ class FeedInfo(Base):
     version = models.CharField(
         max_length=255, blank=True,
         help_text="Version of feed.")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return '%s-%s' % (self.feed.id, self.publisher_name)

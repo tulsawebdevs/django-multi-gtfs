@@ -68,6 +68,7 @@ remove the holiday from the regular service_id schedule.
 from __future__ import unicode_literals
 
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -82,6 +83,7 @@ class ServiceDate(Base):
     exception_type = models.IntegerField(
         default=1, choices=((1, 'Added'), (2, 'Removed')),
         help_text="Is service added or removed on this date?")
+    extra_data = JSONField(default={})
 
     def __str__(self):
         return (

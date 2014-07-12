@@ -101,6 +101,7 @@ from __future__ import unicode_literals
 
 from django.contrib.gis.geos import LineString
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -122,7 +123,7 @@ class Trip(Base):
         help_text="Short name used in schedules and signboards.")
     direction = models.CharField(
         max_length=1, blank=True,
-        choices=(('0', 'Outbound'), ('1', 'Inbound')),
+        choices=(('0', '0'), ('1', '1')),
         help_text="Direction for bi-directional routes.")
     block = models.ForeignKey(
         'Block', null=True, blank=True,
@@ -147,6 +148,7 @@ class Trip(Base):
             ('1', 'Some bicycle accommodation'),
             ('2', 'No bicycles allowed')),
         help_text='Are bicycles allowed?')
+    extra_data = JSONField(default={})
 
     def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""

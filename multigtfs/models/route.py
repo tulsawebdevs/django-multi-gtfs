@@ -114,6 +114,7 @@ from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
 from django.utils.encoding import python_2_unicode_compatible
+from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -135,9 +136,11 @@ class Route(Base):
         max_length=255,
         help_text="Long name of the route")
     desc = models.TextField(
+        "description",
         blank=True,
         help_text="Long description of a route")
     rtype = models.IntegerField(
+        "route type",
         choices=((0, 'Tram, Streetcar, or Light rail'),
                  (1, 'Subway or Metro'),
                  (2, 'Rail'),
@@ -158,6 +161,7 @@ class Route(Base):
     geometry = models.MultiLineStringField(
         null=True, blank=True,
         help_text='Geometry cache of Trips')
+    extra_data = JSONField(default={})
 
     def update_geometry(self):
         """Update the geometry from the Trips"""

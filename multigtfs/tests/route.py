@@ -89,7 +89,7 @@ AB,DTA,10,Airport - Bullfrog,"Our Airport Route", 3,http://example.com,\
             feed=self.feed, route_id='AB', short_name='10',
             long_name='Airport - Bullfrog', rtype=3)
         routes_txt = Route.export_txt(self.feed)
-        self.assertEquals(routes_txt, """\
+        self.assertEqual(routes_txt, """\
 route_id,route_short_name,route_long_name,route_type
 AB,10,Airport - Bullfrog,3
 """)
@@ -102,7 +102,7 @@ AB,10,Airport - Bullfrog,3
             rtype=3, url='http://example.com', color='00FFFF',
             text_color='000000')
         routes_txt = Route.export_txt(self.feed)
-        self.assertEquals(routes_txt, """\
+        self.assertEqual(routes_txt, """\
 route_id,agency_id,route_short_name,route_long_name,route_desc,route_type,\
 route_url,route_color,route_text_color
 AB,DTA,10,Airport - Bullfrog,Our Airport Route,3,http://example.com,\

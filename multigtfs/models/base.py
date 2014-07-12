@@ -13,8 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
+from codecs import BOM_UTF8
 from collections import defaultdict
-from csv import DictReader, writer
+from csv import reader, writer
 from datetime import datetime, date
 from logging import getLogger
 import re
@@ -22,8 +23,7 @@ import re
 from django.contrib.gis.db import models
 from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
-from django.utils.six import StringIO, text_type
-from jsonfield import JSONField
+from django.utils.six import StringIO, text_type, PY3
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
@@ -102,13 +102,11 @@ class Base(models.Model):
 
     objects = BaseManager()
 
-    extra_data = JSONField(default={})
-
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'
 
     @classmethod
-    def import_txt(cls, txt_file, feed):
+    def import_txt(cls, txt_file, feed, filter_func=None):
         '''Import from the GTFS text file'''
 
         # Setup the conversion from GTFS to Django Format
@@ -207,18 +205,35 @@ class Base(models.Model):
                 val_map[csv_name] = converter
 
         # Read and convert the source txt
-        reader = DictReader(txt_file)
+        csv_reader = reader(txt_file)
         unique_line = dict()
         count = 0
+        first = True
         extra_counts = defaultdict(int)
+        if PY3:  # pragma: no cover
+            bom = BOM_UTF8.decode('utf-8')
+        else:
+            bom = BOM_UTF8
         new_objects = []
-        for row in reader:
+        for row in csv_reader:
+            if first:
+                # Read the columns
+                columns = row
+                if columns[0].startswith(bom):
+                    columns[0] = columns[0][len(bom):]
+                first = False
+                continue
+
+            if filter_func and not filter_func(zip(columns, row)):
+                continue
+
+            # Read a data row
             fields = dict()
             point_coords = [None, None]
             ukey_values = {}
             if cls._rel_to_feed == 'feed':
                 fields['feed'] = feed
-            for column_name, value in row.items():
+            for column_name, value in zip(columns, row):
                 if column_name not in name_map:
                     val = null_convert(value)
                     if val is not None:
@@ -245,10 +260,10 @@ class Base(models.Model):
             if ukey in unique_line:
                 logger.warning(
                     '%s line %d is a duplicate of line %d, not imported.',
-                    cls._filename, reader.line_num, unique_line[ukey])
+                    cls._filename, csv_reader.line_num, unique_line[ukey])
                 continue
             else:
-                unique_line[ukey] = reader.line_num
+                unique_line[ukey] = csv_reader.line_num
 
             # Create after accumulating a batch
             new_objects.append(cls(**fields))
