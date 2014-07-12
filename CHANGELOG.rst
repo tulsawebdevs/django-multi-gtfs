@@ -1,6 +1,12 @@
 Changelog
 =========
 
+0.4.1 (2014-07-11)
+------------------
+* Import GTFS feeds using BOM (issue #31)
+* Export non-ASCII GTFS feeds in Python 2 (issue #34)
+* Various admin improvements (issue #29, issue #32)
+
 0.4.0 (2014-06-21)
 ------------------
 This release was generously sponsored by MRCagney.
