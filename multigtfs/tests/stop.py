@@ -225,6 +225,19 @@ http://example.com,1,,America/Los_Angeles
         stop = Stop.objects.get(stop_id='FUR_CREEK_RES')
         self.assertEqual(stop.parent_station, station)
 
+    def test_import_stops_txt_parent_is_space(self):
+        """If parent station is an empty string, then leave unset
+
+        Issue #36
+        """
+        stops_txt = StringIO("""\
+stop_id,stop_name,stop_desc,stop_lat,stop_lon,parent_station
+FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162," "
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        stop = Stop.objects.get()
+        self.assertEqual(stop.parent_station, None)
+
     def test_export_stops_txt_none(self):
         stops_txt = Stop.export_txt(self.feed)
         self.assertFalse(stops_txt)
