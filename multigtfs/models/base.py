@@ -129,7 +129,7 @@ class Base(models.Model):
 
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
-                if value:
+                if value.strip():
                     key1 = "{}:{}".format(field.rel.to.__name__, rel_name)
                     key2 = text_type(value)
 
