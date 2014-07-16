@@ -1,6 +1,6 @@
-#
+# -*- coding: utf-8 -*-
 # Copyright 2012-2014 John Whitlock
-#
+# Copyright 2014 Juha Yrjölä
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
@@ -129,7 +129,7 @@ class Base(models.Model):
 
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
-                if value:
+                if value.strip():
                     key1 = "{}:{}".format(field.rel.to.__name__, rel_name)
                     key2 = text_type(value)
 
