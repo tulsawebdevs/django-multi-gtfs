@@ -84,7 +84,14 @@ class Feed(models.Model):
                 filelist.extend([os.path.join(dirpath, f) for f in filenames])
         else:
             z = ZipFile(gtfs_obj, 'r')
-            opener = z.open
+
+            def zip_opener(filename):
+                table = z.open(filename)
+                if PY3:  # pragma: no cover
+                    from io import TextIOWrapper
+                    table = TextIOWrapper(table)
+                return table
+            opener = zip_opener
             filelist = z.namelist()
 
         gtfs_order = (
@@ -99,9 +106,6 @@ class Feed(models.Model):
                     if f.endswith(klass._filename):
                         start_time = time.time()
                         table = opener(f)
-                        if PY3:  # pragma: no cover
-                            from io import TextIOWrapper
-                            table = TextIOWrapper(table)
                         count = klass.import_txt(table, self) or 0
                         end_time = time.time()
                         logger.info(
