@@ -212,7 +212,7 @@ class Base(models.Model):
         extra_counts = defaultdict(int)
         if PY3:  # pragma: no cover
             bom = BOM_UTF8.decode('utf-8')
-        else:
+        else:  # pragma: no cover
             bom = BOM_UTF8
         new_objects = []
         for row in csv_reader:
