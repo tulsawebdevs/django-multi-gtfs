@@ -136,7 +136,7 @@ class ShapePoint(Base):
     traveled = models.FloatField(
         null=True, blank=True,
         help_text='Distance of point from start of shape')
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return "%s-%d" % (self.shape, self.sequence)

@@ -91,7 +91,7 @@ class Transfer(Base):
     min_transfer_time = models.IntegerField(
         null=True, blank=True,
         help_text="How many seconds are required to transfer?")
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return "%s-%s" % (self.from_stop, self.to_stop.stop_id)

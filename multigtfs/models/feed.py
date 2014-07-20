@@ -51,7 +51,7 @@ class Feed(models.Model):
     """
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    meta = JSONField(default={})
+    meta = JSONField(default={}, blank=True, null=True)
 
     class Meta:
         db_table = 'feed'

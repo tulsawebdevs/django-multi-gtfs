@@ -121,7 +121,7 @@ class FareRule(Base):
         'Zone', null=True, blank=True,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         u = "%d-%s" % (self.fare.feed.id, self.fare.fare_id)
