@@ -103,7 +103,7 @@ class Frequency(Base):
         choices=((0, 'Trips are not exactly scheduled'),
                  (1, 'Trips are exactly scheduled from start time')),
         help_text="Should frequency-based trips be exactly scheduled?")
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return str(self.trip)

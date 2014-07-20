@@ -195,7 +195,7 @@ class Stop(Base):
             ('1', 'Some wheelchair boarding'),
             ('2', 'No wheelchair boarding')),
         help_text='Is wheelchair boarding possible?')
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return "%d-%s" % (self.feed_id, self.stop_id)

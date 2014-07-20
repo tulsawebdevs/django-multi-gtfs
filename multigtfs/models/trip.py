@@ -148,7 +148,7 @@ class Trip(Base):
             ('1', 'Some bicycle accommodation'),
             ('2', 'No bicycles allowed')),
         help_text='Are bicycles allowed?')
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""

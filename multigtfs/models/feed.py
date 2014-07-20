@@ -15,12 +15,14 @@
 from __future__ import unicode_literals
 from zipfile import ZipFile
 import logging
+import os
+import os.path
 import time
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.six import PY3
+from django.utils.six import string_types, PY3
 from jsonfield import JSONField
 
 from .agency import Agency
@@ -49,7 +51,7 @@ class Feed(models.Model):
     """
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    meta = JSONField(default={})
+    meta = JSONField(default={}, blank=True, null=True)
 
     class Meta:
         db_table = 'feed'
@@ -61,17 +63,36 @@ class Feed(models.Model):
         else:
             return "%d" % self.id
 
-    def import_gtfs(self, gtfs_file):
+    def import_gtfs(self, gtfs_obj):
         """Import a GTFS file as feed
 
         Keyword arguments:
-        gtfs_file - A path or file-like object for the GTFS feed
+        gtfs_obj - A path to a zipped GTFS file, a path to an extracted
+            GTFS file, or an open GTFS zip file.
 
         Returns is a list of objects imported
         """
         total_start = time.time()
-        z = ZipFile(gtfs_file, 'r')
-        files = z.namelist()
+
+        # Determine the type of gtfs_obj
+        opener = None
+        filelist = None
+        if isinstance(gtfs_obj, string_types) and os.path.isdir(gtfs_obj):
+            opener = open
+            filelist = []
+            for dirpath, dirnames, filenames in os.walk(gtfs_obj):
+                filelist.extend([os.path.join(dirpath, f) for f in filenames])
+        else:
+            z = ZipFile(gtfs_obj, 'r')
+
+            def zip_opener(filename):
+                table = z.open(filename)
+                if PY3:  # pragma: no cover
+                    from io import TextIOWrapper
+                    table = TextIOWrapper(table)
+                return table
+            opener = zip_opener
+            filelist = z.namelist()
 
         gtfs_order = (
             Agency, Stop, Route, Service, ServiceDate, ShapePoint, Trip,
@@ -81,13 +102,10 @@ class Feed(models.Model):
         post_save.disconnect(dispatch_uid='post_save_stop')
         try:
             for klass in gtfs_order:
-                for f in files:
+                for f in filelist:
                     if f.endswith(klass._filename):
                         start_time = time.time()
-                        table = z.open(f)
-                        if PY3:  # pragma: no cover
-                            from io import TextIOWrapper
-                            table = TextIOWrapper(table)
+                        table = opener(f)
                         count = klass.import_txt(table, self) or 0
                         end_time = time.time()
                         logger.info(
@@ -95,6 +113,7 @@ class Feed(models.Model):
                             klass._filename, count,
                             klass._meta.verbose_name_plural,
                             end_time - start_time)
+                        table.close()
 
         finally:
             post_save.connect(post_save_shapepoint, sender=ShapePoint)

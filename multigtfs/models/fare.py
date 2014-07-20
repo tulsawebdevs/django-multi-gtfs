@@ -99,7 +99,7 @@ class Fare(Base):
     transfer_duration = models.IntegerField(
         null=True, blank=True,
         help_text="Time in seconds until a ticket or transfer expires")
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True,  null=True)
 
     def __str__(self):
         return u"%d-%s(%s %s)" % (

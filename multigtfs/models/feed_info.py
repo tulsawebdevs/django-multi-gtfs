@@ -103,7 +103,7 @@ class FeedInfo(Base):
     version = models.CharField(
         max_length=255, blank=True,
         help_text="Version of feed.")
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return '%s-%s' % (self.feed.id, self.publisher_name)

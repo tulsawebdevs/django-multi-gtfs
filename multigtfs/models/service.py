@@ -168,7 +168,7 @@ class Service(Base):
         help_text="Is the route active on Sunday?")
     start_date = models.DateField()
     end_date = models.DateField()
-    extra_data = JSONField(default={})
+    extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
         return "%d-%s" % (self.feed.id, self.service_id)

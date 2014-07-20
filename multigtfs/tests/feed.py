@@ -16,6 +16,7 @@
 from __future__ import unicode_literals
 
 import os
+import shutil
 import tempfile
 import zipfile
 
@@ -35,10 +36,13 @@ class FeedTest(TestCase):
 
     def setUp(self):
         self.temp_path = None
+        self.temp_dir = None
 
     def tearDown(self):
         if self.temp_path:
             os.unlink(self.temp_path)
+        if self.temp_dir:
+            shutil.rmtree(self.temp_dir)
 
     def normalize(self, feed):
         '''Normalize a feed - line seperators, etc.'''
@@ -54,7 +58,7 @@ class FeedTest(TestCase):
         feed.name = 'Test'
         self.assertEqual(str(feed), '%d Test' % feed.id)
 
-    def test_import_gtfs_test1(self):
+    def test_import_gtfs_test1(self, gtfs_obj=None):
         '''Try importing test1.zip
 
         test1.zip was downloaded from
@@ -74,9 +78,10 @@ class FeedTest(TestCase):
         services table.  After 0.4.0, the service ID was changed to a single
         foriegn key, so only the 'W' service is recorded.
         '''
-        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
+        gtfs_obj = gtfs_obj or os.path.abspath(
+            os.path.join(fixtures_dir, 'test1.zip'))
         feed = Feed.objects.create()
-        feed.import_gtfs(test_path)
+        feed.import_gtfs(gtfs_obj)
         self.assertEqual(Agency.objects.count(), 1)
         self.assertEqual(Block.objects.count(), 6)
         self.assertEqual(Fare.objects.count(), 0)
@@ -99,6 +104,14 @@ class FeedTest(TestCase):
         self.assertEqual(Transfer.objects.count(), 0)
         self.assertEqual(Trip.objects.count(), 11)
         self.assertEqual(Zone.objects.count(), 0)
+
+    def test_import_gtfs_test1_extracted(self):
+        '''Import test1.zip as an extracted folder'''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
+        self.temp_dir = tempfile.mkdtemp()
+        z = zipfile.ZipFile(test_path)
+        z.extractall(self.temp_dir)
+        self.test_import_gtfs_test1(self.temp_dir)
 
     def test_import_gtfs_test2(self):
         '''Try importing test2.zip
