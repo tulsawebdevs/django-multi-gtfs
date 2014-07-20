@@ -25,8 +25,8 @@ from multigtfs.models import Agency, Feed, Service
 
 
 class Command(BaseCommand):
-    args = '<gtfsfeed.zip>'
-    help = 'Imports a GTFS Feed from a zipped feed file'
+    args = '<gtfsfeed.zip or folder>'
+    help = 'Import a GTFS Feed'
     option_list = BaseCommand.option_list + (
         make_option(
             '-n', '--name', type='string', dest='name',
