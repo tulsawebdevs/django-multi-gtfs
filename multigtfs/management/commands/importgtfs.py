@@ -21,7 +21,7 @@ from django.db import connection
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 
-from multigtfs.models.feed import Feed
+from multigtfs.models import Agency, Feed, Service
 
 
 class Command(BaseCommand):
@@ -30,7 +30,9 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option(
             '-n', '--name', type='string', dest='name',
-            help='Set the name of the imported feed'),)
+            help=(
+                'Set the name of the imported feed.  Defaults to name derived'
+                ' from agency name and start date')),)
 
     def handle(self, *args, **options):
         if len(args) == 0:
@@ -38,7 +40,8 @@ class Command(BaseCommand):
         if len(args) > 1:
             raise CommandError('You can only import one feed at a time.')
         gtfs_feed = args[0]
-        name = options.get('name') or 'Imported at %s' % datetime.now()
+        unset_name = 'Imported at %s' % datetime.now()
+        name = options.get('name') or unset_name
 
         # Setup logging
         verbosity = int(options['verbosity'])
@@ -68,4 +71,25 @@ class Command(BaseCommand):
 
         feed = Feed.objects.create(name=name)
         feed.import_gtfs(gtfs_feed)
+
+        # Set name based on feed
+        if feed.name == unset_name:
+            try:
+                agency = feed.agency_set.order_by('id')[:1].get()
+            except Agency.DoesNotExist:
+                agency = None
+            try:
+                service = feed.service_set.order_by('id')[:1].get()
+            except Service.DoesNotExist:
+                service = None
+
+            if agency:
+                name = agency.name
+                if service:
+                    name += service.start_date.strftime(' starting %Y-%m-%d')
+                else:
+                    name += ' i' + unset_name[1:]
+                feed.name = name
+                feed.save()
+
         self.stdout.write("Successfully imported Feed %s\n" % (feed))
