@@ -1,6 +1,14 @@
 Changelog
 =========
 
+0.4.2 (2014-07-20)
+------------------
+* importgtfs handles feeds with whitespace strings (issue #36)
+* Can update objects with JSON fields in admin (issue #37)
+* importgtfs can import an extracted GTFS feed (issue #30)
+* importgtfs defaults to a Feed name based on the agency name and start of
+  service (issue #33)
+
 0.4.1 (2014-07-11)
 ------------------
 * Import GTFS feeds using BOM (issue #31)
