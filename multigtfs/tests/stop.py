@@ -259,7 +259,7 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162
             name=b'The Delta Caf\x82'.decode('latin1'),
             point='POINT(-95.975834 36.114554)')
         stops_txt = Stop.export_txt(self.feed)
-        if isinstance(stops_txt, text_type):
+        if isinstance(stops_txt, text_type):  # pragma: no cover
             stops_txt = stops_txt.encode('utf-8')
         self.assertEqual(stops_txt, b"""\
 stop_id,stop_name,stop_lat,stop_lon
