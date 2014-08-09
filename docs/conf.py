@@ -23,7 +23,10 @@ import os
 cwd = os.getcwd()
 parent = os.path.dirname(cwd)
 sys.path.append(parent)
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wpcsite.settings")
+
+from run_tests import base_config
+from django.conf import settings
+settings.configure(**base_config())
 
 import multigtfs
 

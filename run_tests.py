@@ -21,10 +21,9 @@ import sys
 from django.conf import settings
 
 
-def main(*paths):
-    # Dynamically configure the Django settings with the minimum necessary to
-    # get Django running tests
-    config = {
+def base_config():
+    '''Create a minimal Django configuration'''
+    return {
         'INSTALLED_APPS': ['multigtfs'],
         'TEST_RUNNER': 'django.test.simple.DjangoTestSuiteRunner',
         'DATABASE_ENGINE': 'django.contrib.gis.db.backends.spatialite',
@@ -37,6 +36,13 @@ def main(*paths):
         'TEMPLATE_DEBUG': True
     }
 
+
+def test_config():
+    '''Create a Django configuration for running tests'''
+
+    config = base_config()
+
+    # Optionally add south
     try:
         import south
     except ImportError:
@@ -67,6 +73,11 @@ def main(*paths):
     else:
         config = t_overrides.update(config)
 
+    return config
+
+
+def main(*paths):
+    config = test_config()
     settings.configure(**config)
 
     from django.core import management
@@ -75,7 +86,6 @@ def main(*paths):
 
 
 if __name__ == '__main__':
-
     # Extract non-options from command line
     # Options (-sx, --ipdb) will be parsed inside call_command
     paths = []
