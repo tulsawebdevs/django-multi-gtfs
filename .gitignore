@@ -46,5 +46,3 @@ output/*/index.html
 
 # Sphinx
 docs/_build
-docs/multigtfs*.rst
-docs/modules.rst

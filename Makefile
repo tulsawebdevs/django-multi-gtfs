@@ -10,7 +10,8 @@ help:
 	@echo "coverage - check code coverage quickly with the default Python"
 	@echo "qa - run quick quality assurance (pre-checkin)"
 	@echo "qa-all - run full quality assurance (pre-release)"
-	@echo "docs - generate Sphinx HTML documentation, including API docs"
+	@echo "docs - generate Sphinx HTML documentation"
+	@echo "docs-recreate-automodules - Create reST files with automodule directives"
 	@echo "release - package and upload a release"
 	@echo "sdist - package"
 
@@ -45,10 +46,12 @@ coverage:
 	coverage html
 	open htmlcov/index.html
 
-docs:
-	rm -f docs/multigtfs.rst
+docs-recreate-automodules:
+	rm -f docs/multigtfs*
 	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ multigtfs
+	sphinx-apidoc -e -H "Source documentation" -o docs/ multigtfs multigtfs/admin.py multigtfs/management multigtfs/migrations multigtfs/tests
+
+docs:
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
