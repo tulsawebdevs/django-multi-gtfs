@@ -17,4 +17,6 @@ Contents:
    modules
    contributors
    authors
+   history
+   future
    changelog
