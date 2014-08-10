@@ -16,20 +16,22 @@
 """
 Define Service model for rows in calendar.txt
 
-Google documentation from
-https://developers.google.com/transit/gtfs/reference
+From the `GTFS Reference`_:
+
+.. _`GTFS Reference`:
+   https://developers.google.com/transit/gtfs/reference#calendar
 
 calendar.txt is required
 
-- service_id (required)
-The service_id contains an ID that uniquely identifies a set of dates when
-service is available for one or more routes. Each service_id value can appear
-at most once in a calendar.txt file. This value is dataset unique. It is
-referenced by the trips.txt file.
+service_id (*required*):
+  The service_id contains an ID that uniquely identifies a set of dates when
+  service is available for one or more routes. Each service_id value can appear
+  at most once in a calendar.txt file. This value is dataset unique. It is
+  referenced by the trips.txt file.
 
-- monday (required)
-The monday field contains a binary value that indicates whether the service is
-valid for all Mondays.
+monday (*required*):
+  The monday field contains a binary value that indicates whether the service
+  is valid for all Mondays.
 
     * A value of 1 indicates that service is available for all Mondays in the
       date range. (The date range is specified using the start_date and
@@ -37,12 +39,12 @@ valid for all Mondays.
     * A value of 0 indicates that service is not available on Mondays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- tuesday (required)
-The tuesday field contains a binary value that indicates whether the service is
-valid for all Tuesdays.
+tuesday (*required*):
+  The tuesday field contains a binary value that indicates whether the service
+  is valid for all Tuesdays.
 
     * A value of 1 indicates that service is available for all Tuesdays in the
       date range. (The date range is specified using the start_date and
@@ -50,12 +52,12 @@ valid for all Tuesdays.
     * A value of 0 indicates that service is not available on Tuesdays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- wednesday (required)
-The wednesday field contains a binary value that indicates whether the service
-is valid for all Wednesdays.
+wednesday (*required*):
+  The wednesday field contains a binary value that indicates whether the
+  service is valid for all Wednesdays.
 
     * A value of 1 indicates that service is available for all Wednesdays in
       the date range. (The date range is specified using the start_date and
@@ -63,12 +65,12 @@ is valid for all Wednesdays.
     * A value of 0 indicates that service is not available on Wednesdays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- thursday (required)
-The thursday field contains a binary value that indicates whether the service
-is valid for all Thursdays.
+thursday (*required*):
+  The thursday field contains a binary value that indicates whether the service
+  is valid for all Thursdays.
 
     * A value of 1 indicates that service is available for all Thursdays in the
       date range. (The date range is specified using the start_date and
@@ -76,12 +78,12 @@ is valid for all Thursdays.
     * A value of 0 indicates that service is not available on Thursdays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- friday (required)
-The friday field contains a binary value that indicates whether the service is
-valid for all Fridays.
+friday (*required*):
+  The friday field contains a binary value that indicates whether the service
+  is valid for all Fridays.
 
     * A value of 1 indicates that service is available for all Fridays in the
       date range. (The date range is specified using the start_date and
@@ -89,12 +91,12 @@ valid for all Fridays.
     * A value of 0 indicates that service is not available on Fridays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- saturday (required)
-The saturday field contains a binary value that indicates whether the service
-is valid for all Saturdays.
+saturday (*required*):
+  The saturday field contains a binary value that indicates whether the service
+  is valid for all Saturdays.
 
     * A value of 1 indicates that service is available for all Saturdays in the
       date range. (The date range is specified using the start_date and
@@ -102,12 +104,12 @@ is valid for all Saturdays.
     * A value of 0 indicates that service is not available on Saturdays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- sunday (required)
-The sunday field contains a binary value that indicates whether the service is
-valid for all Sundays.
+sunday (*required*):
+  The sunday field contains a binary value that indicates whether the service
+  is valid for all Sundays.
 
     * A value of 1 indicates that service is available for all Sundays in the
       date range. (The date range is specified using the start_date and
@@ -115,19 +117,19 @@ valid for all Sundays.
     * A value of 0 indicates that service is not available on Sundays in the
       date range.
 
-Note: You may list exceptions for particular dates, such as holidays, in the
-calendar_dates.txt file.
+  Note: You may list exceptions for particular dates, such as holidays, in the
+  calendar_dates.txt file.
 
-- start_date (required)
-The start_date field contains the start date for the service.
+start_date (*required*):
+  The start_date field contains the start date for the service.
 
-The start_date field's value should be in YYYYMMDD format.
+  The start_date field's value should be in YYYYMMDD format.
 
-- end_date (required)
-The end_date field contains the end date for the service. This date is
-included in the service interval.
+end_date (*required*):
+  The end_date field contains the end date for the service. This date is
+  included in the service interval.
 
-The end_date field's value should be in YYYYMMDD format.
+  The end_date field's value should be in YYYYMMDD format.
 """
 from __future__ import unicode_literals
 

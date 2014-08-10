@@ -16,8 +16,10 @@
 """
 Define ServiceDate model for rows in calendar_dates.txt
 
-Google documentation from
-https://developers.google.com/transit/gtfs/reference
+From the `GTFS Reference`_:
+
+.. _`GTFS Reference`:
+   https://developers.google.com/transit/gtfs/reference#calendar_dates
 
 calendar_dates.txt is optional
 
@@ -35,35 +37,36 @@ calendar_dates.txt. If your schedule varies most days of the month, or you want
 to programmatically output service dates without specifying a normal weekly
 schedule, this approach may be preferable.
 
-- service_id (required)
-The service_id contains an ID that uniquely identifies a set of dates when a
-service exception is available for one or more routes. Each (service_id, date)
-pair can only appear once in calendar_dates.txt. If the a service_id value
-appears in both the calendar.txt and calendar_dates.txt files, the information
-in calendar_dates.txt modifies the service information specified in
-calendar.txt. This field is referenced by the trips.txt file.
+service_id (*required*):
+  The service_id contains an ID that uniquely identifies a set of dates when a
+  service exception is available for one or more routes. Each (service_id,
+  date) pair can only appear once in calendar_dates.txt. If the a service_id
+  value appears in both the calendar.txt and calendar_dates.txt files, the
+  information in calendar_dates.txt modifies the service information specified
+  in calendar.txt. This field is referenced by the trips.txt file.
 
-- date (required)
-The date field specifies a particular date when service availability is
-different than the norm. You can use the exception_type field to indicate
-whether service is available on the specified date.
+date (*required*):
+  The date field specifies a particular date when service availability is
+  different than the norm. You can use the exception_type field to indicate
+  whether service is available on the specified date.
 
-The date field's value should be in YYYYMMDD format.
+  The date field's value should be in YYYYMMDD format.
 
-- exception_type (required)
-The exception_type indicates whether service is available on the date specified
-in the date field.
+exception_type (*required*):
+  The exception_type indicates whether service is available on the date
+  specified in the date field.
 
   * A value of 1 indicates that service has been added for the specified date.
   * A value of 2 indicates that service has been removed for the specified
     date.
 
-For example, suppose a route has one set of trips available on holidays and
-another set of trips available on all other days. You could have one service_id
-that corresponds to the regular service schedule and another service_id that
-corresponds to the holiday schedule. For a particular holiday, you would use
-the calendar_dates.txt file to add the holiday to the holiday service_id and to
-remove the holiday from the regular service_id schedule.
+  For example, suppose a route has one set of trips available on holidays and
+  another set of trips available on all other days. You could have one
+  service_id that corresponds to the regular service schedule and another
+  service_id that corresponds to the holiday schedule. For a particular
+  holiday, you would use the calendar_dates.txt file to add the holiday to the
+  holiday service_id and to remove the holiday from the regular service_id
+  schedule.
 """
 from __future__ import unicode_literals
 

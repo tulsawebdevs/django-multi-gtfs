@@ -13,8 +13,8 @@ Submodules
 
 .. toctree::
 
-   multigtfs.models.agency
    multigtfs.models.base
+   multigtfs.models.agency
    multigtfs.models.block
    multigtfs.models.fare
    multigtfs.models.fare_rule
