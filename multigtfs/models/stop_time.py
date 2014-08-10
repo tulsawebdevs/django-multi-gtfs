@@ -47,15 +47,16 @@ arrival_time (*required*):
   Times must be eight digits in HH:MM:SS format (H:MM:SS is also accepted, if
   the hour begins with 0). Do not pad times with spaces. The following columns
   list stop times for a trip and the proper way to express those times in the
-  arrival_time field::
+  arrival_time field:
 
-    Time            arrival_time value
-    08:10:00 A.M.   08:10:00 or 8:10:00
-    01:05:00 P.M.   13:05:00
-    07:40:00 P.M.   19:40:00
-    01:55:00 A.M.   25:55:00
-
-  *TODO: Convert to Table*
+  =============  ===================
+  Time           arrival_time value
+  =============  ===================
+  08:10:00 A.M.  08:10:00 or 8:10:00
+  01:05:00 P.M.  13:05:00
+  07:40:00 P.M.  19:40:00
+  01:55:00 A.M.  25:55:00
+  =============  ===================
 
   Note: Trips that span multiple dates will have stop times greater than
   24:00:00. For example, if a trip begins at 10:30:00 p.m. and ends at 2:15:00
@@ -83,15 +84,16 @@ departure_time (*required*):
   Times must be eight digits in HH:MM:SS format (H:MM:SS is also accepted, if
   the hour begins with 0). Do not pad times with spaces. The following columns
   list stop times for a trip and the proper way to express those times in the
-  departure_time field::
+  departure_time field:
 
-    Time            departure_time value
-    08:10:00 A.M.   08:10:00 or 8:10:00
-    01:05:00 P.M.   13:05:00
-    07:40:00 P.M.   19:40:00
-    01:55:00 A.M.   25:55:00
-
-  *TODO: Convert to Table*
+  =============  ====================
+  Time           departure_time value
+  =============  ====================
+  08:10:00 A.M.  08:10:00 or 8:10:00
+  01:05:00 P.M.  13:05:00
+  07:40:00 P.M.  19:40:00
+  01:55:00 A.M.  25:55:00
+  =============  ====================
 
   Note: Trips that span multiple dates will have stop times greater than
   24:00:00. For example, if a trip begins at 10:30:00 p.m. and ends at 2:15:00
