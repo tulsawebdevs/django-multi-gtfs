@@ -62,6 +62,8 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    include_package_data=True,
+    package_data={b'multigtfs': ['tests/fixtures/*.zip']},
     long_description=(
         read('README.rst') + '\n\n' +
         read('CHANGELOG.rst') + '\n\n' +
