@@ -42,7 +42,7 @@ play with the admin, and read the source code to learn more.
 
 Sample Project
 ++++++++++++++
-The `examples/explore` sample project demonstrates a simple read-only website
+The ``examples/explore`` sample project demonstrates a simple read-only website
 for viewing one or more GTFS feeds.  It include OpenLayers_ maps for viewing
 the routes, trips, and shapes.  You an use it as is, or as a starting place
 for your own projects.  See the project README for more information.

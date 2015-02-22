@@ -1,6 +1,6 @@
 How To Contribute
 =================
-We'd love your help in building *multigtfs*.  Here's some tips:
+We'd love your help in building ``multigtfs``.  Here's some tips:
 
 * Fork the project on GitHub_, clone it locally, and create a
   feature branch for your work (`git flow`_ is nice for this).
