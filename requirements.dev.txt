@@ -16,3 +16,7 @@ MarkupSafe==0.23
 Jinja2==2.7.3
 Pygments==1.2.2
 Sphinx==1.2.2
+
+# qa-all
+check-manifest==0.23
+pyroma==1.7

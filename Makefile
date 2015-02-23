@@ -32,7 +32,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 --exclude='.tox' .
+	flake8 --exclude='.tox,build,dist' .
 
 test:
 	python run_tests.py
@@ -64,4 +64,4 @@ sdist: clean
 	python setup.py sdist
 	ls -l dist
 	check-manifest
-	pyroma dist/`ls -t dist | head -n1`; if [ $$? -ne 1 ]; then exit 1; fi
+	pyroma dist/`ls -t dist | head -n1`

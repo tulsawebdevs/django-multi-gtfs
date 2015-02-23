@@ -111,12 +111,18 @@ class Base(models.Model):
 
         # Setup the conversion from GTFS to Django Format
         # Conversion functions
-        no_convert = lambda value: value
-        date_convert = lambda value: datetime.strptime(value, '%Y%m%d')
-        bool_convert = lambda value: value == '1'
-        char_convert = lambda value: value or ''
-        null_convert = lambda value: value or None
-        point_convert = lambda value: value or 0.0
+        def no_convert(value): return value
+
+        def date_convert(value): return datetime.strptime(value, '%Y%m%d')
+
+        def bool_convert(value): return (value == '1')
+
+        def char_convert(value): return (value or '')
+
+        def null_convert(value): return (value or None)
+
+        def point_convert(value): return (value or 0.0)
+
         cache = {}
 
         def default_convert(field):

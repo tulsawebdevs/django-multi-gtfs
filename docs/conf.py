@@ -15,20 +15,25 @@
 import sys
 import os
 
+try:
+    from run_tests import base_config
+except ImportError:
+    cwd = os.getcwd()
+    parent = os.path.dirname(cwd)
+    sys.path.append(parent)
+    from run_tests import base_config
+
+from django.conf import settings
+
+import multigtfs
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 # sys.path.insert(0, os.path.abspath('.'))
 
-cwd = os.getcwd()
-parent = os.path.dirname(cwd)
-sys.path.append(parent)
 
-from run_tests import base_config
-from django.conf import settings
 settings.configure(**base_config())
-
-import multigtfs
 
 # -- General configuration ---------------------------------------------------
 
