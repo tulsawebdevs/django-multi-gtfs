@@ -37,14 +37,17 @@ agency.  The object has a helper method, ``in_feed``, that is sometimes useful
 in filtering objects by feed.  At other times, it is easier to start at the
 feed and follow relations.
 
-There isn't separate documentation yet.  Load the app in your Django project,
-play with the admin, and read the source code to learn more.
+See the next section, `Implementation of GTFS`_, for details on how the GTFS
+specification is implemented in Django models.  Load the app in your Django
+project, play with the admin, and read the source code to learn more.
 
 Sample Project
 ++++++++++++++
 The ``examples/explore`` sample project demonstrates a simple read-only website
 for viewing one or more GTFS feeds.  It include OpenLayers_ maps for viewing
-the routes, trips, and shapes.  You an use it as is, or as a starting place
-for your own projects.  See the project README for more information.
+the routes, trips, and shapes.  You can use it as is, or as a starting place
+for your own projects.  See the project README (``examples/explore/README.md``)
+for more information.
 
 .. _OpenLayers: http://openlayers.org
+.. _`Implementation of GTFS`: gtfs.html

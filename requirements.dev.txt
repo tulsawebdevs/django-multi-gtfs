@@ -14,7 +14,7 @@ tox==1.7.2
 # Sphinx
 MarkupSafe==0.23
 Jinja2==2.7.3
-Pygments==1.2.2
+Pygments==2.0.2
 Sphinx==1.2.2
 
 # qa-all

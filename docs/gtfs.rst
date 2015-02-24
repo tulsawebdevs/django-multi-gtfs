@@ -15,12 +15,8 @@ GTFS Feeds and general notes
 ****************************
 A GTFS feed is a zipfile containing one or more .txt files, containing
 comma-delimited text. The management commands ``importgtfs`` and
-``exportgtfs`` can read and create these files:
-
-::
-
-    ./manage.py importgtfs [--name name_of_feed] path/to/gtfsfeed.zip
-    ./manage.py exportgtfs [--name basename_of_file] <feed_id>
+``exportgtfs`` can read and create these files (see the docs on
+`Management Commands`_ for more info).
 
 Each .txt file is mapped to a Django model, with additonal models to handle
 implicit relations in GTFS, and to handle multiple feeds in a single database.
@@ -30,13 +26,38 @@ metadata, including these fields:
 
 * ``name`` - A human-friendly name for the feed
 * ``created`` - The time the feed was created
-* ``meta`` - A JSON-encoded field with extra data about the field
+* ``meta`` - A JSON-encoded field with extra data about the feed.  For
+  example, if a stops.txt table include an additional column "shelter", then
+  ``meta`` will contain:
+
+.. code-block:: json
+
+    {
+        "extra_columns": {
+            "Stop": [
+                "shelter"
+            ]
+        }
+    }
 
 Models that map to feed records commonly include these fields:
 
 * ``feed`` - The relation to the Feed
 * ``id`` - The database ID for the record
-* ``extra_data`` - A JSON-encoded field tracking extra data for the record
+* ``extra_data`` - A JSON-encoded field tracking extra data for the record.
+  For example, if a stops.txt file contains an extra column "shelter" with a
+  value "1", ``extra_data`` will contain:
+
+.. code-block:: json
+
+    {
+        "shelter": "1"
+    }
+
+``Feed.extra_columns`` and ``<Model>.extra_data`` work together to allow
+importing and exporting of non-standard feeds without losing data.
+
+.. _`Management Commands`: usage.html#management-commands
 
 Required files
 **************
