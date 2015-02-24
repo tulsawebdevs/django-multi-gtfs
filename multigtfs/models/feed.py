@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
-from zipfile import ZipFile
+from zipfile import ZipFile, ZIP_DEFLATED
 import logging
 import os
 import os.path
@@ -159,7 +159,11 @@ class Feed(models.Model):
         This function will close the file in order to finalize it.
         """
         total_start = time.time()
-        z = ZipFile(gtfs_file, 'w')
+        try:
+            z = ZipFile(gtfs_file, 'w', ZIP_DEFLATED)
+        except RuntimeError:  # pragma: nocover
+            # zlib module not available
+            z = ZipFile(gtfs_file, 'w')
 
         gtfs_order = (
             Agency, Service, ServiceDate, Fare, FareRule, FeedInfo, Frequency,
