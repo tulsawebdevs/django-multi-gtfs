@@ -20,3 +20,6 @@ Sphinx==1.2.2
 # qa-all
 check-manifest==0.23
 pyroma==1.7
+
+# Google tools
+transitfeed==1.2.14
