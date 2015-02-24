@@ -1,6 +1,17 @@
 Changelog
 =========
 
+0.4.3 (2015-02-24)
+------------------
+* Added documentation (issue #26)
+* exportgtfs uses compression if available.  Reduces one exported feed from
+  141MB to 21MB. (issue #27)
+* Feeds that omit calendar.txt can be imported and exported.  GTFS allows this
+  if all dates are specified in calendar_dates.txt instead.  This alternate
+  format is used by the TriMet archive feeds from Portland, OR (issue #28).
+* Django 1.7 is *not* supported by multigtfs.  Version is limited in setup.py
+  to 1.5 and 1.6.
+
 0.4.2 (2014-07-20)
 ------------------
 * importgtfs handles feeds with whitespace strings (issue #36)
