@@ -289,8 +289,8 @@ class Base(models.Model):
         if extra_counts:
             extra_columns = feed.meta.setdefault(
                 'extra_columns', {}).setdefault(cls.__name__, [])
-            for column in extra_counts:
-                if column not in extra_columns:
+            for column in columns:
+                if column in extra_counts and column not in extra_columns:
                     extra_columns.append(column)
             feed.save()
         return len(unique_line)

@@ -3,6 +3,7 @@ GTFS test data from:
 test1.zip - http://timetablepublisher.googlecode.com/files/GTFS%20Test%20Data.zip downloaded on Apr 14th, 2012
 test2.zip - https://developers.google.com/transit/gtfs/examples/sample-feed.zip on Apr 14th, 2012
 test3.zip - http://www.tulsatransit.org/gtfs/google_transit.zip, around Feb 2013
+test4.zip - http://gtfs.s3.amazonaws.com/trimet_20150219_0157.zip on Feb 24, 2015
 
 test1.zip doesn't pass validation, because of the directory structure.  It
 has multiple trip_ids, assigned to different service_ids.  multigtfs will
@@ -18,3 +19,10 @@ test3.zip is a minimized version of an official feed.  It has one quirk - a
 utf-8 encoded control character in the stop description of stop 5640.
 The only validation error is that the last service date is in the past.
 multigtfs will import and export the feed with no changes.
+
+test4.zip is one route from the Portland Trimet archived feed.  This feed uses
+the alternate method of specifying applicable dates, omitting ``calendar.txt``
+and instead including each date in ``calendar_dates.txt``.  This feed fails in
+v0.4.2 and earlier, but was fixed in v0.4.3.  It includes several extra columns
+that cause feed validation errors.  It also includes tables such as
+``stop_features.txt`` that are not in the GTFS spec, and are not imported.

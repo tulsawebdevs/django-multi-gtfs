@@ -52,8 +52,8 @@ class Service(Base):
     sunday = models.BooleanField(
         default=True,
         help_text="Is the route active on Sunday?")
-    start_date = models.DateField()
-    end_date = models.DateField()
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
     extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
@@ -79,3 +79,16 @@ class Service(Base):
     _filename = 'calendar.txt'
     _sort_order = ('start_date', 'end_date')
     _unique_fields = ('service_id',)
+
+    @classmethod
+    def export_txt(cls, feed):
+        '''Export records as calendar.txt'''
+
+        # If no records with start/end dates, skip calendar.txt
+        objects = cls.objects.in_feed(feed)
+
+        if not objects.exclude(
+                start_date__isnull=True, end_date__isnull=True).exists():
+            return None
+
+        return super(Service, cls).export_txt(feed)
