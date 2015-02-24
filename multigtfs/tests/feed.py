@@ -170,6 +170,35 @@ class FeedTest(TestCase):
         self.assertEqual(Trip.objects.count(), 1)
         self.assertEqual(Zone.objects.count(), 0)
 
+    def test_import_gtfs_test4(self):
+        '''Try importing test4.zip
+
+        test4.zip is a version of the GTFS feed from TriMet in Portland
+        from February 2015.  It omits calendar.txt in favor of specifying
+        all dates in calendar_dates.txt, and includes additional files not
+        in the GTFS spec.
+        '''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test4.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        self.assertEqual(Agency.objects.count(), 1)
+        self.assertEqual(Block.objects.count(), 1)
+        self.assertEqual(Fare.objects.count(), 1)
+        self.assertEqual(FareRule.objects.count(), 1)
+        self.assertEqual(Feed.objects.count(), 1)
+        self.assertEqual(FeedInfo.objects.count(), 1)
+        self.assertEqual(Frequency.objects.count(), 0)
+        self.assertEqual(Route.objects.count(), 1)
+        self.assertEqual(Service.objects.count(), 1)
+        self.assertEqual(ServiceDate.objects.count(), 15)
+        self.assertEqual(Shape.objects.count(), 1)
+        self.assertEqual(ShapePoint.objects.count(), 131)
+        self.assertEqual(Stop.objects.count(), 10)
+        self.assertEqual(StopTime.objects.count(), 10)
+        self.assertEqual(Transfer.objects.count(), 2)
+        self.assertEqual(Trip.objects.count(), 1)
+        self.assertEqual(Zone.objects.count(), 1)
+
     def test_export_gtfs_test1(self):
         '''Try exporting test1.zip'''
         test_path = os.path.abspath(os.path.join(fixtures_dir, 'test1.zip'))
@@ -746,3 +775,117 @@ adult,''' + s_fare_a + b''',USD,0,,7200
         trips_in = self.normalize(z_in.read('trips.txt'))
         trips_out = self.normalize(z_out.read('trips.txt'))
         self.assertEqual(trips_in, trips_out)
+
+    def test_export_gtfs_test4(self):
+        '''Try exporting test4.zip'''
+        test_path = os.path.abspath(os.path.join(fixtures_dir, 'test4.zip'))
+        feed = Feed.objects.create()
+        feed.import_gtfs(test_path)
+        file_id, self.temp_path = tempfile.mkstemp()
+        os.close(file_id)
+        feed.export_gtfs(self.temp_path)
+        z_in = zipfile.ZipFile(test_path, 'r')
+        z_out = zipfile.ZipFile(self.temp_path, 'r')
+
+        self.assertEqual(
+            z_in.namelist(),
+            ['agency.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'feed_info.txt',
+             'realtime_feeds.txt',
+             'route_directions.txt',
+             'routes.txt',
+             'shapes.txt',
+             'stop_features.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'transfers.txt',
+             'trips.txt'])
+        self.assertEqual(
+            z_out.namelist(),
+            ['agency.txt',
+             'calendar_dates.txt',
+             'fare_attributes.txt',
+             'fare_rules.txt',
+             'feed_info.txt',
+             'routes.txt',
+             'shapes.txt',
+             'stop_times.txt',
+             'stops.txt',
+             'transfers.txt',
+             'trips.txt'])
+
+        agency_in = self.normalize(z_in.read('agency.txt'))
+        agency_out = self.normalize(z_out.read('agency.txt'))
+        self.assertEqual(agency_in, agency_out)
+
+        cdates_in = self.normalize(z_in.read('calendar_dates.txt'))
+        cdates_out = self.normalize(z_out.read('calendar_dates.txt'))
+        self.assertEqual(cdates_in, cdates_out)
+
+        fare_in = self.normalize(z_in.read('fare_attributes.txt'))
+        self.assertEqual(fare_in, b'''\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+B,2.5,USD,0,,7200
+''')
+        # Sometimes 2.5000, sometimes 2.5
+        fare_b = Fare.objects.get(fare_id='B')
+        s_fare_b = text_type(fare_b.price).encode('utf-8')
+        fare_out = z_out.read('fare_attributes.txt')
+        self.assertEqual(fare_out, b'''\
+fare_id,price,currency_type,payment_method,transfers,transfer_duration
+B,''' + s_fare_b + b''',USD,0,,7200
+''')
+
+        fare_rules_in = self.normalize(z_in.read('fare_rules.txt'))
+        fare_rules_out = self.normalize(z_out.read('fare_rules.txt'))
+        self.assertEqual(fare_rules_in, b'''\
+fare_id,origin_id,route_id,contains_id
+B,B,,B
+''')
+        self.assertEqual(fare_rules_out, b'''\
+fare_id,origin_id,contains_id
+B,B,B
+''')
+
+        routes_in = self.normalize(z_in.read('routes.txt'))
+        routes_out = self.normalize(z_out.read('routes.txt'))
+        self.assertEqual(routes_in, routes_out)
+
+        shapes_in = self.normalize(z_in.read('shapes.txt'))
+        shapes_out = self.normalize(z_out.read('shapes.txt'))
+        self.assertEqual(shapes_in, shapes_out)
+
+        stop_times_in = self.normalize(z_in.read('stop_times.txt'))
+        stop_times_out = self.normalize(z_out.read('stop_times.txt'))
+        self.assertEqual(stop_times_in, stop_times_out)
+
+        stops_in = self.normalize(z_in.read('stops.txt'))
+        stops_in_header = stops_in.split(b'\n')[0]
+        stops_out = self.normalize(z_out.read('stops.txt'))
+        stops_out_header = stops_out.split(b'\n')[0]
+        # parent_station in input, not in output
+        self.assertEqual(stops_in_header, b'''\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,parent_station,direction,position''')
+        self.assertEqual(stops_out_header, b'''\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
+location_type,direction,position''')
+
+        transfers_in = self.normalize(z_in.read('transfers.txt'))
+        transfers_out = self.normalize(z_out.read('transfers.txt'))
+        self.assertEqual(transfers_in, transfers_out)
+
+        trips_in = self.normalize(z_in.read('trips.txt'))
+        trips_out = self.normalize(z_out.read('trips.txt'))
+        # Drops unused trip_type
+        self.assertEqual(trips_in, b'''\
+route_id,service_id,trip_id,direction_id,block_id,shape_id,trip_type
+34,W.411,5215038,0,3401,235511,
+''')
+        self.assertEqual(trips_out, b'''\
+route_id,service_id,trip_id,direction_id,block_id,shape_id
+34,W.411,5215038,0,3401,235511
+''')

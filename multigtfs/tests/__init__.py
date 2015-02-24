@@ -14,11 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-__all__ = (
-    'agency', 'block', 'fare', 'fare_rule', 'feed', 'feed_info', 'fields',
-    'frequency', 'route', 'service', 'service_date', 'shape', 'stop',
-    'stop_time', 'transfer', 'trip', 'utils')
-
 from multigtfs.tests.agency import AgencyTest
 from multigtfs.tests.block import BlockTest
 from multigtfs.tests.fare import FareTest
@@ -36,6 +31,12 @@ from multigtfs.tests.stop_time import StopTimeTest
 from multigtfs.tests.transfer import TransferTest
 from multigtfs.tests.trip import TripTest
 from multigtfs.tests.zone import ZoneTest
+
+__all__ = (
+    'agency', 'block', 'fare', 'fare_rule', 'feed', 'feed_info', 'fields',
+    'frequency', 'route', 'service', 'service_date', 'shape', 'stop',
+    'stop_time', 'transfer', 'trip', 'utils')
+
 
 # Be quiet pyflakes
 __tests = (

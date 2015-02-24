@@ -19,6 +19,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test
 import codecs
 import os
+import sys
 # Get the version from __init__.py
 from multigtfs import __version__
 
@@ -34,6 +35,15 @@ def read(*paths):
         return f.read()
 
 
+# Handle Py2/Py3 issue
+if sys.version_info > (3, 0):
+    # In Py3, package data is dict w/ text key
+    package_data = {'multigtfs': ['tests/fixtures/*.zip']}
+else:
+    # In Py2, package data is dict w/ binary string
+    package_data = {b'multigtfs': ['tests/fixtures/*.zip']}
+
+
 setup(
     name='multigtfs',
     version=__version__,
@@ -43,7 +53,7 @@ setup(
     license='Apache License 2.0',
     url='https://github.com/tulsawebdevs/django-multi-gtfs',
     packages=find_packages(),
-    install_requires=['Django>=1.5', 'jsonfield>=0.9.20'],
+    install_requires=['Django>=1.5,<1.7', 'jsonfield>=0.9.20'],
     keywords='django gtfs',
     test_suite="run_tests",  # Ignored, but makes pyroma happy
     cmdclass={'test': my_test},
@@ -62,8 +72,7 @@ setup(
         "Programming Language :: Python :: 3.4",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    long_description=(
-        read('README.rst') + '\n\n' +
-        read('CHANGELOG.rst') + '\n\n' +
-        read('AUTHORS.rst'))
+    include_package_data=True,
+    package_data=package_data,
+    long_description=read('README.rst')
 )

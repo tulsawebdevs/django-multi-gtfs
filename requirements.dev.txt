@@ -5,3 +5,21 @@ ipdb==0.7
 ipython==0.13
 nose==1.3.0
 wheel==0.23.0
+
+# tox
+virtualenv==1.11.6
+py==1.4.23
+tox==1.7.2
+
+# Sphinx
+MarkupSafe==0.23
+Jinja2==2.7.3
+Pygments==2.0.2
+Sphinx==1.2.2
+
+# qa-all
+check-manifest==0.23
+pyroma==1.7
+
+# Google tools - not Python3 compat
+# transitfeed==1.2.14

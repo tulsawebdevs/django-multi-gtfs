@@ -1,7 +1,4 @@
 include *.py
-exclude t_overrides.py
-exclude *.pyc
-exclude .travis.yml
 include *.rst
 include COPYING.txt
 include qa_check.sh
@@ -10,6 +7,17 @@ include tox.ini
 include requirements.txt
 include requirements.dev.txt
 include multigtfs/tests/fixtures/*
+include Makefile
+
+recursive-include docs *.rst conf.py make.bat Makefile
+
 graft examples
+
 exclude examples/explore/db.sqlite3
 exclude examples/explore/exploreproj/local_settings.py
+exclude docs/modules.rst
+exclude docs/multigtfs.rst
+exclude docs/multigtfs.*.rst
+exclude t_overrides.py
+exclude *.pyc
+exclude .travis.yml
