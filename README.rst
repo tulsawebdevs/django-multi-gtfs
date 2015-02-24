@@ -30,11 +30,10 @@ multigtfs works with Django 1.5 and 1.6.  Django 1.7 is not yet supported.  It
 includes significant changes to database migrations, and will probably be a
 minor update (for example, 0.4.x to 0.5.x).
 
-Most valid GTFS feeds are supported for import and export.  This includes
-feeds with extra columns not yet included in the GTFS spec.  A notable
-exception is that multigtfs does not support feeds that omit ``calendar.txt``,
-but instead use ``calendar_dates.txt``, such as the TriMet feed from
-Portland, OR (see `issue #38`_).
+All valid GTFS feeds are supported for import and export.  This includes
+feeds with extra columns not yet included in the GTFS spec, and feeds that
+omit ``calendar.txt`` in favor of ``calendar_dates.txt`` (such as the TriMet
+archive feeds).  If you find a feed that doesn't work, `file a bug`_!
 
 See the `issues list`_ for more details on bugs and feature requests.
 
@@ -55,4 +54,5 @@ Development
 .. _20036: https://code.djangoproject.com/ticket/20036
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
 .. _`issue #38`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/38
+.. _`file a bug`: https://github.com/tulsawebdevs/django-multi-gtfs/issues
 .. _`issues list`: https://github.com/tulsawebdevs/django-multi-gtfs/issues?state=open
