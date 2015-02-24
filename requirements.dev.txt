@@ -21,5 +21,5 @@ Sphinx==1.2.2
 check-manifest==0.23
 pyroma==1.7
 
-# Google tools
-transitfeed==1.2.14
+# Google tools - not Python3 compat
+# transitfeed==1.2.14

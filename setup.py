@@ -19,6 +19,7 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test
 import codecs
 import os
+import sys
 # Get the version from __init__.py
 from multigtfs import __version__
 
@@ -32,6 +33,15 @@ class my_test(test):
 def read(*paths):
     with codecs.open(os.path.join(*paths), 'r', 'utf-8') as f:
         return f.read()
+
+
+# Handle Py2/Py3 issue
+if sys.version_info > (3, 0):
+    # In Py3, package data is dict w/ text key
+    package_data = {'multigtfs': ['tests/fixtures/*.zip']}
+else:
+    # In Py2, package data is dict w/ binary string
+    package_data = {b'multigtfs': ['tests/fixtures/*.zip']}
 
 
 setup(
@@ -63,7 +73,7 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     include_package_data=True,
-    package_data={b'multigtfs': ['tests/fixtures/*.zip']},
+    package_data=package_data,
     long_description=(
         read('README.rst') + '\n\n' +
         read('CHANGELOG.rst') + '\n\n' +

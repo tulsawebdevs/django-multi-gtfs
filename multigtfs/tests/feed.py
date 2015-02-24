@@ -863,9 +863,9 @@ B,B,B
         self.assertEqual(stop_times_in, stop_times_out)
 
         stops_in = self.normalize(z_in.read('stops.txt'))
-        stops_in_header = stops_in.split('\n')[0]
+        stops_in_header = stops_in.split(b'\n')[0]
         stops_out = self.normalize(z_out.read('stops.txt'))
-        stops_out_header = stops_out.split('\n')[0]
+        stops_out_header = stops_out.split(b'\n')[0]
         # parent_station in input, not in output
         self.assertEqual(stops_in_header, b'''\
 stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,\
