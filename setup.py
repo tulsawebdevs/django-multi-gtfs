@@ -74,8 +74,5 @@ setup(
     ],
     include_package_data=True,
     package_data=package_data,
-    long_description=(
-        read('README.rst') + '\n\n' +
-        read('CHANGELOG.rst') + '\n\n' +
-        read('AUTHORS.rst'))
+    long_description=read('README.rst')
 )

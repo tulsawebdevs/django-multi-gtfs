@@ -14,4 +14,4 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-__version__ = str('0.4.2')
+__version__ = str('0.4.3')

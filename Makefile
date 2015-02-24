@@ -1,4 +1,4 @@
-.PHONY: clean-pyc clean-build docs
+.PHONY: clean-pyc clean-build docs test-release
 
 help:
 	@echo "clean-build - remove build artifacts"
@@ -59,6 +59,11 @@ docs:
 release: clean
 	python setup.py sdist upload
 	python setup.py bdist_wheel upload
+
+test-release:
+	python setup.py register -r https://testpypi.python.org/pypi
+	python setup.py sdist bdist_wheel upload -r https://testpypi.python.org/pypi
+	python -m webbrowser -n https://testpypi.python.org/pypi/multigtfs
 
 sdist: clean
 	python setup.py sdist
