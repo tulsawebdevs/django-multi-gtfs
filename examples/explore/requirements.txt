@@ -3,8 +3,5 @@
 # Install multigtfs from PyPi
 #multigtfs
 
-# Ensure django installed
-Django>=1.5,<1.7
-
 # Use South for database migrations
 South
