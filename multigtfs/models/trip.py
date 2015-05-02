@@ -68,6 +68,13 @@ class Trip(Base):
         help_text='Are bicycles allowed?')
     extra_data = JSONField(default={}, blank=True, null=True)
 
+    def save(self, *args, **kwargs):
+        """Ensure geometry is updated on save
+        
+        TODO: Only update if shape changed"""
+        super(Trip, self).save(*args, **kwargs)
+        self.update_geometry(self)
+        
     def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""
         original = self.geometry
