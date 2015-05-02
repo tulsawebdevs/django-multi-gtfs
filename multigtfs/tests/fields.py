@@ -80,3 +80,7 @@ class SecondsFieldTest(TestCase):
 
     def test_prep_db_value_None(self):
         self.assertIsNone(self.f.get_prep_value(None))
+
+    def test_to_python_empty_string(self):
+        self.assertEqual(Seconds(0), self.f.to_python(''))
+        
