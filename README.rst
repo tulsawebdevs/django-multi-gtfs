@@ -37,6 +37,10 @@ archive feeds).  If you find a feed that doesn't work, `file a bug`_!
 
 See the `issues list`_ for more details on bugs and feature requests.
 
+Example project
+---------------
+Check out the `example project <examples/explore/README.md>`_.
+
 Development
 -----------
 
