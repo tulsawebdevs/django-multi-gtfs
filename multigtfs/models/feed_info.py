@@ -26,7 +26,7 @@ class FeedInfo(Base):
 
     Implements feed_info.txt in the GTFS feed.
     """
-    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
+    feed = models.OneToOneField('Feed', on_delete=models.CASCADE)
     publisher_name = models.CharField(
         max_length=255,
         help_text="Full name of organization that publishes the feed.")
