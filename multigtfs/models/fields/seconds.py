@@ -97,7 +97,7 @@ class SecondsField(with_metaclass(models.SubfieldBase, models.Field)):
         elif colons == 0:
             hours = 0
             minutes = 0
-            seconds = int(svalue)
+            seconds = int(svalue) if isinstance( svalue, int ) else 0
         else:
             raise ValueError('Must be in seconds or HH:MM:SS format')
         return Seconds.from_hms(hours, minutes, seconds)
