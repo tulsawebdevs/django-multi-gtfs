@@ -69,9 +69,8 @@ class Trip(Base):
     extra_data = JSONField(default={}, blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        """Ensure geometry is updated on save
-        
-        TODO: Only update if shape changed"""
+        """Ensure geometry is updated on save when shape is changed
+        TODO: Check that shape is changed before update_geometry run"""
         super(Trip, self).save(*args, **kwargs)
         self.update_geometry(self)
         
