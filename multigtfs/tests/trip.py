@@ -147,7 +147,7 @@ route_id,service_id,trip_id,trip_headsign,trip_short_name,direction_id,\
 block_id,shape_id,wheelchair_accessible,bikes_allowed
 R1,S1,T1,Headsign,HS,0,B1,S1,2,1
 """)
-
+    
     def test_update_geometry_no_shape_or_stoptime(self):
         trip = Trip.objects.create(route=self.route, trip_id='T1')
         trip.update_geometry()
@@ -179,3 +179,29 @@ R1,S1,T1,Headsign,HS,0,B1,S1,2,1
         self.assertEqual(
             trip.geometry.coords,
             ((-117.133162, 36.425288), (-117.14, 36.43)))
+
+    def test_update_geometry_on_save_when_shape_changed(self):
+        trip = Trip.objects.create(route=self.route, trip_id='T1')
+        trip.save()
+        shape = Shape.objects.create(
+            feed=self.feed, shape_id='S1',
+            geometry='LINESTRING(-117.133162 36.425288, -117.14 36.43)')
+        trip2 = Trip.objects.get(pk=trip.pk)
+        trip2.shape = shape
+        trip2.save()
+        self.assertEqual(trip2.geometry, shape.geometry)     
+
+    def test_dont_update_geometry_on_save_if_shape_not_changed(self):
+        shape = Shape.objects.create(
+            feed=self.feed, shape_id='S1',
+            geometry='LINESTRING(-117.133162 36.425288, -117.14 36.43)')
+        shape.save()
+        trip = Trip.objects.create(route=self.route, trip_id='T1', shape=shape)
+        trip.save()
+        shape.geometry = 'LINESTRING(-117.153162 37.425288, -107.14 35.43)'
+        shape.save()
+        trip2 = Trip.objects.get(pk=trip.pk)
+        trip2.trip_id="T2"
+        trip2.save()
+        self.assertNotEqual(trip2.geometry, shape.geometry)
+        
