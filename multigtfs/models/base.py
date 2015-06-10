@@ -63,11 +63,6 @@ class BaseQuerySet(GeoQuerySet):
                 column_map.append((csv_name, field_pattern))
         return column_map
 
-
-class BaseManager(models.GeoManager):
-    def get_query_set(self):
-        return BaseQuerySet(self.model)
-
     def in_feed(self, feed):
         '''Return the objects in the target feed'''
         kwargs = {self.model._rel_to_feed: feed}
@@ -100,7 +95,7 @@ class Base(models.Model):
         abstract = True
         app_label = 'multigtfs'
 
-    objects = BaseManager()
+    objects = BaseQuerySet.as_manager()
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'

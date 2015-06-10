@@ -53,7 +53,7 @@ setup(
     license='Apache License 2.0',
     url='https://github.com/tulsawebdevs/django-multi-gtfs',
     packages=find_packages(),
-    install_requires=['Django>=1.5,<1.7', 'jsonfield>=0.9.20'],
+    install_requires=['Django>=1.7', 'jsonfield>=0.9.20'],
     keywords='django gtfs',
     test_suite="run_tests",  # Ignored, but makes pyroma happy
     cmdclass={'test': my_test},

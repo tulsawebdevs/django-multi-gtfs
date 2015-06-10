@@ -18,6 +18,7 @@
 from __future__ import print_function
 import sys
 
+import django
 from django.conf import settings
 
 
@@ -25,7 +26,7 @@ def base_config():
     '''Create a minimal Django configuration'''
     return {
         'INSTALLED_APPS': ['multigtfs'],
-        'TEST_RUNNER': 'django.test.simple.DjangoTestSuiteRunner',
+        'TEST_RUNNER': 'django.test.runner.DiscoverRunner',
         'DATABASE_ENGINE': 'django.contrib.gis.db.backends.spatialite',
         'DATABASES': {
             'default': {
@@ -33,7 +34,8 @@ def base_config():
             }
         },
         'DEBUG': True,
-        'TEMPLATE_DEBUG': True
+        'TEMPLATE_DEBUG': True,
+        'MIDDLEWARE_CLASSES': ''
     }
 
 
@@ -81,7 +83,11 @@ def main(*paths):
     settings.configure(**config)
 
     from django.core import management
-    failures = management.call_command('test', *paths)
+    django.setup()
+    failures = management.call_command(
+        'test',
+        *paths
+    )
     sys.exit(failures)
 
 

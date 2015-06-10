@@ -1,453 +1,364 @@
 # -*- coding: utf-8 -*-
-# flake8: noqa
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import jsonfield.fields
+import django.contrib.gis.db.models.fields
+import multigtfs.models.fields.seconds
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Agency'
-        db.create_table('agency', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('agency_id', self.gf('django.db.models.fields.CharField')(db_index=True, max_length=255, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-            ('timezone', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('lang', self.gf('django.db.models.fields.CharField')(max_length=2, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('fare_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Agency'])
+    dependencies = [
+    ]
 
-        # Adding model 'Block'
-        db.create_table('block', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('block_id', self.gf('django.db.models.fields.CharField')(max_length=10, db_index=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Block'])
-
-        # Adding model 'Fare'
-        db.create_table('fare', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('fare_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('price', self.gf('django.db.models.fields.DecimalField')(max_digits=17, decimal_places=4)),
-            ('currency_type', self.gf('django.db.models.fields.CharField')(max_length=3)),
-            ('payment_method', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('transfers', self.gf('django.db.models.fields.IntegerField')(default=1)),
-            ('transfer_duration', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Fare'])
-
-        # Adding model 'FareRule'
-        db.create_table('fare_rules', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('fare', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Fare'])),
-            ('route', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Route'], null=True, blank=True)),
-            ('origin', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='fare_origins', null=True, to=orm['multigtfs.Zone'])),
-            ('destination', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='fare_destinations', null=True, to=orm['multigtfs.Zone'])),
-            ('contains', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='fare_contains', null=True, to=orm['multigtfs.Zone'])),
-        ))
-        db.send_create_signal('multigtfs', ['FareRule'])
-
-        # Adding model 'FeedInfo'
-        db.create_table('feed_info', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('publisher_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('publisher_url', self.gf('django.db.models.fields.URLField')(max_length=200)),
-            ('lang', self.gf('django.db.models.fields.CharField')(max_length=20)),
-            ('start_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('end_date', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('version', self.gf('django.db.models.fields.CharField')(max_length=20, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['FeedInfo'])
-
-        # Adding model 'Frequency'
-        db.create_table('frequency', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('trip', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Trip'])),
-            ('start_time', self.gf('multigtfs.models.fields.seconds.SecondsField')()),
-            ('end_time', self.gf('multigtfs.models.fields.seconds.SecondsField')()),
-            ('headway_secs', self.gf('django.db.models.fields.IntegerField')()),
-            ('exact_times', self.gf('django.db.models.fields.CharField')(max_length=1, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Frequency'])
-
-        # Adding model 'Route'
-        db.create_table('route', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('route_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('agency', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Agency'], null=True, blank=True)),
-            ('short_name', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('long_name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('desc', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('rtype', self.gf('django.db.models.fields.IntegerField')()),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-            ('color', self.gf('django.db.models.fields.CharField')(max_length=6, blank=True)),
-            ('text_color', self.gf('django.db.models.fields.CharField')(max_length=6, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Route'])
-
-        # Adding model 'Service'
-        db.create_table('service', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('service_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('monday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('tuesday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('wednesday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('thursday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('friday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('saturday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('sunday', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('start_date', self.gf('django.db.models.fields.DateField')()),
-            ('end_date', self.gf('django.db.models.fields.DateField')()),
-        ))
-        db.send_create_signal('multigtfs', ['Service'])
-
-        # Adding model 'ServiceDate'
-        db.create_table('service_date', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('service', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Service'])),
-            ('date', self.gf('django.db.models.fields.DateField')()),
-            ('exception_type', self.gf('django.db.models.fields.IntegerField')(default=1)),
-        ))
-        db.send_create_signal('multigtfs', ['ServiceDate'])
-
-        # Adding model 'Shape'
-        db.create_table('shape', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('shape_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Shape'])
-
-        # Adding model 'ShapePoint'
-        db.create_table('shape_point', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('shape', self.gf('django.db.models.fields.related.ForeignKey')(related_name='points', to=orm['multigtfs.Shape'])),
-            ('lat', self.gf('django.db.models.fields.DecimalField')(max_digits=13, decimal_places=8)),
-            ('lon', self.gf('django.db.models.fields.DecimalField')(max_digits=13, decimal_places=8)),
-            ('sequence', self.gf('django.db.models.fields.IntegerField')()),
-            ('traveled', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['ShapePoint'])
-
-        # Adding model 'Stop'
-        db.create_table('stop', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('stop_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('code', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('desc', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('lat', self.gf('django.db.models.fields.DecimalField')(max_digits=13, decimal_places=8)),
-            ('lon', self.gf('django.db.models.fields.DecimalField')(max_digits=13, decimal_places=8)),
-            ('zone', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Zone'], null=True, blank=True)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-            ('location_type', self.gf('django.db.models.fields.CharField')(max_length=1, blank=True)),
-            ('parent_station', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Stop'], null=True, blank=True)),
-            ('timezone', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Stop'])
-
-        # Adding model 'Trip'
-        db.create_table('trip', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('route', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Route'])),
-            ('trip_id', self.gf('django.db.models.fields.CharField')(max_length=255, db_index=True)),
-            ('headsign', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('short_name', self.gf('django.db.models.fields.CharField')(max_length=10, blank=True)),
-            ('direction', self.gf('django.db.models.fields.CharField')(max_length=1, blank=True)),
-            ('block', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Block'], null=True, blank=True)),
-            ('shape', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Shape'], null=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Trip'])
-
-        # Adding M2M table for field services on 'Trip'
-        db.create_table('trip_services', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('trip', models.ForeignKey(orm['multigtfs.trip'], null=False)),
-            ('service', models.ForeignKey(orm['multigtfs.service'], null=False))
-        ))
-        db.create_unique('trip_services', ['trip_id', 'service_id'])
-
-        # Adding model 'StopTime'
-        db.create_table('stop_time', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('trip', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Trip'])),
-            ('stop', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Stop'])),
-            ('arrival_time', self.gf('multigtfs.models.fields.seconds.SecondsField')(default=None, null=True, blank=True)),
-            ('departure_time', self.gf('multigtfs.models.fields.seconds.SecondsField')(default=None, null=True, blank=True)),
-            ('stop_sequence', self.gf('django.db.models.fields.IntegerField')()),
-            ('stop_headsign', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('pickup_type', self.gf('django.db.models.fields.CharField')(max_length=1, blank=True)),
-            ('drop_off_type', self.gf('django.db.models.fields.CharField')(max_length=1, blank=True)),
-            ('shape_dist_traveled', self.gf('django.db.models.fields.FloatField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['StopTime'])
-
-        # Adding model 'Transfer'
-        db.create_table('transfer', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('from_stop', self.gf('django.db.models.fields.related.ForeignKey')(related_name='transfer_from_stop', to=orm['multigtfs.Stop'])),
-            ('to_stop', self.gf('django.db.models.fields.related.ForeignKey')(related_name='transfer_to_stop', to=orm['multigtfs.Stop'])),
-            ('transfer_type', self.gf('django.db.models.fields.IntegerField')(default=0, blank=True)),
-            ('min_transfer_time', self.gf('django.db.models.fields.IntegerField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Transfer'])
-
-        # Adding model 'Feed'
-        db.create_table('feed', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Feed'])
-
-        # Adding model 'Zone'
-        db.create_table('zone', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('feed', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['multigtfs.Feed'])),
-            ('zone_id', self.gf('django.db.models.fields.CharField')(max_length=10, db_index=True)),
-        ))
-        db.send_create_signal('multigtfs', ['Zone'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Agency'
-        db.delete_table('agency')
-
-        # Deleting model 'Block'
-        db.delete_table('block')
-
-        # Deleting model 'Fare'
-        db.delete_table('fare')
-
-        # Deleting model 'FareRule'
-        db.delete_table('fare_rules')
-
-        # Deleting model 'FeedInfo'
-        db.delete_table('feed_info')
-
-        # Deleting model 'Frequency'
-        db.delete_table('frequency')
-
-        # Deleting model 'Route'
-        db.delete_table('route')
-
-        # Deleting model 'Service'
-        db.delete_table('service')
-
-        # Deleting model 'ServiceDate'
-        db.delete_table('service_date')
-
-        # Deleting model 'Shape'
-        db.delete_table('shape')
-
-        # Deleting model 'ShapePoint'
-        db.delete_table('shape_point')
-
-        # Deleting model 'Stop'
-        db.delete_table('stop')
-
-        # Deleting model 'Trip'
-        db.delete_table('trip')
-
-        # Removing M2M table for field services on 'Trip'
-        db.delete_table('trip_services')
-
-        # Deleting model 'StopTime'
-        db.delete_table('stop_time')
-
-        # Deleting model 'Transfer'
-        db.delete_table('transfer')
-
-        # Deleting model 'Feed'
-        db.delete_table('feed')
-
-        # Deleting model 'Zone'
-        db.delete_table('zone')
-
-
-    models = {
-        'multigtfs.agency': {
-            'Meta': {'object_name': 'Agency', 'db_table': "'agency'"},
-            'agency_id': ('django.db.models.fields.CharField', [], {'db_index': 'True', 'max_length': '255', 'blank': 'True'}),
-            'fare_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lang': ('django.db.models.fields.CharField', [], {'max_length': '2', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'timezone': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
-        },
-        'multigtfs.block': {
-            'Meta': {'object_name': 'Block', 'db_table': "'block'"},
-            'block_id': ('django.db.models.fields.CharField', [], {'max_length': '10', 'db_index': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
-        },
-        'multigtfs.fare': {
-            'Meta': {'object_name': 'Fare', 'db_table': "'fare'"},
-            'currency_type': ('django.db.models.fields.CharField', [], {'max_length': '3'}),
-            'fare_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'payment_method': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'price': ('django.db.models.fields.DecimalField', [], {'max_digits': '17', 'decimal_places': '4'}),
-            'transfer_duration': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'transfers': ('django.db.models.fields.IntegerField', [], {'default': '1'})
-        },
-        'multigtfs.farerule': {
-            'Meta': {'object_name': 'FareRule', 'db_table': "'fare_rules'"},
-            'contains': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'fare_contains'", 'null': 'True', 'to': "orm['multigtfs.Zone']"}),
-            'destination': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'fare_destinations'", 'null': 'True', 'to': "orm['multigtfs.Zone']"}),
-            'fare': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Fare']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'origin': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'fare_origins'", 'null': 'True', 'to': "orm['multigtfs.Zone']"}),
-            'route': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Route']", 'null': 'True', 'blank': 'True'})
-        },
-        'multigtfs.feed': {
-            'Meta': {'object_name': 'Feed', 'db_table': "'feed'"},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        'multigtfs.feedinfo': {
-            'Meta': {'object_name': 'FeedInfo', 'db_table': "'feed_info'"},
-            'end_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lang': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'publisher_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'publisher_url': ('django.db.models.fields.URLField', [], {'max_length': '200'}),
-            'start_date': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'version': ('django.db.models.fields.CharField', [], {'max_length': '20', 'blank': 'True'})
-        },
-        'multigtfs.frequency': {
-            'Meta': {'object_name': 'Frequency', 'db_table': "'frequency'"},
-            'end_time': ('multigtfs.models.fields.seconds.SecondsField', [], {}),
-            'exact_times': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'headway_secs': ('django.db.models.fields.IntegerField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'start_time': ('multigtfs.models.fields.seconds.SecondsField', [], {}),
-            'trip': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Trip']"})
-        },
-        'multigtfs.route': {
-            'Meta': {'object_name': 'Route', 'db_table': "'route'"},
-            'agency': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Agency']", 'null': 'True', 'blank': 'True'}),
-            'color': ('django.db.models.fields.CharField', [], {'max_length': '6', 'blank': 'True'}),
-            'desc': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'long_name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'route_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'rtype': ('django.db.models.fields.IntegerField', [], {}),
-            'short_name': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
-            'text_color': ('django.db.models.fields.CharField', [], {'max_length': '6', 'blank': 'True'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
-        },
-        'multigtfs.service': {
-            'Meta': {'object_name': 'Service', 'db_table': "'service'"},
-            'end_date': ('django.db.models.fields.DateField', [], {}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'friday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'monday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'saturday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'service_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'start_date': ('django.db.models.fields.DateField', [], {}),
-            'sunday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'thursday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'tuesday': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'wednesday': ('django.db.models.fields.BooleanField', [], {'default': 'True'})
-        },
-        'multigtfs.servicedate': {
-            'Meta': {'object_name': 'ServiceDate', 'db_table': "'service_date'"},
-            'date': ('django.db.models.fields.DateField', [], {}),
-            'exception_type': ('django.db.models.fields.IntegerField', [], {'default': '1'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'service': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Service']"})
-        },
-        'multigtfs.shape': {
-            'Meta': {'object_name': 'Shape', 'db_table': "'shape'"},
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'shape_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
-        },
-        'multigtfs.shapepoint': {
-            'Meta': {'object_name': 'ShapePoint', 'db_table': "'shape_point'"},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lat': ('django.db.models.fields.DecimalField', [], {'max_digits': '13', 'decimal_places': '8'}),
-            'lon': ('django.db.models.fields.DecimalField', [], {'max_digits': '13', 'decimal_places': '8'}),
-            'sequence': ('django.db.models.fields.IntegerField', [], {}),
-            'shape': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'points'", 'to': "orm['multigtfs.Shape']"}),
-            'traveled': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'multigtfs.stop': {
-            'Meta': {'object_name': 'Stop', 'db_table': "'stop'"},
-            'code': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'desc': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'lat': ('django.db.models.fields.DecimalField', [], {'max_digits': '13', 'decimal_places': '8'}),
-            'location_type': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'lon': ('django.db.models.fields.DecimalField', [], {'max_digits': '13', 'decimal_places': '8'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'parent_station': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Stop']", 'null': 'True', 'blank': 'True'}),
-            'stop_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'}),
-            'timezone': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'zone': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Zone']", 'null': 'True', 'blank': 'True'})
-        },
-        'multigtfs.stoptime': {
-            'Meta': {'object_name': 'StopTime', 'db_table': "'stop_time'"},
-            'arrival_time': ('multigtfs.models.fields.seconds.SecondsField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'departure_time': ('multigtfs.models.fields.seconds.SecondsField', [], {'default': 'None', 'null': 'True', 'blank': 'True'}),
-            'drop_off_type': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'pickup_type': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'shape_dist_traveled': ('django.db.models.fields.FloatField', [], {'null': 'True', 'blank': 'True'}),
-            'stop': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Stop']"}),
-            'stop_headsign': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'stop_sequence': ('django.db.models.fields.IntegerField', [], {}),
-            'trip': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Trip']"})
-        },
-        'multigtfs.transfer': {
-            'Meta': {'object_name': 'Transfer', 'db_table': "'transfer'"},
-            'from_stop': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'transfer_from_stop'", 'to': "orm['multigtfs.Stop']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'min_transfer_time': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'to_stop': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'transfer_to_stop'", 'to': "orm['multigtfs.Stop']"}),
-            'transfer_type': ('django.db.models.fields.IntegerField', [], {'default': '0', 'blank': 'True'})
-        },
-        'multigtfs.trip': {
-            'Meta': {'object_name': 'Trip', 'db_table': "'trip'"},
-            'block': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Block']", 'null': 'True', 'blank': 'True'}),
-            'direction': ('django.db.models.fields.CharField', [], {'max_length': '1', 'blank': 'True'}),
-            'headsign': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'route': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Route']"}),
-            'services': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['multigtfs.Service']", 'symmetrical': 'False'}),
-            'shape': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Shape']", 'null': 'True', 'blank': 'True'}),
-            'short_name': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
-            'trip_id': ('django.db.models.fields.CharField', [], {'max_length': '255', 'db_index': 'True'})
-        },
-        'multigtfs.zone': {
-            'Meta': {'object_name': 'Zone', 'db_table': "'zone'"},
-            'feed': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['multigtfs.Feed']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'zone_id': ('django.db.models.fields.CharField', [], {'max_length': '10', 'db_index': 'True'})
-        }
-    }
-
-    complete_apps = ['multigtfs']
+    operations = [
+        migrations.CreateModel(
+            name='Agency',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('agency_id', models.CharField(help_text='Unique identifier for transit agency', max_length=255, db_index=True, blank=True)),
+                ('name', models.CharField(help_text='Full name of the transit agency', max_length=255)),
+                ('url', models.URLField(help_text='URL of the transit agency', blank=True)),
+                ('timezone', models.CharField(help_text='Timezone of the agency', max_length=255)),
+                ('lang', models.CharField(help_text='ISO 639-1 code for the primary language', max_length=2, blank=True)),
+                ('phone', models.CharField(help_text='Voice telephone number', max_length=255, blank=True)),
+                ('fare_url', models.URLField(help_text='URL for purchasing tickets online', blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'agency',
+                'verbose_name_plural': 'agencies',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Block',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('block_id', models.CharField(help_text='Unique identifier for a block.', max_length=63, db_index=True)),
+            ],
+            options={
+                'db_table': 'block',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Fare',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('fare_id', models.CharField(help_text='Unique identifier for a fare class', max_length=255, db_index=True)),
+                ('price', models.DecimalField(help_text='Fare price, in units specified by currency_type', max_digits=17, decimal_places=4)),
+                ('currency_type', models.CharField(help_text='ISO 4217 alphabetical currency code', max_length=3)),
+                ('payment_method', models.IntegerField(default=1, help_text='When is the fare paid?', choices=[(0, 'Fare is paid on board.'), (1, 'Fare must be paid before boarding.')])),
+                ('transfers', models.IntegerField(default=None, help_text='Are transfers permitted?', null=True, blank=True, choices=[(0, 'No transfers permitted on this fare.'), (1, 'Passenger may transfer once.'), (2, 'Passenger may transfer twice.'), (None, 'Unlimited transfers are permitted.')])),
+                ('transfer_duration', models.IntegerField(help_text='Time in seconds until a ticket or transfer expires', null=True, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'fare',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='FareRule',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'fare_rules',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Feed',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('meta', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'feed',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='FeedInfo',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('publisher_name', models.CharField(help_text='Full name of organization that publishes the feed.', max_length=255)),
+                ('publisher_url', models.URLField(help_text="URL of the feed publisher's organization.")),
+                ('lang', models.CharField(help_text='IETF BCP 47 language code for text in field.', max_length=20, verbose_name='language')),
+                ('start_date', models.DateField(help_text='Date that feed starts providing reliable data.', null=True, blank=True)),
+                ('end_date', models.DateField(help_text='Date that feed stops providing reliable data.', null=True, blank=True)),
+                ('version', models.CharField(help_text='Version of feed.', max_length=255, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+            ],
+            options={
+                'db_table': 'feed_info',
+                'verbose_name_plural': 'feed info',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Frequency',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start_time', multigtfs.models.fields.seconds.SecondsField(help_text='Time that the service begins at the specified frequency')),
+                ('end_time', multigtfs.models.fields.seconds.SecondsField(help_text='Time that the service ends at the specified frequency')),
+                ('headway_secs', models.IntegerField(help_text='Time in seconds before returning to same stop')),
+                ('exact_times', models.CharField(blank=True, help_text='Should frequency-based trips be exactly scheduled?', max_length=1, choices=[(0, 'Trips are not exactly scheduled'), (1, 'Trips are exactly scheduled from start time')])),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+            ],
+            options={
+                'db_table': 'frequency',
+                'verbose_name_plural': 'frequencies',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Route',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('route_id', models.CharField(help_text='Unique identifier for route.', max_length=255, db_index=True)),
+                ('short_name', models.CharField(help_text='Short name of the route', max_length=63)),
+                ('long_name', models.CharField(help_text='Long name of the route', max_length=255)),
+                ('desc', models.TextField(help_text='Long description of a route', verbose_name='description', blank=True)),
+                ('rtype', models.IntegerField(help_text='Type of transportation used on route', verbose_name='route type', choices=[(0, 'Tram, Streetcar, or Light rail'), (1, 'Subway or Metro'), (2, 'Rail'), (3, 'Bus'), (4, 'Ferry'), (5, 'Cable car'), (6, 'Gondola or Suspended cable car'), (7, 'Funicular')])),
+                ('url', models.URLField(help_text='Web page about for the route', blank=True)),
+                ('color', models.CharField(help_text='Color of route in hex', max_length=6, blank=True)),
+                ('text_color', models.CharField(help_text='Color of route text in hex', max_length=6, blank=True)),
+                ('geometry', django.contrib.gis.db.models.fields.MultiLineStringField(help_text='Geometry cache of Trips', srid=4326, null=True, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('agency', models.ForeignKey(blank=True, to='multigtfs.Agency', help_text='Agency for this route.', null=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+            ],
+            options={
+                'db_table': 'route',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Service',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('service_id', models.CharField(help_text='Unique identifier for service dates.', max_length=255, db_index=True)),
+                ('monday', models.BooleanField(default=True, help_text='Is the route active on Monday?')),
+                ('tuesday', models.BooleanField(default=True, help_text='Is the route active on Tuesday?')),
+                ('wednesday', models.BooleanField(default=True, help_text='Is the route active on Wednesday?')),
+                ('thursday', models.BooleanField(default=True, help_text='Is the route active on Thursday?')),
+                ('friday', models.BooleanField(default=True, help_text='Is the route active on Friday?')),
+                ('saturday', models.BooleanField(default=True, help_text='Is the route active on Saturday?')),
+                ('sunday', models.BooleanField(default=True, help_text='Is the route active on Sunday?')),
+                ('start_date', models.DateField(null=True, blank=True)),
+                ('end_date', models.DateField(null=True, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+            ],
+            options={
+                'db_table': 'service',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ServiceDate',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('date', models.DateField(help_text='Date that the service differs from the norm.')),
+                ('exception_type', models.IntegerField(default=1, help_text='Is service added or removed on this date?', choices=[(1, 'Added'), (2, 'Removed')])),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('service', models.ForeignKey(to='multigtfs.Service')),
+            ],
+            options={
+                'db_table': 'service_date',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Shape',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('shape_id', models.CharField(help_text='Unique identifier for a shape.', max_length=255, db_index=True)),
+                ('geometry', django.contrib.gis.db.models.fields.LineStringField(help_text='Geometry cache of ShapePoints', srid=4326, null=True, blank=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+            ],
+            options={
+                'db_table': 'shape',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ShapePoint',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('point', django.contrib.gis.db.models.fields.PointField(help_text='WGS 84 latitude/longitude of shape point', srid=4326)),
+                ('sequence', models.IntegerField()),
+                ('traveled', models.FloatField(help_text='Distance of point from start of shape', null=True, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('shape', models.ForeignKey(related_name='points', to='multigtfs.Shape')),
+            ],
+            options={
+                'db_table': 'shape_point',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Stop',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('stop_id', models.CharField(help_text='Unique identifier for a stop or station.', max_length=255, db_index=True)),
+                ('code', models.CharField(help_text='Uniquer identifier (short text or number) for passengers.', max_length=255, blank=True)),
+                ('name', models.CharField(help_text='Name of stop in local vernacular.', max_length=255)),
+                ('desc', models.CharField(help_text='Description of a stop.', max_length=255, verbose_name='description', blank=True)),
+                ('point', django.contrib.gis.db.models.fields.PointField(help_text='WGS 84 latitude/longitude of stop or station', srid=4326)),
+                ('url', models.URLField(help_text='URL for the stop', blank=True)),
+                ('location_type', models.CharField(blank=True, help_text='Is this a stop or station?', max_length=1, choices=[('0', 'Stop'), ('1', 'Station')])),
+                ('timezone', models.CharField(help_text='Timezone of the stop', max_length=255, blank=True)),
+                ('wheelchair_boarding', models.CharField(blank=True, help_text='Is wheelchair boarding possible?', max_length=1, choices=[('0', 'No information'), ('1', 'Some wheelchair boarding'), ('2', 'No wheelchair boarding')])),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+                ('parent_station', models.ForeignKey(blank=True, to='multigtfs.Stop', help_text='The station associated with the stop', null=True)),
+            ],
+            options={
+                'db_table': 'stop',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='StopTime',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('arrival_time', multigtfs.models.fields.seconds.SecondsField(default=None, help_text='Arrival time. Must be set for end stops of trip.', null=True, blank=True)),
+                ('departure_time', multigtfs.models.fields.seconds.SecondsField(default=None, help_text='Departure time. Must be set for end stops of trip.', null=True, blank=True)),
+                ('stop_sequence', models.IntegerField()),
+                ('stop_headsign', models.CharField(help_text='Sign text that identifies the stop for passengers', max_length=255, blank=True)),
+                ('pickup_type', models.CharField(blank=True, help_text='How passengers are picked up', max_length=1, choices=[('0', 'Regularly scheduled pickup'), ('1', 'No pickup available'), ('2', 'Must phone agency to arrange pickup'), ('3', 'Must coordinate with driver to arrange pickup')])),
+                ('drop_off_type', models.CharField(blank=True, help_text='How passengers are picked up', max_length=1, choices=[('0', 'Regularly scheduled drop off'), ('1', 'No drop off available'), ('2', 'Must phone agency to arrange drop off'), ('3', 'Must coordinate with driver to arrange drop off')])),
+                ('shape_dist_traveled', models.FloatField(help_text='Distance of stop from start of shape', null=True, verbose_name='shape distance traveled', blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('stop', models.ForeignKey(to='multigtfs.Stop')),
+            ],
+            options={
+                'db_table': 'stop_time',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Transfer',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('transfer_type', models.IntegerField(default=0, help_text='What kind of transfer?', blank=True, choices=[(0, 'Recommended transfer point'), (1, 'Timed transfer point (vehicle will wait)'), (2, 'min_transfer_time needed to successfully transfer'), (3, 'No transfers possible')])),
+                ('min_transfer_time', models.IntegerField(help_text='How many seconds are required to transfer?', null=True, blank=True)),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('from_stop', models.ForeignKey(related_name='transfer_from_stop', to='multigtfs.Stop', help_text='Stop where a connection between routes begins.')),
+                ('to_stop', models.ForeignKey(related_name='transfer_to_stop', to='multigtfs.Stop', help_text='Stop where a connection between routes ends.')),
+            ],
+            options={
+                'db_table': 'transfer',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Trip',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('trip_id', models.CharField(help_text='Unique identifier for a trip.', max_length=255, db_index=True)),
+                ('headsign', models.CharField(help_text='Destination identification for passengers.', max_length=255, blank=True)),
+                ('short_name', models.CharField(help_text='Short name used in schedules and signboards.', max_length=63, blank=True)),
+                ('direction', models.CharField(blank=True, help_text='Direction for bi-directional routes.', max_length=1, choices=[('0', '0'), ('1', '1')])),
+                ('geometry', django.contrib.gis.db.models.fields.LineStringField(help_text='Geometry cache of Shape or Stops', srid=4326, null=True, blank=True)),
+                ('wheelchair_accessible', models.CharField(blank=True, help_text='Are there accommodations for riders with wheelchair?', max_length=1, choices=[('0', 'No information'), ('1', 'Some wheelchair accommodation'), ('2', 'No wheelchair accommodation')])),
+                ('bikes_allowed', models.CharField(blank=True, help_text='Are bicycles allowed?', max_length=1, choices=[('0', 'No information'), ('1', 'Some bicycle accommodation'), ('2', 'No bicycles allowed')])),
+                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('block', models.ForeignKey(blank=True, to='multigtfs.Block', help_text='Block of sequential trips that this trip belongs to.', null=True)),
+                ('route', models.ForeignKey(to='multigtfs.Route')),
+                ('service', models.ForeignKey(blank=True, to='multigtfs.Service', null=True)),
+                ('shape', models.ForeignKey(blank=True, to='multigtfs.Shape', help_text='Shape used for this trip', null=True)),
+            ],
+            options={
+                'db_table': 'trip',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Zone',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('zone_id', models.CharField(help_text='Unique identifier for a zone.', max_length=63, db_index=True)),
+                ('feed', models.ForeignKey(to='multigtfs.Feed')),
+            ],
+            options={
+                'db_table': 'zone',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='stoptime',
+            name='trip',
+            field=models.ForeignKey(to='multigtfs.Trip'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='stop',
+            name='zone',
+            field=models.ForeignKey(blank=True, to='multigtfs.Zone', help_text='Fare zone for a stop ID.', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='frequency',
+            name='trip',
+            field=models.ForeignKey(to='multigtfs.Trip'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='farerule',
+            name='contains',
+            field=models.ForeignKey(related_name='fare_contains', blank=True, to='multigtfs.Zone', help_text='Fare class is valid for travel withing this zone.', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='farerule',
+            name='destination',
+            field=models.ForeignKey(related_name='fare_destinations', blank=True, to='multigtfs.Zone', help_text='Fare class is valid for travel ending in this zone.', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='farerule',
+            name='fare',
+            field=models.ForeignKey(to='multigtfs.Fare'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='farerule',
+            name='origin',
+            field=models.ForeignKey(related_name='fare_origins', blank=True, to='multigtfs.Zone', help_text='Fare class is valid for travel originating in this zone.', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='farerule',
+            name='route',
+            field=models.ForeignKey(blank=True, to='multigtfs.Route', help_text='Fare class is valid for this route.', null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='fare',
+            name='feed',
+            field=models.ForeignKey(to='multigtfs.Feed'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='block',
+            name='feed',
+            field=models.ForeignKey(to='multigtfs.Feed'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='agency',
+            name='feed',
+            field=models.ForeignKey(to='multigtfs.Feed'),
+            preserve_default=True,
+        ),
+    ]

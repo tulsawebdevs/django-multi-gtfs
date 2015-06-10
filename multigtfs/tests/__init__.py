@@ -14,23 +14,23 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from multigtfs.tests.agency import AgencyTest
-from multigtfs.tests.block import BlockTest
-from multigtfs.tests.fare import FareTest
-from multigtfs.tests.fare_rule import FareRuleTest
-from multigtfs.tests.feed import FeedTest
-from multigtfs.tests.feed_info import FeedInfoTest
-from multigtfs.tests.fields import SecondsTest, SecondsFieldTest
-from multigtfs.tests.frequency import FrequencyTest
-from multigtfs.tests.route import RouteTest
-from multigtfs.tests.service import ServiceTest
-from multigtfs.tests.service_date import ServiceDateTest
-from multigtfs.tests.shape import ShapeTest
-from multigtfs.tests.stop import StopTest
-from multigtfs.tests.stop_time import StopTimeTest
-from multigtfs.tests.transfer import TransferTest
-from multigtfs.tests.trip import TripTest
-from multigtfs.tests.zone import ZoneTest
+from multigtfs.tests.test_agency import AgencyTest
+from multigtfs.tests.test_block import BlockTest
+from multigtfs.tests.test_fare import FareTest
+from multigtfs.tests.test_fare_rule import FareRuleTest
+from multigtfs.tests.test_feed import FeedTest
+from multigtfs.tests.test_feed_info import FeedInfoTest
+from multigtfs.tests.test_fields import SecondsTest, SecondsFieldTest
+from multigtfs.tests.test_frequency import FrequencyTest
+from multigtfs.tests.test_route import RouteTest
+from multigtfs.tests.test_service import ServiceTest
+from multigtfs.tests.test_service_date import ServiceDateTest
+from multigtfs.tests.test_shape import ShapeTest
+from multigtfs.tests.test_stop import StopTest
+from multigtfs.tests.test_stop_time import StopTimeTest
+from multigtfs.tests.test_transfer import TransferTest
+from multigtfs.tests.test_trip import TripTest
+from multigtfs.tests.test_zone import ZoneTest
 
 __all__ = (
     'agency', 'block', 'fare', 'fare_rule', 'feed', 'feed_info', 'fields',
