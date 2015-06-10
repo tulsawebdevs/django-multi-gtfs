@@ -69,6 +69,11 @@ class BaseQuerySet(GeoQuerySet):
         return self.filter(**kwargs)
 
 
+class BaseManager(models.GeoManager):
+    def get_query_set(self):
+        return BaseQuerySet(self.model)
+
+
 class Base(models.Model):
     """Base class for models that are defined in the GTFS spec
 
@@ -95,7 +100,7 @@ class Base(models.Model):
         abstract = True
         app_label = 'multigtfs'
 
-    objects = BaseQuerySet.as_manager()
+    objects = BaseManager.from_queryset(BaseQuerySet)()
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'
