@@ -63,15 +63,21 @@ class BaseQuerySet(GeoQuerySet):
                 column_map.append((csv_name, field_pattern))
         return column_map
 
+
+class BaseManager(models.GeoManager):
+    def get_queryset(self):
+        '''Django 1.8 expects this method name. Simply calling the other
+        method results in a recursion error in some python interpretters.
+        '''
+        return BaseQuerySet(self.model)
+
+    def get_query_set(self):
+        return BaseQuerySet(self.model)
+
     def in_feed(self, feed):
         '''Return the objects in the target feed'''
         kwargs = {self.model._rel_to_feed: feed}
         return self.filter(**kwargs)
-
-
-class BaseManager(models.GeoManager):
-    def get_query_set(self):
-        return BaseQuerySet(self.model)
 
 
 class Base(models.Model):
@@ -100,7 +106,7 @@ class Base(models.Model):
         abstract = True
         app_label = 'multigtfs'
 
-    objects = BaseManager.from_queryset(BaseQuerySet)()
+    objects = BaseManager()
 
     # The relation of the model to the feed it belongs to.
     _rel_to_feed = 'feed'

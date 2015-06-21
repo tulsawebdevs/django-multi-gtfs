@@ -21,6 +21,8 @@ import sys
 import django
 from django.conf import settings
 
+django_version, django_point = django.VERSION[:2]
+
 
 def base_config():
     '''Create a minimal Django configuration'''
@@ -35,7 +37,10 @@ def base_config():
         },
         'DEBUG': True,
         'TEMPLATE_DEBUG': True,
-        'MIDDLEWARE_CLASSES': ''
+        'MIDDLEWARE_CLASSES': '',
+        'SOUTH_MIGRATION_MODULES': {
+            'multigtfs': 'multigtfs.south_migrations',
+        }
     }
 
 
@@ -83,7 +88,9 @@ def main(*paths):
     settings.configure(**config)
 
     from django.core import management
-    django.setup()
+    if django_version >= 1 and django_point > 6:
+        django.setup()
+
     failures = management.call_command(
         'test',
         *paths
