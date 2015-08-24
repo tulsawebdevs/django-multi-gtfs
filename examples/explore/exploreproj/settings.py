@@ -85,6 +85,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
 
+SOUTH_MIGRATION_MODULES = {
+    'multigtfs': 'multigtfs.south_migrations'
+}
+
 # Extend with developer's prefered settings
 try:
     from exploreproj.local_settings import *  # flake8: noqa
