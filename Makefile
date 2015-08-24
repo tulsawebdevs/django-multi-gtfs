@@ -42,7 +42,8 @@ test-all:
 
 coverage:
 	coverage erase
-	./run_tests.py --with-coverage --cover-tests
+	coverage run --source multigtfs ./run_tests.py
+	coverage report -m
 	coverage html
 	open htmlcov/index.html
 

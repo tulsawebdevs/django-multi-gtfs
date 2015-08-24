@@ -3,7 +3,7 @@
 [run]
 branch = True
 include = ./*
-omit = *migrations*
+omit = *migrations*,multigtfs/admin.py,multigtfs/app_settings.py,multigtfs/management/*
 
 [report]
 show_missing = True
