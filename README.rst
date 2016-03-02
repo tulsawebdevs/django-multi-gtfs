@@ -4,6 +4,9 @@ multigtfs: GTFS as a Django app
 .. image:: https://travis-ci.org/tulsawebdevs/django-multi-gtfs.svg?branch=master
     :target: https://travis-ci.org/tulsawebdevs/django-multi-gtfs
 
+.. image:: https://coveralls.io/repos/github/tulsawebdevs/django-multi-gtfs/badge.svg?branch=django19
+    :target: https://coveralls.io/github/tulsawebdevs/django-multi-gtfs
+
 .. Omit badges from docs
 
 **multigtfs** is an `Apache 2.0`_-licensed Django app that supports importing
