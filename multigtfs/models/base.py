@@ -48,14 +48,18 @@ class BaseQuerySet(GeoQuerySet):
             if point_match:
                 field = None
             else:
-                field = cls._meta.get_field_by_name(field_name)[0]
+                field = cls._meta.get_field(field_name)
 
             # Only add optional columns if they are used in the records
             if field and field.blank and not field.has_default():
                 if field.null:
                     blank = None
                 else:
-                    blank = field.value_to_string(None)
+                    try:
+                        blank = field.value_to_string(None)
+                    except AttributeError:
+                        # Django 1.9 and later
+                        blank = ''
                 kwargs = {field_name: blank}
                 if self.exclude(**kwargs).exists():
                     column_map.append((csv_name, field_pattern))
@@ -189,7 +193,7 @@ class Base(models.Model):
             if point_match:
                 field = None
             else:
-                field = cls._meta.get_field_by_name(field_base)[0]
+                field = cls._meta.get_field(field_base)
 
             # Pick a conversion function for the field
             if point_match:
@@ -326,8 +330,7 @@ class Base(models.Model):
                 point_match = re_point.match(base_field)
                 if point_match:
                     continue
-                field_type = cls._meta.get_field_by_name(
-                    base_field)[0]
+                field_type = cls._meta.get_field(base_field)
                 assert not isinstance(field_type, ManyToManyField)
                 sort_fields.append(field)
 
@@ -352,7 +355,7 @@ class Base(models.Model):
         for field_name in fields:
             if '__' in field_name:
                 local_field_name, subfield_name = field_name.split('__', 1)
-                field = cls._meta.get_field_by_name(local_field_name)[0]
+                field = cls._meta.get_field(local_field_name)
                 field_type = field.rel.to
                 model_name = field_type.__name__
                 if model_name in model_to_field_name:
