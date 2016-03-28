@@ -17,9 +17,8 @@
 
 from __future__ import unicode_literals
 
-from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.six import integer_types, with_metaclass
+from multigtfs.compat import FieldBase
 
 try:
     from south.modelsinspector import add_introspection_rules
@@ -75,18 +74,35 @@ class Seconds(object):
         return self._compare(other, lambda s, o: s != o)
 
 
-class SecondsField(with_metaclass(models.SubfieldBase, models.Field)):
+class SecondsField(FieldBase):
     '''A Model Field for storing Seconds'''
 
     description = 'Seconds since start of the day'
 
+    def from_db_value(self, value, expression, connection, context):
+        '''Handle data loaded from database.'''
+        if value is None:
+            return value
+        return self.parse_seconds(value)
+
     def to_python(self, value):
+        '''Handle data from serialization and form clean() methods.'''
         if isinstance(value, Seconds):
             return value
         if value is None:
             return None
-        if isinstance(value, integer_types):
-            return Seconds(value)
+        return self.parse_seconds(value)
+
+    @staticmethod
+    def parse_seconds(value):
+        '''
+        Parse string into Seconds instances.
+
+        Handled formats:
+        HH:MM:SS
+        HH:MM
+        SS
+        '''
         svalue = str(value)
         colons = svalue.count(':')
         if colons == 2:
@@ -103,14 +119,19 @@ class SecondsField(with_metaclass(models.SubfieldBase, models.Field)):
         return Seconds.from_hms(hours, minutes, seconds)
 
     def get_prep_value(self, value):
-        if value:
+        '''Prepare value for database storage.'''
+        if isinstance(value, Seconds):
             return value.seconds
+        elif value:
+            return self.parse_seconds(value).seconds
         else:
             return None
 
     def get_internal_type(self):
+        '''Seconds are stored in the database like nullable Integers.'''
         return 'IntegerField'
 
     def value_to_string(self, obj):
-        value = self._get_val_from_obj(obj)
+        '''Convert to HH:MM:SS format.'''
+        value = self.value_from_object(obj)
         return value.__str__()
