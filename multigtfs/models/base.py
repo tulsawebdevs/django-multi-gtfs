@@ -25,6 +25,8 @@ from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type, PY3
 
+from multigtfs.compat import get_blank_value
+
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
@@ -52,15 +54,7 @@ class BaseQuerySet(GeoQuerySet):
 
             # Only add optional columns if they are used in the records
             if field and field.blank and not field.has_default():
-                if field.null:
-                    blank = None
-                else:
-                    try:
-                        blank = field.value_to_string(None)
-                    except AttributeError:
-                        # Django 1.9 and later
-                        blank = ''
-                kwargs = {field_name: blank}
+                kwargs = {field_name: get_blank_value(field)}
                 if self.exclude(**kwargs).exists():
                     column_map.append((csv_name, field_pattern))
             else:

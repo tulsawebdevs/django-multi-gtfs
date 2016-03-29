@@ -22,3 +22,28 @@ else:
     from django.db.models import SubfieldBase
     from django.utils.six import with_metaclass
     FieldBase = with_metaclass(SubfieldBase, Field)
+
+
+#
+# Get the 'blank' value for a field
+#
+
+def _get_blank_value_18(field):
+    """Get the value for blank fields in Django 1.8 and earlier."""
+    if field.null:
+        return None
+    else:
+        return field.value_to_string(None)
+
+
+def _get_blank_value_19(field):
+    """Get the value for blank fields in Django 1.9 and later."""
+    if field.null:
+        return None
+    else:
+        return ''
+
+if DJ_VERSION >= StrictVersion('1.9'):
+    get_blank_value = _get_blank_value_19
+else:
+    get_blank_value = _get_blank_value_18
