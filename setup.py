@@ -17,8 +17,6 @@ from __future__ import unicode_literals
 
 from setuptools import setup, find_packages
 from setuptools.command.test import test
-import codecs
-import os
 import sys
 # Get the version from __init__.py
 from multigtfs import __version__
@@ -31,6 +29,8 @@ class my_test(test):
 
 
 def read(*paths):
+    import codecs
+    import os.path
     with codecs.open(os.path.join(*paths), 'r', 'utf-8') as f:
         return f.read()
 
@@ -59,7 +59,7 @@ setup(
     cmdclass={'test': my_test},
     zip_safe=True,
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Framework :: Django",
         "Intended Audience :: Developers",

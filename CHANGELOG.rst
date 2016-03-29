@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.0.0 (2016-03-29)
+------------------
+* The project has been production-ready for a while. Updating the version
+  number and the PyPI classifiers to reflect that.
+* Add support for Django 1.7 through 1.9, and a compatibility layer to handle
+  future versions.
+* Add support for transitioning from South to Django migrations.
+
 0.4.3 (2015-02-24)
 ------------------
 * Added documentation (issue #26)

@@ -28,7 +28,10 @@ break relying code.  In the worst case scenario, you may need to export your
 GTFS feeds in the original version, update multigtfs and your code, and
 re-import.
 
-multigtfs works with Django 1.7 and 1.8. 
+multigtfs works with Django 1.5 through 1.9. In the next version, support
+will be limited to Django's supported releases, so if you are using an old
+version you will want to update to at least 1.8, the long-term support (LTS)
+release.
 
 All valid GTFS feeds are supported for import and export.  This includes
 feeds with extra columns not yet included in the GTFS spec, and feeds that
@@ -55,8 +58,6 @@ Development
 .. _`all changes`: https://developers.google.com/transit/gtfs/changes#RevisionHistory
 .. _PostgreSQL: http://www.postgresql.org
 .. _PostGIS: http://postgis.refractions.net
-.. _20036: https://code.djangoproject.com/ticket/20036
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
-.. _`issue #38`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/38
 .. _`file a bug`: https://github.com/tulsawebdevs/django-multi-gtfs/issues
 .. _`issues list`: https://github.com/tulsawebdevs/django-multi-gtfs/issues?state=open
