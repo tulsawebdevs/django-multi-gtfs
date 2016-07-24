@@ -14,12 +14,12 @@
 # limitations under the License.
 
 from __future__ import unicode_literals
-from codecs import BOM_UTF8
 
 from django.test import TestCase
-from django.utils.six import StringIO, PY3
+from django.utils.six import StringIO
 
 from multigtfs.models import Agency, Feed
+from multigtfs.compat import bom_prefix_csv
 
 
 class AgencyTest(TestCase):
@@ -86,17 +86,10 @@ DTA,"Demo Transit Authority",http://google.com,America/Los_Angeles,en,\
         self.assertEqual(agency.fare_url, 'http://google.com')
 
     def test_import_bom(self):
-        if PY3:  # pragma: no cover
-            text = (BOM_UTF8.decode('utf-8') + """\
+        agency_txt = StringIO(bom_prefix_csv("""\
 agency_name,agency_url,agency_timezone
 Demo Transit Authority,http://google.com,America/Los_Angeles
-""")
-        else:
-            text = (BOM_UTF8 + b"""\
-agency_name,agency_url,agency_timezone
-Demo Transit Authority,http://google.com,America/Los_Angeles
-""")
-        agency_txt = StringIO(text)
+"""))
         Agency.import_txt(agency_txt, self.feed)
         agency = Agency.objects.get()
         self.assertEqual(agency.agency_id, '')
