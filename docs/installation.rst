@@ -14,4 +14,4 @@ Or, if you have virtualenvwrapper installed::
 In your settings, add ``multigtfs`` to your ``INSTALLED APPS`` and ensure
 you have a spatial database configured.
 
-Use ``./manage.py migrate`` to install the tables,
+Use ``./manage.py migrate`` to install the tables.

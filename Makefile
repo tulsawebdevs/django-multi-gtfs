@@ -50,7 +50,6 @@ test-all:
 	tox
 
 coverage:
-	echo ${COVERAGE_COMPAT}
 	coverage erase
 	coverage run --source multigtfs ${COVERAGE_OMIT} ./run_tests.py
 	coverage report -m

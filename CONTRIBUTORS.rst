@@ -11,7 +11,7 @@ We'd love your help in building ``multigtfs``.  Here's some tips:
   (``pip install -r requirements.txt; pip install -r requirements.dev.txt``).
 * Test changes with ``./run_tests.py``
 * Test `PEP 8`_ and code coverage with ``./qa_check.sh``
-* Add yourself to AUTHORS.rst
+* Add yourself to ``AUTHORS.rst``
 * When you are happy with the change, publish your branch on GitHub and
   request a merge to the master branch.
 
