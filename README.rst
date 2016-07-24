@@ -1,11 +1,21 @@
 multigtfs: GTFS as a Django app
 ===============================
 
-.. image:: https://travis-ci.org/tulsawebdevs/django-multi-gtfs.svg?branch=master
+.. image:: https://img.shields.io/pypi/v/multigtfs.svg
+    :alt: The PyPI package
+    :target: https://pypi.python.org/pypi/multigtfs
+
+.. image:: https://img.shields.io/pypi/dw/multigtfs.svg
+    :alt: PyPI download statistics
+    :target: https://pypi.python.org/pypi/multigtfs
+
+.. image:: https://img.shields.io/travis/tulsawebdevs/django-multi-gtfs/master.svg
+    :alt: TravisCI Build Status
     :target: https://travis-ci.org/tulsawebdevs/django-multi-gtfs
 
-.. image:: https://coveralls.io/repos/github/tulsawebdevs/django-multi-gtfs/badge.svg?branch=django19
-    :target: https://coveralls.io/github/tulsawebdevs/django-multi-gtfs
+.. image:: https://img.shields.io/coveralls/tulsawebdevs/django-multi-gtfs/master.svg
+    :alt: Coveralls Test Coverage
+    :target: https://coveralls.io/r/tulsawebdevs/django-multi-gtfs?branch=master
 
 .. Omit badges from docs
 
