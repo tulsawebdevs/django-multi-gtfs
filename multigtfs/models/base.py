@@ -25,12 +25,13 @@ from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type, PY3
 
-from multigtfs.compat import get_blank_value
+from multigtfs.compat import get_blank_value, write_text_rows
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
 large_queryset_size = 100000
+CSV_BOM = BOM_UTF8.decode('utf-8') if PY3 else BOM_UTF8
 
 
 class BaseQuerySet(GeoQuerySet):
@@ -64,12 +65,7 @@ class BaseQuerySet(GeoQuerySet):
 
 class BaseManager(models.GeoManager):
     def get_queryset(self):
-        '''Django 1.8 expects this method name. Simply calling the other
-        method results in a recursion error in some python interpretters.
-        '''
-        return BaseQuerySet(self.model)
-
-    def get_query_set(self):
+        '''Return the custom queryset.'''
         return BaseQuerySet(self.model)
 
     def in_feed(self, feed):
@@ -220,17 +216,13 @@ class Base(models.Model):
         count = 0
         first = True
         extra_counts = defaultdict(int)
-        if PY3:  # pragma: no cover
-            bom = BOM_UTF8.decode('utf-8')
-        else:  # pragma: no cover
-            bom = BOM_UTF8
         new_objects = []
         for row in csv_reader:
             if first:
                 # Read the columns
                 columns = row
-                if columns[0].startswith(bom):
-                    columns[0] = columns[0][len(bom):]
+                if columns[0].startswith(CSV_BOM):
+                    columns[0] = columns[0][len(CSV_BOM):]
                 first = False
                 continue
 
@@ -335,7 +327,7 @@ class Base(models.Model):
         # Write header row
         header_row = [text_type(c) for c in columns]
         header_row.extend(extra_columns)
-        write_rows(csv_writer, [header_row])
+        write_text_rows(csv_writer, [header_row])
 
         # Report the work to be done
         total = objects.count()
@@ -422,7 +414,7 @@ class Base(models.Model):
                     row.append(obj.extra_data.get(col, u''))
                 rows.append(row)
                 if len(rows) % batch_size == 0:  # pragma: no cover
-                    write_rows(csv_writer, rows)
+                    write_text_rows(csv_writer, rows)
                     count += len(rows)
                     logger.info(
                         "Exported %d %s",
@@ -430,21 +422,5 @@ class Base(models.Model):
                     rows = []
 
         # Write rows smaller than batch size
-        write_rows(csv_writer, rows)
+        write_text_rows(csv_writer, rows)
         return out.getvalue()
-
-
-def write_rows(writer, rows):
-    '''Write a batch of row data to the csv writer'''
-    for row in rows:
-        try:
-            writer.writerow(row)
-        except UnicodeEncodeError:  # pragma: no cover
-            # Python 2 csv does badly with unicode outside of ASCII
-            new_row = []
-            for item in row:
-                if isinstance(item, text_type):
-                    new_row.append(item.encode('utf-8'))
-                else:
-                    new_row.append(item)
-            writer.writerow(new_row)

@@ -17,18 +17,8 @@
 
 from __future__ import unicode_literals
 
+from django.db.models import Field
 from django.utils.encoding import python_2_unicode_compatible
-from multigtfs.compat import FieldBase
-
-try:
-    from south.modelsinspector import add_introspection_rules
-except ImportError:  # pragma: no cover
-    # south is not required
-    pass
-else:
-    # Let south know how to create a SecondsField
-    add_introspection_rules(
-        [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
 
 
 @python_2_unicode_compatible
@@ -74,7 +64,7 @@ class Seconds(object):
         return self._compare(other, lambda s, o: s != o)
 
 
-class SecondsField(FieldBase):
+class SecondsField(Field):
     '''A Model Field for storing Seconds'''
 
     description = 'Seconds since start of the day'
@@ -89,7 +79,7 @@ class SecondsField(FieldBase):
         '''Handle data from serialization and form clean() methods.'''
         if isinstance(value, Seconds):
             return value
-        if value is None:
+        if value in self.empty_values:
             return None
         return self.parse_seconds(value)
 

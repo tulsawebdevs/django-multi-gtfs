@@ -1,6 +1,5 @@
 language: python
 sudo: false
-python: 2.7
 install: pip install tox coveralls
 script: tox -e $TOX_ENV
 after_success: coveralls
@@ -9,13 +8,32 @@ before_script:
     - psql -U postgres -c "DROP DATABASE IF EXISTS multigtfs"
     - psql -U postgres -c "CREATE DATABASE multigtfs"
     - psql -U postgres -d multigtfs -c "CREATE EXTENSION IF NOT EXISTS postgis; CREATE EXTENSION IF NOT EXISTS postgis_topology;"
-env:
-    - TOX_ENV=py27-django15-south08-postgis
-    - TOX_ENV=py27-django16-south08-postgis
-    - TOX_ENV=py34-django16-south08-postgis
-    - TOX_ENV=py27-django17-postgis
-    - TOX_ENV=py27-django18-postgis
-    - TOX_ENV=py34-django17-postgis
-    - TOX_ENV=py34-django18-postgis
-    - TOX_ENV=py27-django19-postgis
-    - TOX_ENV=py34-django19-postgis
+matrix:
+    include:
+        - env: TOX_ENV=py27-django18-postgis
+          python: "2.7"
+        - env: TOX_ENV=py34-django18-postgis
+          python: "3.4"
+        - env: TOX_ENV=py27-django19-postgis
+          python: "2.7"
+        - env: TOX_ENV=py34-django19-postgis
+          python: "3.4"
+        - env: TOX_ENV=py35-django19-postgis
+          python: "3.5"
+        - env: TOX_ENV=py27-django110-postgis
+          python: "2.7"
+        - env: TOX_ENV=py34-django110-postgis
+          python: "3.4"
+        - env: TOX_ENV=py35-django110-postgis
+          python: "3.5"
+        - env: TOX_ENV=py27-djangomaster-postgis
+          python: "2.7"
+        - env: TOX_ENV=py34-djangomaster-postgis
+          python: "3.4"
+        - env: TOX_ENV=py35-djangomaster-postgis
+          python: "3.5"
+    allow_failures:
+        # Django master is allowed to fail
+        - env: TOXENV=py27-djangomaster-postgis
+        - env: TOXENV=py34-djangomaster-postgis
+        - env: TOXENV=py35-djangomaster-postgis

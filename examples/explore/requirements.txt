@@ -2,6 +2,3 @@
 -e ../..
 # Install multigtfs from PyPi
 #multigtfs
-
-# Use South for database migrations
-South

@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
 import logging
 import os
 import os.path
@@ -22,9 +22,10 @@ import time
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
 from django.utils.encoding import python_2_unicode_compatible
-from django.utils.six import string_types, PY3
+from django.utils.six import string_types
 from jsonfield import JSONField
 
+from multigtfs.compat import open_writable_zipfile, opener_from_zipfile
 from .agency import Agency
 from .fare import Fare
 from .fare_rule import FareRule
@@ -83,16 +84,9 @@ class Feed(models.Model):
             for dirpath, dirnames, filenames in os.walk(gtfs_obj):
                 filelist.extend([os.path.join(dirpath, f) for f in filenames])
         else:
-            z = ZipFile(gtfs_obj, 'r')
-
-            def zip_opener(filename):
-                table = z.open(filename)
-                if PY3:  # pragma: no cover
-                    from io import TextIOWrapper
-                    table = TextIOWrapper(table)
-                return table
-            opener = zip_opener
-            filelist = z.namelist()
+            zfile = ZipFile(gtfs_obj, 'r')
+            opener = opener_from_zipfile(zfile)
+            filelist = zfile.namelist()
 
         gtfs_order = (
             Agency, Stop, Route, Service, ServiceDate, ShapePoint, Trip,
@@ -159,11 +153,7 @@ class Feed(models.Model):
         This function will close the file in order to finalize it.
         """
         total_start = time.time()
-        try:
-            z = ZipFile(gtfs_file, 'w', ZIP_DEFLATED)
-        except RuntimeError:  # pragma: nocover
-            # zlib module not available
-            z = ZipFile(gtfs_file, 'w')
+        z = open_writable_zipfile(gtfs_file)
 
         gtfs_order = (
             Agency, Service, ServiceDate, Fare, FareRule, FeedInfo, Frequency,

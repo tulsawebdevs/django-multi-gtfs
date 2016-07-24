@@ -1,6 +1,21 @@
 Changelog
 =========
 
+1.1.0 (To Be Released)
+----------------------
+* Add support for Django 1.10
+* Drop support for Django 1.7 and earlier, and for South migrations. If you
+  are using these, upgrade to 1.0.0 first, migrate your codebase to Django 1.8
+  and Django migrations, then update to 1.1.0.
+* Move Python 2 / Python 3 and other compatibilty code to
+  ``multigtfs/compat.py``.  Exclude this file from the ``make qa`` coverage
+  report, unless the ``COVERAGE_COMPAT`` environment variable is set.  Because
+  the cross-environment code is now in this file, many lines will be uncovered
+  in a particular environment, while other files should be 100% covered. This
+  file is tested in the supported environments in TravisCI, and a combined
+  coverage report is generated in Coveralls, where ``compat.py`` should be 100%
+  covered.
+
 1.0.0 (2016-03-29)
 ------------------
 * The project has been production-ready for a while. Updating the version
@@ -112,4 +127,3 @@ This release was generously sponsored by MRCagney.
 ------------------
 * Fixed Fare.transfers for unlimited rides (use None instead of -1)
 * First PyPi version
-
