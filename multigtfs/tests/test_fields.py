@@ -75,6 +75,12 @@ class SecondsFieldTest(TestCase):
     def test_to_python_too_many_colons(self):
         self.assertRaises(ValueError, self.f.to_python, '01:01:01:01')
 
+    def test_to_python_none(self):
+        self.assertIsNone(self.f.to_python(None))
+
+    def test_to_python_empty_string(self):
+        self.assertIsNone(self.f.to_python(''))
+
     def test_prep_db_value_Seconds(self):
         self.assertEqual(500, self.f.get_prep_value(Seconds(500)))
 
