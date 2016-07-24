@@ -17,8 +17,8 @@
 
 from __future__ import unicode_literals
 
+from django.db.models import Field
 from django.utils.encoding import python_2_unicode_compatible
-from multigtfs.compat import FieldBase
 
 try:
     from south.modelsinspector import add_introspection_rules
@@ -74,7 +74,7 @@ class Seconds(object):
         return self._compare(other, lambda s, o: s != o)
 
 
-class SecondsField(FieldBase):
+class SecondsField(Field):
     '''A Model Field for storing Seconds'''
 
     description = 'Seconds since start of the day'
