@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
-from zipfile import ZipFile, ZIP_DEFLATED
+from zipfile import ZipFile
 import logging
 import os
 import os.path
@@ -25,7 +25,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import string_types
 from jsonfield import JSONField
 
-from ..compat import opener_from_zipfile
+from multigtfs.compat import open_writable_zipfile, opener_from_zipfile
 from .agency import Agency
 from .fare import Fare
 from .fare_rule import FareRule
@@ -153,11 +153,7 @@ class Feed(models.Model):
         This function will close the file in order to finalize it.
         """
         total_start = time.time()
-        try:
-            z = ZipFile(gtfs_file, 'w', ZIP_DEFLATED)
-        except RuntimeError:  # pragma: nocover
-            # zlib module not available
-            z = ZipFile(gtfs_file, 'w')
+        z = open_writable_zipfile(gtfs_file)
 
         gtfs_order = (
             Agency, Service, ServiceDate, Fare, FareRule, FeedInfo, Frequency,

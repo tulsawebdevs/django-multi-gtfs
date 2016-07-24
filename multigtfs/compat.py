@@ -4,6 +4,7 @@ Handle compatibility between Python versions, Django versions, etc.
 """
 from codecs import BOM_UTF8
 from distutils.version import LooseVersion
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from django import get_version
 from django.utils.six import PY3, binary_type, text_type
@@ -57,6 +58,15 @@ def force_utf8(text):
         return text
     else:
         return text.encode('utf-8')
+
+
+def open_writable_zipfile(path):
+    """Open a ZipFile for writing, with maximum available compression."""
+    try:
+        return ZipFile(path, 'w', ZIP_DEFLATED)
+    except RuntimeError:  # pragma: nocover
+        # zlib module not available
+        return ZipFile(path, 'w')
 
 
 def opener_from_zipfile(zipfile):
