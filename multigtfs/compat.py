@@ -6,7 +6,7 @@ from codecs import BOM_UTF8
 from distutils.version import LooseVersion
 
 from django import get_version
-from django.utils.six import PY3, binary_type
+from django.utils.six import PY3, binary_type, text_type
 
 DJ_VERSION = LooseVersion(get_version())
 
@@ -75,3 +75,19 @@ def opener_from_zipfile(zipfile):
             return inner_file
 
     return opener
+
+
+def write_text_rows(writer, rows):
+    '''Write CSV row data which may include text.'''
+    for row in rows:
+        try:
+            writer.writerow(row)
+        except UnicodeEncodeError:
+            # Python 2 csv does badly with unicode outside of ASCII
+            new_row = []
+            for item in row:
+                if isinstance(item, text_type):
+                    new_row.append(item.encode('utf-8'))
+                else:
+                    new_row.append(item)
+            writer.writerow(new_row)
