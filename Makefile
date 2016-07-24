@@ -1,5 +1,14 @@
 .PHONY: clean-pyc clean-build docs test-release
 
+# Omit multigtfs/compat.py from coverage by default
+# Set COVERAGE_COMPAT to non-zero to cover it
+COVERAGE_COMPAT ?= 0
+ifeq ($(COVERAGE_COMPAT), 0)
+COVERAGE_OMIT := --omit multigtfs/compat.py
+else
+COVERAGE_OMIT :=
+endif
+
 help:
 	@echo "clean-build - remove build artifacts"
 	@echo "clean-pyc - remove Python file artifacts"
@@ -41,8 +50,9 @@ test-all:
 	tox
 
 coverage:
+	echo ${COVERAGE_COMPAT}
 	coverage erase
-	coverage run --source multigtfs ./run_tests.py
+	coverage run --source multigtfs ${COVERAGE_OMIT} ./run_tests.py
 	coverage report -m
 	coverage html
 	open htmlcov/index.html
