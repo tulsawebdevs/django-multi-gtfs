@@ -5,6 +5,7 @@ Handle compatibility between Python versions, Django versions, etc.
 from distutils.version import LooseVersion
 
 from django import get_version
+from django.utils.six import PY3
 
 DJ_VERSION = LooseVersion(get_version())
 
@@ -32,3 +33,21 @@ if DJ_VERSION >= LooseVersion('1.9'):
     get_blank_value = _get_blank_value_19
 else:
     get_blank_value = _get_blank_value_18
+
+
+def opener_from_zipfile(zipfile):
+    """
+    Returns a function that will open a file in a zipfile by name.
+
+    For Python3 compatibility, the raw file will be converted to text.
+    """
+
+    def opener(filename):
+        inner_file = zipfile.open(filename)
+        if PY3:
+            from io import TextIOWrapper
+            return TextIOWrapper(inner_file)
+        else:
+            return inner_file
+
+    return opener
