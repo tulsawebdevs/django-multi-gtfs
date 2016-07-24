@@ -38,9 +38,6 @@ def base_config():
         'DEBUG': True,
         'TEMPLATE_DEBUG': True,
         'MIDDLEWARE_CLASSES': '',
-        'SOUTH_MIGRATION_MODULES': {
-            'multigtfs': 'multigtfs.south_migrations',
-        }
     }
 
 
@@ -48,15 +45,6 @@ def test_config():
     '''Create a Django configuration for running tests'''
 
     config = base_config()
-
-    # Optionally add south
-    try:
-        import south
-    except ImportError:
-        pass
-    else:
-        assert south  # flake8 be quiet
-        config['INSTALLED_APPS'].insert(0, 'south')
 
     # If django-nose is installed, use it
     # You can do things like ./run_tests.py --with-coverage

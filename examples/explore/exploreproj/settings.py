@@ -37,13 +37,6 @@ INSTALLED_APPS = [
     'django.contrib.gis',
     'exploreapp',
 ]
-try:
-    import south
-except ImportError:
-    pass
-else:
-    assert south
-    INSTALLED_APPS.append('south')
 
 INSTALLED_APPS.extend([
     'multigtfs',
@@ -84,10 +77,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 STATIC_URL = '/static/'
-
-SOUTH_MIGRATION_MODULES = {
-    'multigtfs': 'multigtfs.south_migrations'
-}
 
 # Extend with developer's prefered settings
 try:

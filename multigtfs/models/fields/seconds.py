@@ -20,16 +20,6 @@ from __future__ import unicode_literals
 from django.db.models import Field
 from django.utils.encoding import python_2_unicode_compatible
 
-try:
-    from south.modelsinspector import add_introspection_rules
-except ImportError:  # pragma: no cover
-    # south is not required
-    pass
-else:
-    # Let south know how to create a SecondsField
-    add_introspection_rules(
-        [], ["^multigtfs\.models\.fields\.seconds\.SecondsField"])
-
 
 @python_2_unicode_compatible
 class Seconds(object):
