@@ -64,12 +64,7 @@ class BaseQuerySet(GeoQuerySet):
 
 class BaseManager(models.GeoManager):
     def get_queryset(self):
-        '''Django 1.8 expects this method name. Simply calling the other
-        method results in a recursion error in some python interpretters.
-        '''
-        return BaseQuerySet(self.model)
-
-    def get_query_set(self):
+        '''Return the custom queryset.'''
         return BaseQuerySet(self.model)
 
     def in_feed(self, feed):
