@@ -32,16 +32,15 @@ Status
 ------
 multigtfs is ready for your GTFS project.
 
-Point releases (0.4.1 to 0.4.2) should be safe, only adding features or fixing
-bugs.  Minor updates (0.3.3 to 0.4.0) may include significant changes that will
-break relying code.  In the worst case scenario, you may need to export your
-GTFS feeds in the original version, update multigtfs and your code, and
-re-import.
+Point releases (such as 1.0.0 to 1.0.1) should be safe, only adding features or
+fixing bugs.  Minor updates (1.0.1 to 1.1.0) may include significant changes
+that will break relying code.  In the worst case scenario, you may need to
+export your GTFS feeds in the original version, update multigtfs and your code,
+and re-import.
 
-multigtfs works with Django 1.5 through 1.9. In the next version, support
-will be limited to Django's supported releases, so if you are using an old
-version you will want to update to at least 1.8, the long-term support (LTS)
-release.
+multigtfs works with Django 1.8 (the long-term support, or LTS, release)
+through 1.10.  Support will follow the Django supported releases, as well as
+the Python versions supported by those releases.
 
 All valid GTFS feeds are supported for import and export.  This includes
 feeds with extra columns not yet included in the GTFS spec, and feeds that
