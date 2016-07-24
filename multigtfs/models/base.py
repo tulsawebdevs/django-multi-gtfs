@@ -31,6 +31,7 @@ logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
 large_queryset_size = 100000
+CSV_BOM = BOM_UTF8.decode('utf-8') if PY3 else BOM_UTF8
 
 
 class BaseQuerySet(GeoQuerySet):
@@ -215,17 +216,13 @@ class Base(models.Model):
         count = 0
         first = True
         extra_counts = defaultdict(int)
-        if PY3:  # pragma: no cover
-            bom = BOM_UTF8.decode('utf-8')
-        else:  # pragma: no cover
-            bom = BOM_UTF8
         new_objects = []
         for row in csv_reader:
             if first:
                 # Read the columns
                 columns = row
-                if columns[0].startswith(bom):
-                    columns[0] = columns[0][len(bom):]
+                if columns[0].startswith(CSV_BOM):
+                    columns[0] = columns[0][len(CSV_BOM):]
                 first = False
                 continue
 
