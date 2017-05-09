@@ -165,7 +165,7 @@ S1,36.425288,-117.133162,1,1.1
             shape.geometry.coords,
             ((-117.133162, 36.425288), (-117.13, 36.42)))
         self.assertEqual(trip.geometry, shape.geometry)
-        self.assertEqual(route.geometry, MultiLineString(shape.geometry))
+        self.assertEqual(route.geometry, MultiLineString(shape.geometry, srid=4326))
 
     def test_update_geometry_no_parent(self):
         shape = Shape.objects.create(feed=self.feed)

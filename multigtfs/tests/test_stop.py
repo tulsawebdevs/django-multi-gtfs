@@ -291,4 +291,4 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162,7
         self.assertEqual(
             trip.geometry.coords,
             ((-117.133162, 36.425288), (-117.13, 36.42)))
-        self.assertEqual(route.geometry, MultiLineString(trip.geometry))
+        self.assertEqual(route.geometry, MultiLineString(trip.geometry, srid=4326))
