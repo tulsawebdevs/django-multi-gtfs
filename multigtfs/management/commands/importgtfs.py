@@ -18,7 +18,7 @@ import logging
 
 from django.db import connection
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from multigtfs.models import Agency, Feed, Service
 
