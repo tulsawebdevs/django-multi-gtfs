@@ -14,7 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 from datetime import datetime
-from optparse import make_option
 import logging
 
 from django.db import connection
@@ -25,21 +24,25 @@ from multigtfs.models import Agency, Feed, Service
 
 
 class Command(BaseCommand):
-    args = '<gtfsfeed.zip or folder>'
     help = 'Import a GTFS Feed'
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '-n', '--name', type='string', dest='name',
-            help=(
-                'Set the name of the imported feed.  Defaults to name derived'
-                ' from agency name and start date')),)
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('gtfs_feed',
+                            metavar='<gtfsfeed.zip or folder>',
+                            type=str)
+
+        # Named (optional) arguments
+        parser.add_argument('-n', '--name',
+                            type=str,
+                            dest='name',
+                            help=(
+                                'Set the name of the imported feed.  Defaults'
+                                ' to name derived from agency name and'
+                                ' start date'))
 
     def handle(self, *args, **options):
-        if len(args) == 0:
-            raise CommandError('You must pass in the path to the feed.')
-        if len(args) > 1:
-            raise CommandError('You can only import one feed at a time.')
-        gtfs_feed = args[0]
+        gtfs_feed = options.get('gtfs_feed')
         unset_name = 'Imported at %s' % datetime.now()
         name = options.get('name') or unset_name
 
