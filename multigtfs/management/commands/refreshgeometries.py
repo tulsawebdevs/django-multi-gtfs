@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 from __future__ import unicode_literals
-from optparse import make_option
 import logging
 import time
 
@@ -25,26 +24,37 @@ from multigtfs.models import Feed, Route, Shape, Trip
 
 
 class Command(BaseCommand):
-    args = '--all | <feed ID 1> <feed ID 2> ...'
     help = 'Updates the cached geometry of GTFS feeds'
-    option_list = BaseCommand.option_list + (
-        make_option(
-            '-a', '--all', action='store_true', dest='all', default=False,
-            help='update all feeds'),
-        make_option(
-            '-q', '--quiet', action='store_false', dest='verbose',
-            default=True, help="don't print status messages to stdout"),
-    )
+
+    def add_arguments(self, parser):
+        # Positional arguments
+        parser.add_argument('feed_ids',
+                            nargs='*',
+                            metavar='Feed ID',
+                            type=int)
+
+        # Named (optional) arguments
+        parser.add_argument('-a', '--all',
+                            action='store_true',
+                            dest='all',
+                            default=False,
+                            help='Update all feeds')
+        parser.add_argument('-q', '--quiet',
+                            action='store_false',
+                            dest='verbose',
+                            default=True,
+                            help="Don't print status messages to stdout")
 
     def handle(self, *args, **options):
         total_start = time.time()
 
         # Validate the arguments
         all_feeds = options.get('all')
-        if len(args) == 0 and not all_feeds:
-            raise CommandError('You must pass in feed ID or --all.')
-        if len(args) > 0 and all_feeds:
-            raise CommandError("You can't specify a feeds and --all.")
+        feed_ids = options.get('feed_ids')
+        if len(feed_ids) == 0 and not all_feeds:
+            raise CommandError('You must pass in a feed ID or --all.')
+        if len(feed_ids) > 0 and all_feeds:
+            raise CommandError("You can't specify a feed and --all.")
 
         # Setup logging
         verbosity = int(options['verbosity'])
@@ -77,7 +87,6 @@ class Command(BaseCommand):
             feeds = Feed.objects.order_by('id')
         else:
             feeds = []
-            feed_ids = [int(a) for a in args]
             for feed_id in feed_ids:
                 try:
                     feeds.append(Feed.objects.get(id=feed_id))
