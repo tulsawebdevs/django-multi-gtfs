@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: mdillon/postgis
+    environment:
+      - POSTGRES_PASSWORD=psqlDjangoMultiGtfs
+      - POSTGRES_USER=postgres
+  web:
+    build: .
+    environment:
+      - DATABASE_URL=postgis://postgres:psqlDjangoMultiGtfs@db:5432/explore
+      - DEBUG=1
+      - LOCAL_INSTALLED_APPS=django_extensions,django_nose
+      - PGHOST=db
+      - PGPASSWORD=psqlDjangoMultiGtfs
+      - PGUSER=postgres
+      - SECRET_KEY=ReallyBadSecret#949
+      - TEST_RUNNER=django_nose.NoseTestSuiteRunner
+    volumes:
+      - ./multigtfs:/code/multigtfs
+      - ./examples/explore:/code/examples/explore
+      - ./feeds:/feeds
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
