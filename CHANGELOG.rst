@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.0 (To Be Released)
+1.1.0 (2017-07-09)
 ----------------------
 * Add support for Django 1.10 and 1.11
 * Drop support for Django 1.7 and earlier, and for South migrations. If you
@@ -17,6 +17,7 @@ Changelog
   covered.
 * Add a dockerized environment for the explore example app, and run it under
   Django 1.11.
+* Whitespace-only values in import files are treated as empty values (PR #56)
 
 1.0.0 (2016-03-29)
 ------------------
