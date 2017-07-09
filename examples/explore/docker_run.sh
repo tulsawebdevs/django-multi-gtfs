@@ -22,7 +22,7 @@ then
     echo "from django.contrib.auth.models import User; admin=User.objects.get(username='admin'); admin.set_password('password'); admin.save()" | python manage.py shell
 
     echo "Loading feeds"
-    ls /feeds/input | grep -v "README.md" | xargs -I {} ./manage.py importgtfs /feeds/input/{}
+    ls /feeds/import | grep -v "README.md" | xargs -I {} ./manage.py importgtfs /feeds/import/{}
 else
     echo "  present!"
 fi

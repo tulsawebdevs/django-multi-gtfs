@@ -39,7 +39,7 @@ export your GTFS feeds in the original version, update multigtfs and your code,
 and re-import.
 
 multigtfs works with Django 1.8 (the long-term support, or LTS, release)
-through 1.10.  Support will follow the Django supported releases, as well as
+through 1.11.  Support will follow the Django supported releases, as well as
 the Python versions supported by those releases.
 
 All valid GTFS feeds are supported for import and export.  This includes
@@ -56,7 +56,9 @@ Check out the `example project`_.
 If you have Docker_ installed and working, you can run the example project
 without installing a database.
 
-#. Add one or more feeds to import to the folder ``feeds/input``
+#. Add one or more feeds to import to the folder ``feeds/import``. You can find
+   a feed for download at https://transitfeeds.com, such as
+   `Tulsa Transit's Feed`_.
 #. Initialize the containers with ``docker-compose up``.  After a few
    minutes, it will display::
 
@@ -90,3 +92,4 @@ Development
 .. _`issues list`: https://github.com/tulsawebdevs/django-multi-gtfs/issues?state=open
 .. _`example project`: examples/explore/README.md
 .. _`Docker`: https://www.docker.com
+.. _`Tulsa Transit's Feed`: https://transitfeeds.com/p/tulsa-transit/521

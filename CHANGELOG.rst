@@ -3,7 +3,7 @@ Changelog
 
 1.1.0 (To Be Released)
 ----------------------
-* Add support for Django 1.10
+* Add support for Django 1.10 and 1.11
 * Drop support for Django 1.7 and earlier, and for South migrations. If you
   are using these, upgrade to 1.0.0 first, migrate your codebase to Django 1.8
   and Django migrations, then update to 1.1.0.
@@ -15,6 +15,8 @@ Changelog
   file is tested in the supported environments in TravisCI, and a combined
   coverage report is generated in Coveralls, where ``compat.py`` should be 100%
   covered.
+* Add a dockerized environment for the explore example app, and run it under
+  Django 1.11.
 
 1.0.0 (2016-03-29)
 ------------------

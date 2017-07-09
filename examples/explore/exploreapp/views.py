@@ -156,7 +156,7 @@ class TripByServiceListView(ListView):
         return context
 
     def get_queryset(self, **kwargs):
-        return Trip.objects.filter(services=self.kwargs['service_id'])
+        return Trip.objects.filter(service=self.kwargs['service_id'])
 
 
 class TripByShapeListView(ListView):
