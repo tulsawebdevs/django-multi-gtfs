@@ -66,17 +66,17 @@ docs:
 	$(MAKE) -C docs html
 	open docs/_build/html/index.html
 
-release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+release: clean sdist
+	twine upload dist/*
+	python -m webbrowser -n https://pypi.python.org/pypi/multigtfs
 
-test-release:
-	python setup.py register -r https://testpypi.python.org/pypi
-	python setup.py sdist bdist_wheel upload -r https://testpypi.python.org/pypi
+# Add [test] section to ~/.pypirc, https://test.pypi.org/legacy/
+test-release: clean sdist
+	twine upload --repository test dist/*
 	python -m webbrowser -n https://testpypi.python.org/pypi/multigtfs
 
 sdist: clean
-	python setup.py sdist
+	python setup.py sdist bdist_wheel
 	ls -l dist
 	check-manifest
-	pyroma dist/`ls -t dist | head -n1`
+	pyroma dist/`ls -t dist | grep tar.gz | head -n1`
