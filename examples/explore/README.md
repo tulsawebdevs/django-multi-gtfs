@@ -9,9 +9,27 @@ This project uses [spatiallite][spatialite] by default.  You'll need to
 [install the spatialite tools][sp_tut] on your system.
 
 If you want to use an alternate database
-(e.g. [PostGIS][postgis]), you can create an alternate `DATABASES`
-definition in `exploreproj/local_settings.py`, and adjust the installation
-accordingly.
+(e.g. [PostGIS][postgis]), you'll need to install its requirements, and adjust
+the configuration.
+
+[postgis]: http://boundlessgeo.com/solutions/solutions-software/postgis/ "PostGIS homepage"
+[spatialite]: https://www.gaia-gis.it/fossil/spatialite-tools/index "spatialite-tools homepage"
+[sp_tut]: http://www.gaia-gis.it/gaia-sins/spatialite-tutorial-2.3.1.html "SpatiaLite tutorial"
+
+## Configuration
+
+This project uses [python-decouple][decouple] and [dj-database-url][dj_db_url]
+to load settings from the environment, an ``.ini`` file, or a ``.env`` file.
+For example, to use PostGIS database ``multigtfs`` on host
+``postgis.example.com`` with username ``user`` and password ``password``, you
+could create this ``.env`` file in the ``explore`` folder:
+
+    DATABASE_URL=postgis://user:password@postgis.example.com/multigtfs
+
+See ``exploreproj/settings.py`` for other parameters that can be overriden.
+
+[decouple]: https://github.com/henriquebastos/python-decouple/ "Python Decouple"
+[dj-database-url]: https://github.com/kennethreitz/dj-database-url/ "DJ-Database-URL"
 
 ## Installation
 
@@ -21,10 +39,6 @@ accordingly.
     $ ./manage.py syncdb               # Create db.sqlite3, superuser
     $ ./manage.py migrate              # Add multigtfs tables
     $ ./manage.py runserver            # Run on http://localhost:8000
-
-[postgis]: http://boundlessgeo.com/solutions/solutions-software/postgis/ "PostGIS homepage"
-[spatialite]: https://www.gaia-gis.it/fossil/spatialite-tools/index "spatialite-tools homepage"
-[sp_tut]: http://www.gaia-gis.it/gaia-sins/spatialite-tutorial-2.3.1.html "SpatiaLite tutorial"
 
 ### Detailed installation instructions
 

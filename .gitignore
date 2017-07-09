@@ -5,7 +5,6 @@
 
 # Developer files
 examples/explore/db.sqlite3
-examples/explore/exploreproj/local_settings.py
 t_overrides.py
 
 # Packages
