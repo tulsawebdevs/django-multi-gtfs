@@ -5,10 +5,6 @@ multigtfs: GTFS as a Django app
     :alt: The PyPI package
     :target: https://pypi.python.org/pypi/multigtfs
 
-.. image:: https://img.shields.io/pypi/dw/multigtfs.svg
-    :alt: PyPI download statistics
-    :target: https://pypi.python.org/pypi/multigtfs
-
 .. image:: https://img.shields.io/travis/tulsawebdevs/django-multi-gtfs/master.svg
     :alt: TravisCI Build Status
     :target: https://travis-ci.org/tulsawebdevs/django-multi-gtfs
