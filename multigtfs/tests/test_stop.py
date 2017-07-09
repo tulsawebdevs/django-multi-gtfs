@@ -227,6 +227,22 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162," "
         stop = Stop.objects.get()
         self.assertEqual(stop.parent_station, None)
 
+    def test_import_stops_txt_strip_spaces(self):
+        """A whitespace-only field is treated as empty.
+
+        From SFMTA feed.
+        """
+        stops_txt = StringIO("""\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url
+98,198,2ND ST & MARKET ST, ,37.789255,-122.401225, ,%s
+""" % ' ')  # Get around flake8 warning on trailing whitespace
+        Stop.import_txt(stops_txt, self.feed)
+        stop = Stop.objects.get()
+        self.assertEqual(stop.name, '2ND ST & MARKET ST')
+        self.assertEqual(stop.desc, '')
+        self.assertEqual(stop.zone, None)
+        self.assertEqual(stop.url, '')
+
     def test_export_stops_txt_none(self):
         stops_txt = Stop.export_txt(self.feed)
         self.assertFalse(stops_txt)
