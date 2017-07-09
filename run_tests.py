@@ -74,11 +74,9 @@ def test_config():
 def main(*paths):
     config = test_config()
     settings.configure(**config)
+    django.setup()
 
     from django.core import management
-    if django_version >= 1 and django_point > 6:
-        django.setup()
-
     failures = management.call_command(
         'test',
         *paths

@@ -16,35 +16,21 @@ matrix:
           python: "3.4"
         - env: TOX_ENV=py27-django19-postgis
           python: "2.7"
-        - env: TOX_ENV=py34-django19-postgis
-          python: "3.4"
         - env: TOX_ENV=py35-django19-postgis
           python: "3.5"
         - env: TOX_ENV=py27-django110-postgis
           python: "2.7"
-        - env: TOX_ENV=py34-django110-postgis
-          python: "3.4"
         - env: TOX_ENV=py35-django110-postgis
           python: "3.5"
         - env: TOX_ENV=py27-django111-postgis
           python: "2.7"
-        - env: TOX_ENV=py34-django111-postgis
-          python: "3.4"
-        - env: TOX_ENV=py35-django111-postgis
-          python: "3.5"
         - env: TOX_ENV=py36-django111-postgis
           python: "3.6"
-        - env: TOX_ENV=py27-djangomaster-postgis
-          python: "2.7"
-        - env: TOX_ENV=py34-djangomaster-postgis
-          python: "3.4"
-        - env: TOX_ENV=py35-djangomaster-postgis
+        - env: TOX_ENV=py35-django-master-postgis
           python: "3.5"
-        - env: TOX_ENV=py36-djangomaster-postgis
+        - env: TOX_ENV=py36-django-master-postgis
           python: "3.6"
     allow_failures:
         # Django master is allowed to fail
-        - env: TOXENV=py27-djangomaster-postgis
-        - env: TOXENV=py34-djangomaster-postgis
-        - env: TOXENV=py35-djangomaster-postgis
-        - env: TOXENV=py36-djangomaster-postgis
+        - env: TOX_ENV=py35-django-master-postgis
+        - env: TOX_ENV=py36-django-master-postgis
