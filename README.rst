@@ -51,7 +51,25 @@ See the `issues list`_ for more details on bugs and feature requests.
 
 Example project
 ---------------
-Check out the `example project <examples/explore/README.md>`_.
+Check out the `example project`_.
+
+If you have Docker_ installed and working, you can run the example project
+without installing a database.
+
+#. Add one or more feeds to import to the folder ``feeds/input``
+#. Initialize the containers with ``docker-compose up``.  After a few
+   minutes, it will display::
+
+    web_1  | Django version 1.8.18, using settings 'exploreproj.settings'
+    web_1  | Development server is running at http://0.0.0.0:8000/
+    web_1  | Using the Werkzeug debugger (http://werkzeug.pocoo.org/)
+    web_1  | Quit the server with CONTROL-C.
+    web_1  |  * Debugger is active!
+    web_1  |  * Debugger PIN: XXX-XXX-XXX
+
+#. Visit http://localhost:8000 to view the example project.
+
+See the `example project`_ for more details.
 
 Development
 -----------
@@ -70,3 +88,5 @@ Development
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
 .. _`file a bug`: https://github.com/tulsawebdevs/django-multi-gtfs/issues
 .. _`issues list`: https://github.com/tulsawebdevs/django-multi-gtfs/issues?state=open
+.. _`example project`: examples/explore/README.md
+.. _`Docker`: https://www.docker.com
