@@ -48,5 +48,5 @@ docs/_build
 
 # Feeds
 feeds/
-!feeds/input/README.md
-!feeds/output/README.md
+!feeds/import/README.md
+!feeds/export/README.md

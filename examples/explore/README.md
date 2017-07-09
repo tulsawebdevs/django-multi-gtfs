@@ -37,7 +37,8 @@ See ``exploreproj/settings.py`` for other parameters that can be overriden.
 
 ## Running with Docker
 
-  1. Add one or more feeds to import to the folder ``feeds/input``
+  1. Add one or more feeds to import to the folder ``feeds/import``. If you
+     need a feed, pick one from https://transitfeeds.com.
   1. Initialize the containers with ``docker-compose up``. This runs several
      steps:
      * Initializes a PostgreSQL database server with PostGIS extensions
@@ -56,10 +57,10 @@ To stop Docker, use Ctrl-C.  You can also run in the background with
 Feeds are only imported the first time you start the project. To load
 additional feeds:
 
-   1. Place the feed in ``feeds/input``.
+   1. Place the feed in ``feeds/import``.
    1. Run ``docker-compose up -d`` to run the containers in the background
    1. Run ``docker-compose exec web bash`` to start a bash shell
-   1. Run ``./manage.py importgtfs /feeds/input/name_of_feed.zip``
+   1. Run ``./manage.py importgtfs /feeds/import/name_of_feed.zip``
 
 ## Local Installation
 
