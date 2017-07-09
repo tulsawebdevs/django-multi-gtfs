@@ -1,23 +1,28 @@
 include *.py
 include *.rst
-include COPYING.txt
-include qa_check.sh
 include .coveragerc
-include tox.ini
-include requirements.txt
-include requirements.dev.txt
-include multigtfs/tests/fixtures/*
+include COPYING.txt
 include Makefile
+include feeds/export/README.md
+include feeds/import/README.md
+include multigtfs/tests/fixtures/*
+include qa_check.sh
+include requirements.dev.txt
+include requirements.txt
+include tox.ini
 
 recursive-include docs *.rst conf.py make.bat Makefile
 
 graft examples
 
+exclude *.pyc
+exclude .dockerignore
+exclude .travis.yml
+exclude Dockerfile
+exclude docker-compose.yml
+exclude docs/modules.rst
+exclude docs/multigtfs.*.rst
+exclude docs/multigtfs.rst
 exclude examples/explore/db.sqlite3
 exclude examples/explore/exploreproj/local_settings.py
-exclude docs/modules.rst
-exclude docs/multigtfs.rst
-exclude docs/multigtfs.*.rst
 exclude t_overrides.py
-exclude *.pyc
-exclude .travis.yml

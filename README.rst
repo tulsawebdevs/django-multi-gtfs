@@ -74,13 +74,13 @@ Development
 
 :Code:           https://github.com/tulsawebdevs/django-multi-gtfs
 :Issues:         https://github.com/tulsawebdevs/django-multi-gtfs/issues
-:Dev Docs:       http://multigtfs.readthedocs.org/
+:Dev Docs:       http://multigtfs.readthedocs.io/
 :IRC:            irc://irc.freenode.net/tulsawebdevs
 
 
 .. _`Apache 2.0`: http://choosealicense.com/licenses/apache/
 .. _`June 20, 2012 reference`: https://developers.google.com/transit/gtfs/reference
-.. _`all changes`: https://developers.google.com/transit/gtfs/changes#RevisionHistory
+.. _`all changes`: https://developers.google.com/transit/gtfs/guides/revision-history
 .. _PostgreSQL: http://www.postgresql.org
 .. _PostGIS: http://postgis.refractions.net
 .. _GeoDjango: https://docs.djangoproject.com/en/dev/ref/contrib/gis/
