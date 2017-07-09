@@ -39,7 +39,7 @@ export your GTFS feeds in the original version, update multigtfs and your code,
 and re-import.
 
 multigtfs works with Django 1.8 (the long-term support, or LTS, release)
-through 1.10.  Support will follow the Django supported releases, as well as
+through 1.11.  Support will follow the Django supported releases, as well as
 the Python versions supported by those releases.
 
 All valid GTFS feeds are supported for import and export.  This includes
