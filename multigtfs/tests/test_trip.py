@@ -116,6 +116,20 @@ R1,S2,T1
         self.assertEqual(trip.service, service1)
         self.assertFalse(service2.trip_set.exists())
 
+    def test_import_trips_txt_quoted_direction_id(self):
+        '''
+        A direction_id should be stripped of quotation marks
+
+        Issue 64
+        '''
+        trips_txt = StringIO("""\
+route_id,service_id,trip_id,shape_id,trip_headsign,direction_id
+R1,"S1","T3","46-860-y11-1.2.I","Aston Quay", "1"
+""")
+        Trip.import_txt(trips_txt, self.feed)
+        trip = Trip.objects.get(trip_id='T3')
+        self.assertEqual(trip.direction, '1')
+
     def test_export_trips_txt_empty(self):
         trips_txt = Trip.export_txt(self.feed)
         self.assertFalse(trips_txt)

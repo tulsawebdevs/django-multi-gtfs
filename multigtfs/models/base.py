@@ -117,7 +117,7 @@ class Base(models.Model):
 
         def bool_convert(value): return (value == '1')
 
-        def char_convert(value): return (value.strip() or '')
+        def char_convert(value): return (value.strip(' "') or '')
 
         def null_convert(value): return (value.strip() or None)
 
