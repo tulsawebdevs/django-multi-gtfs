@@ -33,6 +33,7 @@ class RouteTest(TestCase):
         routes_txt = StringIO("""\
 route_id,route_short_name,route_long_name,route_type
 AB,10,Airport - Bullfrog,3
+
 """)
         Route.import_txt(routes_txt, self.feed)
         route = Route.objects.get()

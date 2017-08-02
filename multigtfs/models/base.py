@@ -229,6 +229,9 @@ class Base(models.Model):
             if filter_func and not filter_func(zip(columns, row)):
                 continue
 
+            if not row:
+                continue
+
             # Read a data row
             fields = dict()
             point_coords = [None, None]
