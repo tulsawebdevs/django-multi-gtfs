@@ -41,7 +41,7 @@ clean-pyc:
 	find . -name '*~' -exec rm -f {} +
 
 lint:
-	flake8 --exclude='.tox,build,dist' .
+	flake8
 
 test:
 	python run_tests.py
