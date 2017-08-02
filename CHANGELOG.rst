@@ -1,8 +1,21 @@
 Changelog
 =========
 
+1.1.1 (2017-08-02)
+------------------
+* Strip whitespace after commas in CSV files with skipinitialspace_
+  (`issue #64`_, `PR #65`_ and `#68`_).
+* Discard empty lines in CSV files (`issue #66`_, `PR #67`_)
+
+.. _skipinitialspace: https://docs.python.org/2/library/csv.html#csv.Dialect.skipinitialspace
+.. _`issue #64`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/64
+.. _`PR #65`: https://github.com/tulsawebdevs/django-multi-gtfs/pull/65
+.. _`#68`: https://github.com/tulsawebdevs/django-multi-gtfs/pull/68
+.. _`issue #66`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/66
+.. _`PR #67`: https://github.com/tulsawebdevs/django-multi-gtfs/pull/67
+
 1.1.0 (2017-07-09)
-----------------------
+------------------
 * Add support for Django 1.10 and 1.11
 * Drop support for Django 1.7 and earlier, and for South migrations. If you
   are using these, upgrade to 1.0.0 first, migrate your codebase to Django 1.8
@@ -17,7 +30,10 @@ Changelog
   covered.
 * Add a dockerized environment for the explore example app, and run it under
   Django 1.11.
-* Whitespace-only values in import files are treated as empty values (PR #56)
+* Whitespace-only values in import files are treated as empty values
+  (`PR #56`_)
+
+.. _`PR #56`: https://github.com/tulsawebdevs/django-multi-gtfs/pull/56
 
 1.0.0 (2016-03-29)
 ------------------
@@ -26,6 +42,8 @@ Changelog
 * Add support for Django 1.7 through 1.9, and a compatibility layer to handle
   future versions.
 * Add support for transitioning from South to Django migrations.
+
+.. Omit older changes from package
 
 0.4.3 (2015-02-24)
 ------------------
@@ -77,9 +95,11 @@ This release was generously sponsored by MRCagney.
 0.3.3 (2014-03-28)
 ------------------
 * Add new optional fields (issue #23):
-    - trip.wheelchair_accessible
-    - trip.bikes_allowed
-    - stop.wheelchair_boarding
+
+  * trip.wheelchair_accessible
+  * trip.bikes_allowed
+  * stop.wheelchair_boarding
+
 * Route.geometry does not include duplicate Trip.geometry lines (issue #24)
 * Fix order of points in Shape.geometry (issue #25)
 * Add management command 'refreshgeometries' to refresh cached geometries
