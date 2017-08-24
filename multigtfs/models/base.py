@@ -121,7 +121,12 @@ class Base(models.Model):
 
         def null_convert(value): return (value or None)
 
-        def point_convert(value): return (value or 0.0)
+        def point_convert(value):
+            """Convert latitude / longitude, strip leading +."""
+            if value.startswith('+'):
+                return value[1:]
+            else:
+                return (value or 0.0)
 
         cache = {}
 
