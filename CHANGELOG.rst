@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Next (unreleased)
+~~~~~~~~~~~~~~~~~
+* Handle latitude and longitudes with initial `+` sign.
+  (`issue #70`_).
+
+.. _`issue #70`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/70
+
 1.1.1 (2017-08-02)
 ------------------
 * Strip whitespace after commas in CSV files with skipinitialspace_
