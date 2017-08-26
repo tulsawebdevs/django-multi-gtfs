@@ -141,22 +141,23 @@ class Base(models.Model):
         def instance_convert(field, feed, rel_name):
             def get_instance(value):
                 if value.strip():
-                    key1 = "{}:{}".format(field.rel.to.__name__, rel_name)
+                    related = field.related_model
+                    key1 = "{}:{}".format(related.__name__, rel_name)
                     key2 = text_type(value)
 
                     # Load existing objects
                     if key1 not in cache:
-                        pairs = field.rel.to.objects.filter(
-                            **{field.rel.to._rel_to_feed: feed}).values_list(
+                        pairs = related.objects.filter(
+                            **{related._rel_to_feed: feed}).values_list(
                             rel_name, 'id')
                         cache[key1] = dict((text_type(x), i) for x, i in pairs)
 
                     # Create new?
                     if key2 not in cache[key1]:
                         kwargs = {
-                            field.rel.to._rel_to_feed: feed,
+                            related._rel_to_feed: feed,
                             rel_name: value}
-                        cache[key1][key2] = field.rel.to.objects.create(
+                        cache[key1][key2] = related.objects.create(
                             **kwargs).id
                     return cache[key1][key2]
                 else:
@@ -199,7 +200,7 @@ class Base(models.Model):
                 converter = bool_convert
             elif isinstance(field, models.CharField):
                 converter = char_convert
-            elif field.rel:
+            elif field.is_relation:
                 converter = instance_convert(field, feed, rel_name)
                 assert not isinstance(field, models.ManyToManyField)
             elif field.null:
@@ -350,7 +351,7 @@ class Base(models.Model):
             if '__' in field_name:
                 local_field_name, subfield_name = field_name.split('__', 1)
                 field = cls._meta.get_field(local_field_name)
-                field_type = field.rel.to
+                field_type = field.related_model
                 model_name = field_type.__name__
                 if model_name in model_to_field_name:
                     # Already loaded this model under a different field name
