@@ -27,7 +27,7 @@ class Agency(Base):
 
     Maps to agency.txt in the GTFS feed.
     """
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     agency_id = models.CharField(
         max_length=255, blank=True, db_index=True,
         help_text="Unique identifier for transit agency")

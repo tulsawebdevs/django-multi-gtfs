@@ -28,8 +28,9 @@ class Trip(Base):
     This implements trips.txt in the GTFS feed
     """
 
-    route = models.ForeignKey('Route')
-    service = models.ForeignKey('Service', null=True, blank=True)
+    route = models.ForeignKey('Route', on_delete=models.CASCADE)
+    service = models.ForeignKey(
+        'Service', null=True, blank=True, on_delete=models.SET_NULL)
     trip_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a trip.")
@@ -44,10 +45,10 @@ class Trip(Base):
         choices=(('0', '0'), ('1', '1')),
         help_text="Direction for bi-directional routes.")
     block = models.ForeignKey(
-        'Block', null=True, blank=True,
+        'Block', null=True, blank=True, on_delete=models.SET_NULL,
         help_text="Block of sequential trips that this trip belongs to.")
     shape = models.ForeignKey(
-        'Shape', null=True, blank=True,
+        'Shape', null=True, blank=True, on_delete=models.SET_NULL,
         help_text="Shape used for this trip")
     geometry = models.LineStringField(
         null=True, blank=True,

@@ -28,12 +28,13 @@ class Route(Base):
     Maps to route.txt in the GTFS feed.
     """
 
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     route_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for route.")
     agency = models.ForeignKey(
-        'Agency', null=True, blank=True, help_text="Agency for this route.")
+        'Agency', null=True, blank=True, on_delete=models.SET_NULL,
+        help_text="Agency for this route.")
     short_name = models.CharField(
         max_length=63,
         help_text="Short name of the route")

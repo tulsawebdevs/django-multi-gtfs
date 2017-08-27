@@ -29,7 +29,7 @@ class Shape(Base):
     """The path the vehicle takes along the route.
 
     Implements shapes.txt."""
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     shape_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a shape.")
@@ -63,7 +63,8 @@ class Shape(Base):
 @python_2_unicode_compatible
 class ShapePoint(Base):
     """A point along the shape"""
-    shape = models.ForeignKey('Shape', related_name='points')
+    shape = models.ForeignKey(
+        'Shape', on_delete=models.CASCADE, related_name='points')
     point = models.PointField(
         help_text='WGS 84 latitude/longitude of shape point')
     sequence = models.IntegerField()

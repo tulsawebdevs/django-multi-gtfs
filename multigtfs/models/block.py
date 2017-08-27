@@ -27,7 +27,7 @@ class Block(Base):
     This data is not represented as a file in the GTFS.  It appears as an
     identifier in the trip table.
     """
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     block_id = models.CharField(
         max_length=63, db_index=True,
         help_text="Unique identifier for a block.")
