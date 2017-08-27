@@ -24,7 +24,7 @@ from multigtfs.models.fields import SecondsField
 @python_2_unicode_compatible
 class Frequency(Base):
     """Description of a trip that repeats without fixed stop times"""
-    trip = models.ForeignKey('Trip')
+    trip = models.ForeignKey('Trip', on_delete=models.CASCADE)
     start_time = SecondsField(
         help_text="Time that the service begins at the specified frequency")
     end_time = SecondsField(

@@ -34,7 +34,7 @@ class Stop(Base):
 
     Maps to stops.txt in the GTFS feed.
     """
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     stop_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a stop or station.")
@@ -51,7 +51,7 @@ class Stop(Base):
     point = models.PointField(
         help_text='WGS 84 latitude/longitude of stop or station')
     zone = models.ForeignKey(
-        'Zone', null=True, blank=True,
+        'Zone', null=True, blank=True, on_delete=models.SET_NULL,
         help_text="Fare zone for a stop ID.")
     url = models.URLField(
         blank=True, help_text="URL for the stop")
@@ -59,7 +59,7 @@ class Stop(Base):
         max_length=1, blank=True, choices=(('0', 'Stop'), ('1', 'Station')),
         help_text="Is this a stop or station?")
     parent_station = models.ForeignKey(
-        'Stop', null=True, blank=True,
+        'Stop', null=True, blank=True, on_delete=models.SET_NULL,
         help_text="The station associated with the stop")
     timezone = models.CharField(
         max_length=255, blank=True,
