@@ -8,7 +8,7 @@ RUN pip install "django>=1.11,<2.0" psycopg2
 RUN mkdir /code
 RUN mkdir /feeds
 
-COPY setup.py README.rst /code/
+COPY setup.py CHANGELOG.rst README.rst /code/
 COPY multigtfs /code/multigtfs
 COPY examples/explore /code/examples/explore
 
