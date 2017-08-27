@@ -21,11 +21,11 @@ from logging import getLogger
 import re
 
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.query import GeoQuerySet
 from django.db.models.fields.related import ManyToManyField
 from django.utils.six import StringIO, text_type, PY3
 
-from multigtfs.compat import get_blank_value, write_text_rows
+from multigtfs.compat import (
+    get_blank_value, write_text_rows, Manager, QuerySet)
 
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
@@ -34,7 +34,7 @@ large_queryset_size = 100000
 CSV_BOM = BOM_UTF8.decode('utf-8') if PY3 else BOM_UTF8
 
 
-class BaseQuerySet(GeoQuerySet):
+class BaseQuerySet(QuerySet):
     def populated_column_map(self):
         '''Return the _column_map without unused optional fields'''
         column_map = []
@@ -63,7 +63,7 @@ class BaseQuerySet(GeoQuerySet):
         return column_map
 
 
-class BaseManager(models.GeoManager):
+class BaseManager(Manager):
     def get_queryset(self):
         '''Return the custom queryset.'''
         return BaseQuerySet(self.model)
