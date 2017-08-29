@@ -28,7 +28,8 @@ class RouteDirection(Base):
     """
     route = models.ForeignKey(
         'Route', null=True, blank=True,
-        help_text="Route for which this direction description applies.")
+        help_text="Route for which this direction description applies.",
+        on_delete=models.CASCADE)
     direction = models.CharField(
         max_length=1, blank=True,
         choices=(('0', '0'), ('1', '1')),
@@ -39,7 +40,8 @@ class RouteDirection(Base):
     extra_data = JSONField(default={}, blank=True, null=True)
 
     def __str__(self):
-        u = "%d-%s-%s" % (self.fare.feed.id, self.fare.fare_id, self.route.route_id)
+        u = "%d-%s-%s" % (
+            self.route.feed.id, self.route.route_id, self.direction)
         return u
 
     class Meta:
@@ -49,10 +51,10 @@ class RouteDirection(Base):
     # For Base import/export
     _column_map = (
         ('route_id', 'route__route_id'),
-        ('direction', 'direction'),
+        ('direction_id', 'direction'),
         ('direction_name', 'direction_name'),
     )
     _filename = 'route_directions.txt'
     _rel_to_feed = 'route__feed'
     _sort_order = ('route__route_id', 'direction')
-    _unique_fields = ()
+    _unique_fields = ('route_id', 'direction_id',)
