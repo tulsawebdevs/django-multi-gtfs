@@ -32,6 +32,7 @@ from .fare_rule import FareRule
 from .feed_info import FeedInfo
 from .frequency import Frequency
 from .route import Route
+from .route_direction import RouteDirection
 from .service import Service
 from .service_date import ServiceDate
 from .shape import ShapePoint, post_save_shapepoint
@@ -91,6 +92,7 @@ class Feed(models.Model):
         gtfs_order = (
             Agency, Stop, Route, Service, ServiceDate, ShapePoint, Trip,
             StopTime, Frequency, Fare, FareRule, Transfer, FeedInfo,
+            RouteDirection,
         )
         post_save.disconnect(dispatch_uid='post_save_shapepoint')
         post_save.disconnect(dispatch_uid='post_save_stop')
@@ -157,7 +159,7 @@ class Feed(models.Model):
 
         gtfs_order = (
             Agency, Service, ServiceDate, Fare, FareRule, FeedInfo, Frequency,
-            Route, ShapePoint, StopTime, Stop, Transfer, Trip,
+            Route, RouteDirection, ShapePoint, StopTime, Stop, Transfer, Trip,
         )
 
         for klass in gtfs_order:

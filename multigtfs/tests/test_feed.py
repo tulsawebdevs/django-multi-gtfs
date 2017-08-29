@@ -25,8 +25,8 @@ from django.utils.six import text_type
 
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
-    Route, Service, ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer,
-    Trip, Zone)
+    Route, RouteDirection, Service, ServiceDate, Shape, ShapePoint,
+    Stop, StopTime, Transfer, Trip, Zone)
 
 my_dir = os.path.dirname(__file__)
 fixtures_dir = os.path.join(my_dir, 'fixtures')
@@ -189,6 +189,7 @@ class FeedTest(TestCase):
         self.assertEqual(FeedInfo.objects.count(), 1)
         self.assertEqual(Frequency.objects.count(), 0)
         self.assertEqual(Route.objects.count(), 1)
+        self.assertEqual(RouteDirection.objects.count(), 2)
         self.assertEqual(Service.objects.count(), 1)
         self.assertEqual(ServiceDate.objects.count(), 15)
         self.assertEqual(Shape.objects.count(), 1)
@@ -811,6 +812,7 @@ adult,''' + s_fare_a + b''',USD,0,,7200
              'fare_rules.txt',
              'feed_info.txt',
              'routes.txt',
+             'route_directions.txt',
              'shapes.txt',
              'stop_times.txt',
              'stops.txt',
