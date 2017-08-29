@@ -23,20 +23,20 @@ from multigtfs.models.base import models, Base
 @python_2_unicode_compatible
 class FareRule(Base):
     """Associate a Fare with a Route and/or Zones"""
-    fare = models.ForeignKey('Fare')
+    fare = models.ForeignKey('Fare', on_delete=models.CASCADE)
     route = models.ForeignKey(
-        'Route', null=True, blank=True,
+        'Route', null=True, blank=True, on_delete=models.SET_NULL,
         help_text="Fare class is valid for this route.")
     origin = models.ForeignKey(
-        'Zone', null=True, blank=True,
+        'Zone', null=True, blank=True, on_delete=models.SET_NULL,
         related_name='fare_origins',
         help_text="Fare class is valid for travel originating in this zone.")
     destination = models.ForeignKey(
-        'Zone', null=True, blank=True,
+        'Zone', null=True, blank=True, on_delete=models.SET_NULL,
         related_name='fare_destinations',
         help_text="Fare class is valid for travel ending in this zone.")
     contains = models.ForeignKey(
-        'Zone', null=True, blank=True,
+        'Zone', null=True, blank=True, on_delete=models.SET_NULL,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
     extra_data = JSONField(default={}, blank=True, null=True)

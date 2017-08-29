@@ -27,11 +27,11 @@ class Transfer(Base):
     Implements transfer.txt in the GTFS feed.
     """
     from_stop = models.ForeignKey(
-        'Stop',
+        'Stop', on_delete=models.CASCADE,
         related_name='transfer_from_stop',
         help_text='Stop where a connection between routes begins.')
     to_stop = models.ForeignKey(
-        'Stop',
+        'Stop', on_delete=models.CASCADE,
         related_name='transfer_to_stop',
         help_text='Stop where a connection between routes ends.')
     transfer_type = models.IntegerField(

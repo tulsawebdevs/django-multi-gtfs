@@ -1,3 +1,4 @@
+===============================
 multigtfs: GTFS as a Django app
 ===============================
 
@@ -25,7 +26,7 @@ and PostGIS_ 2.x are recommended for development and production, since these
 support all the GeoDjango features.
 
 Status
-------
+======
 multigtfs is ready for your GTFS project.
 
 Point releases (such as 1.0.0 to 1.0.1) should be safe, only adding features or
@@ -46,7 +47,7 @@ archive feeds).  If you find a feed that doesn't work, `file a bug`_!
 See the `issues list`_ for more details on bugs and feature requests.
 
 Example project
----------------
+===============
 Check out the `example project`_.
 
 If you have Docker_ installed and working, you can run the example project
@@ -70,7 +71,7 @@ without installing a database.
 See the `example project`_ for more details.
 
 Development
------------
+===========
 
 :Code:           https://github.com/tulsawebdevs/django-multi-gtfs
 :Issues:         https://github.com/tulsawebdevs/django-multi-gtfs/issues

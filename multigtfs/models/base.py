@@ -117,11 +117,16 @@ class Base(models.Model):
 
         def bool_convert(value): return (value == '1')
 
-        def char_convert(value): return (value.strip() or '')
+        def char_convert(value): return (value or '')
 
-        def null_convert(value): return (value.strip() or None)
+        def null_convert(value): return (value or None)
 
-        def point_convert(value): return (value or 0.0)
+        def point_convert(value):
+            """Convert latitude / longitude, strip leading +."""
+            if value.startswith('+'):
+                return value[1:]
+            else:
+                return (value or 0.0)
 
         cache = {}
 
@@ -211,7 +216,7 @@ class Base(models.Model):
                 val_map[csv_name] = converter
 
         # Read and convert the source txt
-        csv_reader = reader(txt_file)
+        csv_reader = reader(txt_file, skipinitialspace=True)
         unique_line = dict()
         count = 0
         first = True
@@ -227,6 +232,9 @@ class Base(models.Model):
                 continue
 
             if filter_func and not filter_func(zip(columns, row)):
+                continue
+
+            if not row:
                 continue
 
             # Read a data row

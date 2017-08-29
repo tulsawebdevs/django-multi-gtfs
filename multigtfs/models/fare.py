@@ -24,7 +24,7 @@ from multigtfs.models.base import models, Base
 class Fare(Base):
     """A fare class"""
 
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     fare_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for a fare class")

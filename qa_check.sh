@@ -11,4 +11,4 @@ coverage erase
 coverage run --source multigtfs ${COVERAGE_OMIT} ./run_tests.py
 if [[ $? -ne 0 ]]; then exit 1; fi
 coverage report
-flake8 --exclude=".tox" .
+flake8 .

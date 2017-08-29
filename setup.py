@@ -28,11 +28,34 @@ class my_test(test):
         run_tests.main()
 
 
-def read(*paths):
+def get_long_description():
     import codecs
-    import os.path
-    with codecs.open(os.path.join(*paths), 'r', 'utf-8') as f:
-        return f.read()
+    with codecs.open('README.rst', 'r', 'utf-8') as f:
+        readme = f.read()
+
+    body_tag = ".. Omit badges from docs"
+    readme_body_start = readme.index(body_tag)
+    assert readme_body_start
+    readme_body = readme[readme_body_start + len(body_tag):]
+
+    with codecs.open('CHANGELOG.rst', 'r', 'utf-8') as f:
+        changelog = f.read()
+    old_tag = ".. Omit older changes from package"
+    changelog_body_end = changelog.index(old_tag)
+    assert changelog_body_end
+    changelog_body = changelog[:changelog_body_end]
+
+    long_description = """
+%(readme_body)s
+
+%(changelog_body)s
+
+Older changes can be found in the `full documention`_.
+
+.. _`full documention`: \
+http://multigtfs.readthedocs.io/en/latest/changelog.html
+""" % locals()
+    return long_description
 
 
 # Handle Py2/Py3 issue
@@ -48,6 +71,7 @@ setup(
     name='multigtfs',
     version=__version__,
     description='General Transit Feed Specification (GTFS) as a Django app',
+    long_description=get_long_description(),
     author='John Whitlock',
     author_email='John-Whitlock@ieee.org',
     license='Apache License 2.0',
@@ -75,6 +99,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     include_package_data=True,
-    package_data=package_data,
-    long_description=read('README.rst')
+    package_data=package_data
 )

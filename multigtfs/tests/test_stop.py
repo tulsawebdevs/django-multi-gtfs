@@ -83,6 +83,24 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),,36.425288,-117.133162
         self.assertEqual(stop.timezone, '')
         self.assertEqual(stop.wheelchair_boarding, '')
 
+    def test_import_stops_txt_plus_point(self):
+        """Test issue #70, latitude / longitude with leading plus sign."""
+        stops_txt = StringIO("""\
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,location_type,parent_station
+10258,TANEU,TANNEURS,,+49.119799,+06.182966,1,
+""")
+        Stop.import_txt(stops_txt, self.feed)
+        stop = Stop.objects.get()
+        self.assertEqual(stop.feed, self.feed)
+        self.assertEqual(stop.stop_id, '10258')
+        self.assertEqual(stop.code, 'TANEU')
+        self.assertEqual(stop.name, 'TANNEURS')
+        self.assertEqual(stop.desc, '')
+        self.assertEqual(str(stop.lat), '49.119799')
+        self.assertEqual(str(stop.lon), '6.182966')
+        self.assertEqual(stop.location_type, '1')
+        self.assertEqual(stop.parent_station, None)
+
     def test_import_stops_txt_extra_columns(self):
         stops_txt = StringIO("""\
 stop_id,stop_name,stop_desc,stop_lat,stop_lon,platform_code
@@ -307,4 +325,5 @@ FUR_CREEK_RES,Furnace Creek Resort (Demo),36.425288,-117.133162,7
         self.assertEqual(
             trip.geometry.coords,
             ((-117.133162, 36.425288), (-117.13, 36.42)))
-        self.assertEqual(route.geometry, MultiLineString(trip.geometry, srid=4326))
+        self.assertEqual(route.geometry,
+                         MultiLineString(trip.geometry, srid=4326))

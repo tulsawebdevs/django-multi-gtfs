@@ -27,7 +27,7 @@ class Service(Base):
     Implements calendar.txt
     """
 
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
     service_id = models.CharField(
         max_length=255, db_index=True,
         help_text="Unique identifier for service dates.")

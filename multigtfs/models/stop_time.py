@@ -29,8 +29,8 @@ class StopTime(Base):
 
     This implements stop_times.txt in the GTFS feed
     """
-    trip = models.ForeignKey(Trip)
-    stop = models.ForeignKey(Stop)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    stop = models.ForeignKey(Stop, on_delete=models.CASCADE)
     arrival_time = SecondsField(
         default=None, null=True, blank=True,
         help_text="Arrival time. Must be set for end stops of trip.")
