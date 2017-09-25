@@ -1,5 +1,11 @@
 language: python
+dist: trusty
 sudo: false
+addons:
+  postgresql: "9.5"
+  apt:
+    packages:
+      - postgresql-9.5-postgis-2.3
 install: pip install tox coveralls
 script: tox -e $TOX_ENV
 after_success: coveralls
