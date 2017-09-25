@@ -72,7 +72,7 @@ class Route(Base):
     def update_geometry(self):
         """Update the geometry from the Trips"""
         original = self.geometry
-        trips = self.trip_set.exclude(geometry=None)
+        trips = self.trip_set.exclude(geometry__isnull=True)
         unique_coords = set()
         unique_geom = list()
         for t in trips:
