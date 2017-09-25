@@ -26,6 +26,10 @@ matrix:
           python: "2.7"
         - env: TOX_ENV=py36-django111-postgis
           python: "3.6"
+        - env: TOX_ENV=py35-django20-postgis
+          python: "3.5"
+        - env: TOX_ENV=py36-django20-postgis
+          python: "3.6"
         - env: TOX_ENV=py35-django-master-postgis
           python: "3.5"
         - env: TOX_ENV=py36-django-master-postgis
