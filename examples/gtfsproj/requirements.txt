@@ -9,3 +9,5 @@ dj-database-url
 # Configure other settings from the environment
 python-decouple
 
+# Connect to postgresql database
+psycopg2
