@@ -1,0 +1,4 @@
+# Install multigtfs from PyPi
+multigtfs
+# Or from local source project
+#-e ../..
