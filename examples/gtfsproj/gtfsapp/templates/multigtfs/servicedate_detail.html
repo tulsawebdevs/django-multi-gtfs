@@ -1,0 +1,16 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Trip {{object}}{% endblock %}
+{% block page_title %}Trip {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>ServiceDate</strong> is an exception to a Service's routine schedule
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>service</dt><dd><a href="{% url 'service_detail' feed_id=object.service.feed_id pk=object.service_id %}">Service {{object.service}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>date</dt><dd>{{object.date}}</dd>
+    <dt>exception_type</dt><dd>{{object.get_exception_type_display|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

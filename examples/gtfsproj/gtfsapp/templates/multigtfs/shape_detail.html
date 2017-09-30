@@ -1,0 +1,48 @@
+{% extends "multigtfs/base.html" %}
+{% load staticfiles %}
+{% block head_title %}{{ block.super }} - Shape {{object}}{% endblock %}
+
+{% block head_extra %}
+{% if object.geometry %}
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="{% static 'js/explore.js' %}"></script>
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Shape {{object}}{% endblock %}
+
+{% block page_top_content_elem %}
+A <strong>Shape</strong> is the path a vehicle travels, on the road or on a track.
+{% endblock %}
+
+{% block page_middle_content %}
+{% if object.geometry %}
+<div class="row" style="height:300px" id="map"></div>
+{% else %}
+<h2>Map</h2>
+<p><em>
+    This shape does not have a populated geometry.  A shape must have at
+    least 2 ShapePoints, and update_geometry() must be run on the shape.
+</em></p>
+{% endif %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>shape_id</dt><dd>{{object.shape_id|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'trip_by_shape_list' feed_id=object.id shape_id=object.id %}">{{object.trip_set.count}} Trip{{ object.trip_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'shapepoint_by_shape_list' feed_id=object.id shape_id=object.id %}">{{object.points.count}} ShapePoint{{ object.points.count|pluralize }}</a></li>
+</ul>
+{% endblock %}
+
+{% block body_script %}
+{% if object.geometry %}
+<script defer="defer" type="text/javascript">
+explore.mapLine('map', '{{object.geometry.wkt}}');
+</script>
+{% endif %}
+{% endblock %}

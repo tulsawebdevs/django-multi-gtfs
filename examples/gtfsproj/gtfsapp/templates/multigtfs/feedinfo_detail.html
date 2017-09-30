@@ -1,0 +1,20 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - FeedInfo {{object}}{% endblock %}
+{% block page_title %}FeedInfo {{object}}{% endblock %}
+{% block page_top_content_elem %}
+<strong>FeedInfo</strong> contains information about the feed.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>publisher_name</dt><dd>{{object.publisher_name}}</dd>
+    <dt>publisher_url</dt><dd>{% if object.publisher_url %}<a href="{{object.publisher_url}}">{{object.publisher_url}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>lang</dt><dd>{{object.lang|default:'<em>Not set</em>'}}</dd>
+    <dt>start_date</dt><dd>{{object.start_date|default:'<em>Not set</em>'}}</dd>
+    <dt>end_date</dt><dd>{{object.end_date|default:'<em>Not set</em>'}}</dd>
+    <dt>version</dt><dd>{{object.version|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

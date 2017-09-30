@@ -1,0 +1,21 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Agency {{object}}{% endblock %}
+{% block page_title %}Agency {{object}}{% endblock %}
+{% block page_top_content_elem %}
+An <strong>Agency</strong> represents a transit agency.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>agency_id</dt><dd>{{object.agency_id|default:'<em>Not set</em>'}}</dd>
+    <dt>name</dt><dd>{{object.name}}</dd>
+    <dt>url</dt><dd>{% if object.url %}<a href="{{object.url}}">{{object.url}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>timezone</dt><dd>{{object.timezone}}</dd>
+    <dt>lang</dt><dd>{{object.lang|default:'<em>Not set</em>'}}</dd>
+    <dt>phone</dt><dd>{{object.phone|default:'<em>Not set</em>'}}</dd>
+    <dt>fare_url</dt><dd>{% if object.fare_url %}<a href="{{object.fare_url}}">{{object.fare_url}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "multigtfs/base.html" %}
+{% load staticfiles %}
+{% block head_title %}{{ block.super }} - ShapePoint {{object}}{% endblock %}
+{% block head_extra %}
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="{% static 'js/explore.js' %}"></script>
+{% endblock %}
+{% block page_title %}ShapePoint {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>ShapePoint</strong> is a point of a shape
+{% endblock %}
+{% block page_middle_content %}
+<div class="row" style="height:300px" id="map"></div>
+<h2>Attributes</h2>
+<dl>
+    <dt>shape</dt><dd><a href="{% url 'shape_detail' feed_id=object.shape.feed_id pk=object.shape_id %}">Shape {{object.shape}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>point</dt><dd>{{object.point}}</dd>
+    <dt>sequence</dt><dd>{{object.sequence}}</dd>
+    <dt>traveled</dt><dd>{{object.traveled}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}
+{% block body_script %}
+<script defer="defer" type="text/javascript">
+  explore.mapPoint('map', {{object.point.x}}, {{object.point.y}}, 16);
+</script>
+{% endblock %}

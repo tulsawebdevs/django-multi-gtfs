@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Stops{% endblock %}
+{% block page_title %}Stops{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Stop</strong> is a stop or station in the schedule.
+{% endblock %}
+{% block page_middle_content %}
+{% for stop in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'stop_detail' feed_id=stop.feed_id pk=stop.pk %}">Stop {{ stop }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No stops yet.</em></p>
+{% endfor %}
+{% endblock %}

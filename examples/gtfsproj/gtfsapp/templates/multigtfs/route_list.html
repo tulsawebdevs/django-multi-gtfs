@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Routes{% endblock %}
+{% block page_title %}Routes{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Route</strong> is named route in the schedule
+{% endblock %}
+{% block page_middle_content %}
+{% for route in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'route_detail' feed_id=route.feed_id pk=route.pk %}">Route {{ route }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No routes yet.</em></p>
+{% endfor %}
+{% endblock %}

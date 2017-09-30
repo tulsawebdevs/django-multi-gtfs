@@ -1,0 +1,22 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - StopTime {{object}}{% endblock %}
+{% block page_title %}StopTime {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>StopTime</strong> is the intersection between a Trip and a Stop.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>trip</dt><dd><a href="{% url 'trip_detail' feed_id=object.stop.feed_id pk=object.trip_id %}">Trip {{object.trip}}</a></dd>
+    <dt>stop</dt><dd><a href="{% url 'stop_detail' feed_id=object.stop.feed_id pk=object.stop_id %}">Stop {{object.stop}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>arrival_time</dt><dd>{{object.arrival_time|default:'<em>Not set</em>'}}</dd>
+    <dt>departure_time</dt><dd>{{object.departure_time|default:'<em>Not set</em>'}}</dd>
+    <dt>stop_sequence</dt><dd>{{object.stop_sequence}}</dd>
+    <dt>stop_headsign</dt><dd>{{object.stop_headsign|default:'<em>Not set</em>'}}</dd>
+    <dt>pickup_type</dt>{{object.get_pickup_type_display|default:'<em>Not set</em>'}}</dd>
+    <dt>dropoff_type</dt>{{object.get_dropoff_type_display|default:'<em>Not set</em>'}}</dd>
+    <dt>shape_dist_traveled</dt><dd>{{object.shape_dist_traveled|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}
