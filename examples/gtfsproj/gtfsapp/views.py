@@ -6,7 +6,8 @@ from django.views.generic import ListView, DetailView
 
 from multigtfs.models import (
     Feed, FeedInfo, Agency, Route, Trip, Service, Stop, 
-    Shape, ShapePoint, Fare, Zone, StopTime, FareRule, Frequency
+    Shape, ShapePoint, Fare, Zone, StopTime, FareRule, Frequency,
+    ServiceDate
 )
 
 # List feed
@@ -111,6 +112,10 @@ class ZoneDetail(DetailView):
 class FareDetail(DetailView):
     model = Fare
 
+class ServiceDateDetail(DetailView):
+    model = ServiceDate
+
+
 
 class TripByRouteList(ListView):
     model = Trip
@@ -193,5 +198,26 @@ class ShapePointByShapeList(ListView):
     def get_queryset(self, **kwargs):
         return ShapePoint.objects.filter(shape=self.kwargs['shape_id'])
 
+class ServiceDateByServiceList(ListView):
+    model = ServiceDate
 
+    def get_context_data(self, **kwargs):
+        context = super(ServiceDateByServiceList, self).get_context_data(
+            **kwargs)
+        context['service'] = Service.objects.get(id=self.kwargs['service_id'])
+        return context
 
+    def get_queryset(self, **kwargs):
+        return ServiceDate.objects.filter(service=self.kwargs['service_id'])
+
+class TripByServiceList(ListView):
+    model = Trip
+
+    def get_context_data(self, **kwargs):
+        context = super(TripByServiceList, self).get_context_data(**kwargs)
+        context['service'] = Service.objects.get(id=self.kwargs['service_id'])
+        context['feed_id'] = self.kwargs['feed_id']
+        return context
+
+    def get_queryset(self, **kwargs):
+        return Trip.objects.filter(service=self.kwargs['service_id'])

@@ -8,7 +8,7 @@ from gtfsapp.views import (
     FeedDetail, FeedInfoDetail, AgencyDetail, 
     RouteDetail, TripDetail, StopDetail, StopTimeDetail, 
     ServiceDetail, ShapeDetail, ShapePointDetail, FareDetail, 
-    ZoneDetail, 
+    ZoneDetail, ServiceDateDetail,
 
     StopTimeByStopList, FareRuleByRouteList, TripByRouteList,
 
@@ -16,6 +16,7 @@ from gtfsapp.views import (
 
     TripByShapeList, ShapePointByShapeList,
 
+    ServiceDateByServiceList, TripByServiceList, 
 )
 
 urlpatterns = [
@@ -39,6 +40,7 @@ urlpatterns = [
     url(r'feed/(?P<feed_id>\d+)/service/(?P<pk>\d+)/$', ServiceDetail.as_view(), name='service_detail'),
     url(r'feed/(?P<feed_id>\d+)/shape/(?P<pk>\d+)/$', ShapeDetail.as_view(), name='shape_detail'),
     url(r'feed/(?P<feed_id>\d+)/shapepoint/(?P<pk>\d+)$', ShapePointDetail.as_view(), name='shapepoint_detail'),
+    url(r'feed/(?P<feed_id>\d+)/servicedate/(?P<pk>\d+)/$', ServiceDateDetail.as_view(), name='servicedate_detail'),
 
     url(r'feed/(?P<feed_id>\d+)/fare/(?P<pk>\d+)/$', FareDetail.as_view(), name='fare_detail'),
     url(r'feed/(?P<feed_id>\d+)/zone/(?P<pk>\d+)/$', ZoneDetail.as_view(), name='zone_detail'),
@@ -55,4 +57,6 @@ urlpatterns = [
     url(r'feed/(?P<feed_id>\d+)/shape/(?P<shape_id>\d+)/shapepoint/$', ShapePointByShapeList.as_view(), name='shapepoint_by_shape_list'),
     url(r'feed/(?P<feed_id>\d+)/shape/(?P<shape_id>\d+)/trip/$', TripByShapeList.as_view(), name='trip_by_shape_list'),
 
-]
+    url(r'feed/(?P<feed_id>\d+)/service/(?P<service_id>\d+)/servicedate/$', ServiceDateByServiceList.as_view(), name='servicedate_by_service_list'),
+    url(r'feed/(?P<feed_id>\d+)/service/(?P<service_id>\d+)/trip/$', TripByServiceList.as_view(), name='trip_by_service_list'), ]
+   
