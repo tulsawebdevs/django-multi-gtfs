@@ -2,3 +2,10 @@
 multigtfs
 # Or from local source project
 #-e ../..
+
+# Configure the database from the environment
+dj-database-url
+
+# Configure other settings from the environment
+python-decouple
+
