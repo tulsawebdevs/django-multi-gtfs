@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import dj_database_url
 from decouple import config, Csv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -21,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+$8pgzf)luxklr(rhzg4!$6+b^2hbw*-frvh_2-7an9-_==n_u'
+SECRET_KEY = config('SECRET_KEY', default='+$8pgzf)luxklr(rhzg4!$6+b^2hbw*-frvh_2-7an9-_==n_u', cast=str)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
@@ -37,6 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'gtfsapp',
+    'multigtfs',
 ]
 
 MIDDLEWARE = [
@@ -74,11 +77,12 @@ WSGI_APPLICATION = 'gtfsproj.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': config('DATABASE_URL',
+                   default='spatialite:///%s' % os.path.join(BASE_DIR, 'db.sqlite3'),
+                   cast=dj_database_url.parse)
 }
+
+
 
 
 # Password validation
