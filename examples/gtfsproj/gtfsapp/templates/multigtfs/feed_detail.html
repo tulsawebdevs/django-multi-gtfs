@@ -1,0 +1,14 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Feed {{object}}{% endblock %}
+{% block page_title %}Feed {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Feed</strong> represents a single GTFS feed.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>name</dt><dd>{{object.name}}</dd>
+    <dt>created</dt><dd>{{object.created}}</dd>
+</dl>
+{% endblock %}
