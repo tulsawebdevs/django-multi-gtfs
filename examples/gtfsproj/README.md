@@ -87,3 +87,21 @@ The following applies to Ubunutu
     ./manage.py runserver 0.0.0.0:8000
 
 Now you can access from browser using host IP address and port 8000.
+
+<h2>Environment variables</h2>
+
+You can either set environment variables in the .env file as per above or directly
+at command line when you create the container. For example, to use existing postgis database:
+
+    sudo docker run -d -p 8000:8000 --name multiproj1 -e DATABASE_URL=postgis://USER:PASSWORD@HOST:PORT/DBNAME  multiproj
+
+The environment variables you can change are identified in the following file:
+
+    django-multi-gtfs/examples/gtfsproj/gtfsproj/settings.py
+
+They all use the config() function e.g. SECRET_KEY is set in the following example,
+indicated by the "config('SECRET_KEY'" section.
+
+    SECRET_KEY = config('SECRET_KEY', default='+$8pgzf)luxklr(rhzg4!$6+b^2hbw*-frvh_2-7an9-_==n_u', cast=str)
+
+
