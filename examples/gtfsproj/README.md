@@ -1,6 +1,14 @@
 <h1>Multi GTFS project</h1>
 
-<h2>With Docker</h2>
+This is an alternative example project. It is largely based on the 
+"explore" example project but has been recreated with slightly different
+structure. 
+
+The intention is that this example will ultimately provide a  
+slightly different experience. This will include more mapping (possibly
+using leaflet), new template (e.g. bootstrap 4) and different navigation.
+
+<h2>Run with Docker</h2>
 
 <h3>Build and run</h3>
 
@@ -8,18 +16,27 @@ Build docker image. This will use the settings in teh .env.example
 file, which can be replaced by creating a ".env" file before building
 the image (eg. cp env.example .env).
 
+    # Get source code
+    git clone https://github.com/alaw005/django-multi-gtfs.git
+    cd django-multi-gtfs/examples/gtfsproj
+
+    # Build image
     sudo docker build -t multiproj .
 
 Run docker container as background (to run in forground change 
 "-d" to "-it". This will automatically run the development server 
 using the settings in the .env.example file.
 
+    # Create container
     sudo docker run -d -p 8000:8000 --name multiproj1 multiproj
 
-Now setup database and superuser (if database does not already exist)
+Now setup database and superuser, refer management commands below.
+This is only required if database does not already exist or multgtfs
+has been updated (in which case need to migrate only)
 
-    ./manage.py migrate
-    ./manage.py createsuperuser
+    # Setup database (if required)
+    sudo docker exec -it multiproj1 ./manage.py migrate
+    sudo docker exec -it multiproj1 ./manage.py createsuperuser
 
 Now you can access from browser using host IP address and port 8000.
 
@@ -40,7 +57,7 @@ To specify a feed name rather than the defaul use the following.
 
     sudo docker exec -it multiproj1 ./manage.py importgtfs --name "Feed name" /feeds/feed.zip
 
-<h2>Without Docker</h2>
+<h2>Run without Docker</h2>
 
 The following applies to Ubunutu
 
