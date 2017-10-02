@@ -13,12 +13,5 @@ if [ $# -eq 0 ]; then
   # If no arguments provided then run server on port 8000
   exec ./manage.py runserver 0.0.0.0:8000
 else
-  if [ $1 = "bash" ]; then
-    # If bash first argument then use that for all arguments
-    exec "$@"
-  else
-    # Otherwise pass arguments to django manage.py script
-    exec ./manage.py "$@"
-  fi
+  exec "$@"
 fi
-

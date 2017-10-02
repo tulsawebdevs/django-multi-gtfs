@@ -23,5 +23,6 @@ VOLUME /gtfs/feeds
 # run_project script passes all arguments except
 # bash to django manage.py script for project
 # runs development server by default
-ENTRYPOINT ["bash", "/code/run_project.sh"]
-CMD ["runserver", "0.0.0.0:8000"]
+RUN chmod +x /code/run_project.sh
+ENTRYPOINT ["/code/run_project.sh"]
+CMD ["./manage.py", "runserver", "0.0.0.0:8000"]
