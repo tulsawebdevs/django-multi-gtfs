@@ -57,6 +57,26 @@ To specify a feed name rather than the defaul use the following.
 
     sudo docker exec -it multiproj1 ./manage.py importgtfs --name "Feed name" /feeds/feed.zip
 
+<h3>Creating postgres database (assumes server already running)</h3>
+
+At the command line (as long as postgres is installed):
+
+    # Create database
+    createdb -h HOST -p 5432 -U USERNAME multigtfs
+
+    # Install postgis extension
+    psql -h HOST -p 5432 -U USERNAME -d multigtfs -c "CREATE EXTENSION postgis;"
+
+Now initiatise the database using multigtfs:
+
+	# Configure database
+    sudo docker exec -it multigtfs ./manage.py migrate
+
+    # Create superuser
+    sudo docker exec -it multigtfs ./manage.py createsuperuser
+
+That's it.
+
 <h2>Run without Docker</h2>
 
 The following applies to Ubunutu
