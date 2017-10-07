@@ -30,16 +30,18 @@ ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
 
 # Application definition
-
+# NB new apps need to be placed first for their templates
+# to override subsequent apps
 INSTALLED_APPS = [
+    'gtfsapp',
+    'multigtfs',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'gtfsapp',
-    'multigtfs',
+    'django.contrib.gis',
 ]
 
 MIDDLEWARE = [

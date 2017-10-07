@@ -11,6 +11,7 @@ fi
 # If no arguments provided then run server on port 8000
 if [ $# -eq 0 ]; then
   # If no arguments provided then run server on port 8000
+  echo "Run development server on port 8000"
   exec ./manage.py runserver 0.0.0.0:8000
 else
   exec "$@"
