@@ -11,3 +11,6 @@ python-decouple
 
 # Connect to postgresql database
 psycopg2
+
+# Install gunicorn server 
+gunicorn
