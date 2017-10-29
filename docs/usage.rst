@@ -50,4 +50,4 @@ for your own projects.  See the project README (``examples/explore/README.md``)
 for more information.
 
 .. _OpenLayers: http://openlayers.org
-.. _`Implementation of GTFS`: gtfs.html
+.. _`Implementation of GTFS`: gtfs.rst
