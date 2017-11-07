@@ -1,0 +1,18 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Frequency {{object}}{% endblock %}
+{% block page_title %}Frequency {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Frequency</strong> represents a periodic trip without a set schedule.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>trip</dt><dd><a href="{% url 'trip_detail' feed_id=view.kwargs.feed_id pk=trip_id  %}">Trip {{object.trip}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>start_time</dt><dd>{{object.start_time}}</dd>
+    <dt>end_time</dt><dd>{{object.end_time}}</dd>
+    <dt>headway_secs</dt><dd>{{object.headway_secs}}</dd>
+    <dt>exact_times</dt>{{object.get_exact_times_display|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

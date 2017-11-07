@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Zones{% endblock %}
+{% block page_title %}Zones{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Zone</strong> is an area with the same fare rules.
+{% endblock %}
+{% block page_middle_content %}
+{% for zone in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'zone_detail' feed_id=zone.feed_id pk=zone.pk %}">Zone {{ zone }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No zones yet.</em></p>
+{% endfor %}
+{% endblock %}

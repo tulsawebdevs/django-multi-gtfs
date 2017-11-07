@@ -1,0 +1,17 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - FareRule {{object}}{% endblock %}
+{% block page_title %}FareRule {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>FareRule</strong> is the intersection between a Route and a Fare
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>route</dt><dd><a href="{% url 'route_detail' feed_id=object.route.feed_id pk=object.route_id %}">Route {{object.route}}</a></dd>
+    <dt>fare</dt><dd><a href="{% url 'fare_detail' feed_id=object.fare.feed_id pk=object.fare_id %}">Fare {{object.fare}}</a></dd>
+    <dt>origin</dt><dd>{% if object.origin_id %}<a href="{% url 'zone_detail' feed_id=object.id origin_id=object.origin_id %}">Zone {{object.origin}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>destination</dt><dd>{% if object.destination_id %}<a href="{% url 'zone_detail' feed_id=object.id destination_id=object.destination_id %}">Zone {{object.destination}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>contains</dt><dd>{% if object.contains_id %}<a href="{% url 'zone_detail' feed_id=object.id contains_id=object.contains_id %}">Zone {{object.contains}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

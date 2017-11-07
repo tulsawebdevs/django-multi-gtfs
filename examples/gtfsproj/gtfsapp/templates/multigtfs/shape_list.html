@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Shapes{% endblock %}
+{% block page_title %}Shapes{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Shape</strong> is the path a vehicle travels, on the road or on a track.
+{% endblock %}
+{% block page_middle_content %}
+{% for shape in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'shape_detail' feed_id=shape.feed_id pk=shape.pk %}">Shape {{ shape }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No shapes yet.</em></p>
+{% endfor %}
+{% endblock %}
