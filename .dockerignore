@@ -50,3 +50,6 @@ docs/_build
 feeds/
 !feeds/import/README.md
 !feeds/export/README.md
+
+# Pyenv
+.python-version

@@ -101,3 +101,18 @@ def write_text_rows(writer, rows):
                 else:
                     new_row.append(item)
             writer.writerow(new_row)
+
+
+# The GeoQuerySet is deprecated in Django 1.8
+# https://docs.djangoproject.com/en/dev/releases/1.9/#django-contrib-gis
+# The GeoManager is deprecated in Django 1.9
+# https://docs.djangoproject.com/en/dev/releases/1.9/#geomanager-and-geoqueryset-custom-methods
+# They are removed in Django 2.0
+# https://docs.djangoproject.com/en/dev/releases/2.0/#features-removed-in-2-0
+if DJ_VERSION >= LooseVersion('2.0'):
+    from django.db.models import Manager, QuerySet
+else:
+    from django.contrib.gis.db.models import GeoManager as Manager
+    from django.contrib.gis.db.models.query import GeoQuerySet as QuerySet
+assert Manager
+assert QuerySet
