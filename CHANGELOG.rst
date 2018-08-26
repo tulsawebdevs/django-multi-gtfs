@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.1.2 (unreleased)
+1.1.2 (2018-08-26)
 ------------------
 * Add support for Django 2.0 and 2.1
 * Handle latitude and longitudes with initial `+` sign.
