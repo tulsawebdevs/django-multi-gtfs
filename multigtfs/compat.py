@@ -31,6 +31,7 @@ def _get_blank_value_19(field):
     else:
         return ''
 
+
 if DJ_VERSION >= LooseVersion('1.9'):
     get_blank_value = _get_blank_value_19
 else:
