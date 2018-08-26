@@ -6,3 +6,4 @@ Authors
 * Adam Lawrence (`alaw005 <https://github.com/alaw005>`_, alaw005@gmail.com)
 * Dave Kroondyk (`davekaro <https://github.com/davekaro>`_, davekaro@gmail.com)
 * Joshua Goodwin (`jclgoodwin <https://github.com/jclgoodwin>`_, j@joshuagoodw.in)
+* Jakub Dorňák (`misli <https://github.com/misli>`, jakub.dornak@misli.cz)

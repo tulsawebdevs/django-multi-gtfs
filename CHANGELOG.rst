@@ -1,12 +1,16 @@
 Changelog
 =========
 
-Next (unreleased)
-~~~~~~~~~~~~~~~~~
+1.1.2 (unreleased)
+------------------
+* Add support for Django 2.0 and 2.1
 * Handle latitude and longitudes with initial `+` sign.
   (`issue #70`_).
+* Use ``.iterator()`` to save memory during export (`PR #80`_)
+* Fix validation error in admin for Frequency.exact_times
 
 .. _`issue #70`: https://github.com/tulsawebdevs/django-multi-gtfs/issues/70
+.. _`PR #80`: https://github.com/tulsawebdevs/django-multi-gtfs/pull/80
 
 1.1.1 (2017-08-02)
 ------------------
