@@ -33,8 +33,8 @@ class Frequency(Base):
         help_text="Time in seconds before returning to same stop")
     exact_times = models.CharField(
         max_length=1, blank=True,
-        choices=((0, 'Trips are not exactly scheduled'),
-                 (1, 'Trips are exactly scheduled from start time')),
+        choices=(('0', 'Trips are not exactly scheduled'),
+                 ('1', 'Trips are exactly scheduled from start time')),
         help_text="Should frequency-based trips be exactly scheduled?")
     extra_data = JSONField(default={}, blank=True, null=True)
 
