@@ -2,7 +2,7 @@ language: python
 dist: trusty
 sudo: false
 addons:
-  postgresql: "9.5"
+  postgresql: 9.5
   apt:
     packages:
       - postgresql-9.5-postgis-2.3
@@ -40,12 +40,20 @@ matrix:
           python: "3.5"
         - env: TOX_ENV=py36-django21-postgis
           python: "3.6"
+        - env: TOX_ENV=py35-django22-postgis
+          python: "3.5"
+        - env: TOX_ENV=py37-django22-postgis
+          python: "3.7"
+          sudo: required
+          dist: xenial
         - env: TOX_ENV=py35-django-master-postgis
           python: "3.5"
         - env: TOX_ENV=py36-django-master-postgis
           python: "3.6"
         - env: TOX_ENV=py37-django-master-postgis
           python: "3.7"
+          sudo: required
+          dist: xenial
     allow_failures:
         # Django master is allowed to fail
         - env: TOX_ENV=py35-django-master-postgis
