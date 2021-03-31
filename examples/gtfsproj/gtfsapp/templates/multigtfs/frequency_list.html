@@ -1,0 +1,19 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Frequencies{% endblock %}
+{% block page_title %}Frequencies{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Frequency</strong> represents a periodic trip without a set schedule.
+route runs.
+{% endblock %}
+{% block page_middle_content %}
+{% if trip %}
+<p>Frequencies for <a href="{% url 'trip_detail' feed_id=view.kwargs.feed_id pk=trip.pk %}">Trip {{trip}}</a></p>
+{% endif %}
+{% for frequency in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'frequency_detail' feed_id=frequency.feed_id pk=frequency.pk %}">Frequency {{ frequency }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No frequencies yet.</em></p>
+{% endfor %}
+{% endblock %}

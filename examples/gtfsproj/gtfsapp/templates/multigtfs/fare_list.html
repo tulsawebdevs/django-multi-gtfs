@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}Explore - - django-multi-gtfs - Fares{% endblock %}
+{% block page_title %}Fares{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Fare</strong> describes how passengers pay for service.
+{% endblock %}
+{% block page_middle_content %}
+{% for fare in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'fare_detail' feed_id=fare.feed_id pk=fare.pk %}">Fare {{ fare }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No fares yet.</em></p>
+{% endfor %}
+{% endblock %}

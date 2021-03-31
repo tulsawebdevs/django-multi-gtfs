@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Zone {{object}}{% endblock %}
+{% block page_title %}Zone {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Zone</strong> is an area with the same fare rules.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>zone_id</dt><dd>{{object.zone_id}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+{% endblock %}

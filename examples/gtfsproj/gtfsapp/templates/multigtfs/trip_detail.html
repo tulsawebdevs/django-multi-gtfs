@@ -1,0 +1,57 @@
+{% extends "multigtfs/base.html" %}
+{% load staticfiles %}
+{% block head_title %}{{ block.super }} - Trip {{object}}{% endblock %}
+
+{% block head_extra %}
+{% if object.geometry %}
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="{% static 'js/explore.js' %}"></script>
+{% endif %}
+{% endblock %}
+
+{% block page_title %}Trip {{object}}{% endblock %}
+
+{% block page_top_content_elem %}
+A <strong>Trip</strong> is a single run of a Route
+{% endblock %}
+
+{% block page_middle_content %}
+{% if object.geometry %}
+<div class="row" style="height:300px" id="map"></div>
+{% else %}
+<h2>Map</h2>
+<p><em>
+    This trip does not have a populated geometry.  A trip must have a
+    related Shape or at least 2 StopTrips, and update_geometry() must
+    be run on the Trip.
+</em></p>
+{% endif %}
+<h2>Attributes</h2>
+<dl>
+    <dt>route</dt><dd><a href="{% url 'route_detail' feed_id=object.route.feed_id pk=object.route_id %}">Route {{object.route}}</a></dd>
+    <dt>service</dt><dd><a href="{% url 'service_detail' feed_id=object.route.feed_id pk=object.service_id %}">Service {{object.service}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>trip_id</dt><dd>{{object.trip_id|default:'<em>Not set</em>'}}</dd>
+    <dt>headsign</dt><dd>{{object.headsign|default:'<em>Not set</em>'}}</dd>
+    <dt>short_name</dt><dd>{{object.short_name|default:'<em>Not set</em>'}}</dd>
+    <dt>direction</dt><dd>{{object.get_direction_display|default:'<em>Not set</em>'}}</dd>
+    <dt>block</dt><dd>{% if object.block_id %}<a href="{% url 'block_detail' feed_id=view.kwargs.feed_id pk=object.block_id %}">Block {{object.block}}</a>{% else %}<em>No Block</em>{% endif %}</dd>
+    <dt>shape</dt><dd>{% if object.shape_id %}<a href="{% url 'shape_detail' feed_id=view.kwargs.feed_id pk=object.shape_id %}">Shape {{object.shape}}</a>{% else %}<em>No Shape</em>{% endif %}</dd>
+    <dt>wheelchair_accessible</dt><dd>{{object.get_wheelchair_accessible_display|default:'<em>Not set</em>'}}</dd>
+    <dt>bikes_allowed</dt><dd>{{object.get_bikes_allowed_display|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'frequency_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.frequency_set.count}} Frequenc{{ object.frequency_set.count|pluralize:"y,ies" }}</a></li>
+    <li><a href="{% url 'stoptime_by_trip_list' feed_id=object.route.feed_id trip_id=object.id %}">{{object.stoptime_set.count}} StopTime{{ object.stoptime_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}
+
+{% block body_script %}
+{% if object.geometry %}
+<script defer="defer" type="text/javascript">
+explore.mapLine('map', '{{object.geometry.wkt}}');
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - StopTimes{% endblock %}
+{% block page_title %}StopTimes{% endblock %}
+{% block page_top_content_elem %}
+A <strong>StopTime</strong> is the intersection between a Trip and a Stop.
+{% endblock %}
+{% block page_middle_content %}
+{% if stop %}
+<p>StopTimes for <a href="{% url 'stop_detail' feed_id=feed_id pk=stop.pk %}">Stop {{stop}}</a></p>
+{% elif trip %}
+<p>StopTimes for <a href="{% url 'trip_detail' feed_id=feed_id pk=trip.pk %}">Trip {{trip}}</a></p>
+{% endif %}
+{% for stoptime in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'stoptime_detail' feed_id=feed_id pk=stoptime.pk %}">StopTime {{ stoptime }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No stoptimes yet.</em></p>
+{% endfor %}
+{% endblock %}

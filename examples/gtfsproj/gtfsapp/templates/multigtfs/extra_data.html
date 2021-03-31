@@ -1,0 +1,8 @@
+{% if object.extra_data %}
+<h2>Extra Attributes</h2>
+<dl>
+{% for key, val in object.extra_data.iteritems %}
+    <dt>{{ key }}</dt><dd>{{ val }}</dd>
+{% endfor %}
+</dl>
+{% endif %}
