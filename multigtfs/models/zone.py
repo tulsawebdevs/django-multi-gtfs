@@ -14,12 +14,9 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
-
 from multigtfs.models.base import models, Base
 
 
-@python_2_unicode_compatible
 class Zone(Base):
     """Represents a fare zone.
 

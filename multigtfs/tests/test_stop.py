@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
 from django.test import TestCase
-from django.utils.six import StringIO
+from io import StringIO
 
 from multigtfs.compat import bom_prefix_csv, force_utf8
 from multigtfs.models import Feed, Route, Stop, StopTime, Trip, Zone

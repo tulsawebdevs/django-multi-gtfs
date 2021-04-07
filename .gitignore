@@ -53,3 +53,12 @@ feeds/
 
 # Pyenv
 .python-version
+
+# PyCharm
+.idea/*
+
+# VenV
+venv/*
+
+# VS Code
+.vscode/*

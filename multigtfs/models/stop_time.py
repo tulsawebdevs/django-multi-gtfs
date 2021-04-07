@@ -14,8 +14,7 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
-from jsonfield import JSONField
+from django.db.models import JSONField
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.stop import Stop
@@ -23,7 +22,6 @@ from multigtfs.models.trip import Trip
 from multigtfs.models.fields import SecondsField
 
 
-@python_2_unicode_compatible
 class StopTime(Base):
     """A specific stop on a route on a trip.
 

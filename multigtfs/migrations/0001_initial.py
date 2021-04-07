@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import jsonfield.fields
 import django.contrib.gis.db.models.fields
 import multigtfs.models.fields.seconds
 
@@ -25,7 +24,7 @@ class Migration(migrations.Migration):
                 ('lang', models.CharField(help_text='ISO 639-1 code for the primary language', max_length=2, blank=True)),
                 ('phone', models.CharField(help_text='Voice telephone number', max_length=255, blank=True)),
                 ('fare_url', models.URLField(help_text='URL for purchasing tickets online', blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
             ],
             options={
                 'db_table': 'agency',
@@ -54,7 +53,7 @@ class Migration(migrations.Migration):
                 ('payment_method', models.IntegerField(default=1, help_text='When is the fare paid?', choices=[(0, 'Fare is paid on board.'), (1, 'Fare must be paid before boarding.')])),
                 ('transfers', models.IntegerField(default=None, help_text='Are transfers permitted?', null=True, blank=True, choices=[(0, 'No transfers permitted on this fare.'), (1, 'Passenger may transfer once.'), (2, 'Passenger may transfer twice.'), (None, 'Unlimited transfers are permitted.')])),
                 ('transfer_duration', models.IntegerField(help_text='Time in seconds until a ticket or transfer expires', null=True, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
             ],
             options={
                 'db_table': 'fare',
@@ -65,7 +64,7 @@ class Migration(migrations.Migration):
             name='FareRule',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
             ],
             options={
                 'db_table': 'fare_rules',
@@ -78,7 +77,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
                 ('created', models.DateTimeField(auto_now_add=True)),
-                ('meta', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('meta', models.JSONField(default={}, null=True, blank=True)),
             ],
             options={
                 'db_table': 'feed',
@@ -95,7 +94,7 @@ class Migration(migrations.Migration):
                 ('start_date', models.DateField(help_text='Date that feed starts providing reliable data.', null=True, blank=True)),
                 ('end_date', models.DateField(help_text='Date that feed stops providing reliable data.', null=True, blank=True)),
                 ('version', models.CharField(help_text='Version of feed.', max_length=255, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('feed', models.ForeignKey(to='multigtfs.Feed', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -112,7 +111,7 @@ class Migration(migrations.Migration):
                 ('end_time', multigtfs.models.fields.seconds.SecondsField(help_text='Time that the service ends at the specified frequency')),
                 ('headway_secs', models.IntegerField(help_text='Time in seconds before returning to same stop')),
                 ('exact_times', models.CharField(blank=True, help_text='Should frequency-based trips be exactly scheduled?', max_length=1, choices=[(0, 'Trips are not exactly scheduled'), (1, 'Trips are exactly scheduled from start time')])),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
             ],
             options={
                 'db_table': 'frequency',
@@ -133,7 +132,7 @@ class Migration(migrations.Migration):
                 ('color', models.CharField(help_text='Color of route in hex', max_length=6, blank=True)),
                 ('text_color', models.CharField(help_text='Color of route text in hex', max_length=6, blank=True)),
                 ('geometry', django.contrib.gis.db.models.fields.MultiLineStringField(help_text='Geometry cache of Trips', srid=4326, null=True, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('agency', models.ForeignKey(blank=True, to='multigtfs.Agency', help_text='Agency for this route.', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('feed', models.ForeignKey(to='multigtfs.Feed', on_delete=django.db.models.deletion.CASCADE)),
             ],
@@ -156,7 +155,7 @@ class Migration(migrations.Migration):
                 ('sunday', models.BooleanField(default=True, help_text='Is the route active on Sunday?')),
                 ('start_date', models.DateField(null=True, blank=True)),
                 ('end_date', models.DateField(null=True, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('feed', models.ForeignKey(to='multigtfs.Feed', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -170,7 +169,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', models.DateField(help_text='Date that the service differs from the norm.')),
                 ('exception_type', models.IntegerField(default=1, help_text='Is service added or removed on this date?', choices=[(1, 'Added'), (2, 'Removed')])),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('service', models.ForeignKey(to='multigtfs.Service', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -198,7 +197,7 @@ class Migration(migrations.Migration):
                 ('point', django.contrib.gis.db.models.fields.PointField(help_text='WGS 84 latitude/longitude of shape point', srid=4326)),
                 ('sequence', models.IntegerField()),
                 ('traveled', models.FloatField(help_text='Distance of point from start of shape', null=True, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('shape', models.ForeignKey(related_name='points', to='multigtfs.Shape', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -219,7 +218,7 @@ class Migration(migrations.Migration):
                 ('location_type', models.CharField(blank=True, help_text='Is this a stop or station?', max_length=1, choices=[('0', 'Stop'), ('1', 'Station')])),
                 ('timezone', models.CharField(help_text='Timezone of the stop', max_length=255, blank=True)),
                 ('wheelchair_boarding', models.CharField(blank=True, help_text='Is wheelchair boarding possible?', max_length=1, choices=[('0', 'No information'), ('1', 'Some wheelchair boarding'), ('2', 'No wheelchair boarding')])),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('feed', models.ForeignKey(to='multigtfs.Feed', on_delete=django.db.models.deletion.CASCADE)),
                 ('parent_station', models.ForeignKey(blank=True, to='multigtfs.Stop', help_text='The station associated with the stop', null=True, on_delete=django.db.models.deletion.CASCADE)),
             ],
@@ -239,7 +238,7 @@ class Migration(migrations.Migration):
                 ('pickup_type', models.CharField(blank=True, help_text='How passengers are picked up', max_length=1, choices=[('0', 'Regularly scheduled pickup'), ('1', 'No pickup available'), ('2', 'Must phone agency to arrange pickup'), ('3', 'Must coordinate with driver to arrange pickup')])),
                 ('drop_off_type', models.CharField(blank=True, help_text='How passengers are picked up', max_length=1, choices=[('0', 'Regularly scheduled drop off'), ('1', 'No drop off available'), ('2', 'Must phone agency to arrange drop off'), ('3', 'Must coordinate with driver to arrange drop off')])),
                 ('shape_dist_traveled', models.FloatField(help_text='Distance of stop from start of shape', null=True, verbose_name='shape distance traveled', blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('stop', models.ForeignKey(to='multigtfs.Stop', on_delete=django.db.models.deletion.CASCADE)),
             ],
             options={
@@ -253,7 +252,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('transfer_type', models.IntegerField(default=0, help_text='What kind of transfer?', blank=True, choices=[(0, 'Recommended transfer point'), (1, 'Timed transfer point (vehicle will wait)'), (2, 'min_transfer_time needed to successfully transfer'), (3, 'No transfers possible')])),
                 ('min_transfer_time', models.IntegerField(help_text='How many seconds are required to transfer?', null=True, blank=True)),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('from_stop', models.ForeignKey(related_name='transfer_from_stop', to='multigtfs.Stop', help_text='Stop where a connection between routes begins.', on_delete=django.db.models.deletion.CASCADE)),
                 ('to_stop', models.ForeignKey(related_name='transfer_to_stop', to='multigtfs.Stop', help_text='Stop where a connection between routes ends.', on_delete=django.db.models.deletion.CASCADE)),
             ],
@@ -273,7 +272,7 @@ class Migration(migrations.Migration):
                 ('geometry', django.contrib.gis.db.models.fields.LineStringField(help_text='Geometry cache of Shape or Stops', srid=4326, null=True, blank=True)),
                 ('wheelchair_accessible', models.CharField(blank=True, help_text='Are there accommodations for riders with wheelchair?', max_length=1, choices=[('0', 'No information'), ('1', 'Some wheelchair accommodation'), ('2', 'No wheelchair accommodation')])),
                 ('bikes_allowed', models.CharField(blank=True, help_text='Are bicycles allowed?', max_length=1, choices=[('0', 'No information'), ('1', 'Some bicycle accommodation'), ('2', 'No bicycles allowed')])),
-                ('extra_data', jsonfield.fields.JSONField(default={}, null=True, blank=True)),
+                ('extra_data', models.JSONField(default={}, null=True, blank=True)),
                 ('block', models.ForeignKey(blank=True, to='multigtfs.Block', help_text='Block of sequential trips that this trip belongs to.', null=True, on_delete=django.db.models.deletion.CASCADE)),
                 ('route', models.ForeignKey(to='multigtfs.Route', on_delete=django.db.models.deletion.CASCADE)),
                 ('service', models.ForeignKey(blank=True, to='multigtfs.Service', null=True, on_delete=django.db.models.deletion.CASCADE)),

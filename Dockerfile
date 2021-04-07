@@ -2,8 +2,8 @@ FROM python:3.6
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
-RUN apt-get install -y binutils libproj-dev gdal-bin postgresql-client
-RUN pip install "django>=1.11,<2.0" psycopg2
+RUN apt-get install -y binutils libproj-dev gdal-bin postgresql-client python3-gdal
+RUN pip install psycopg2-binary
 
 RUN mkdir /code
 RUN mkdir /feeds

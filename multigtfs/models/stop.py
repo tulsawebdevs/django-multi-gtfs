@@ -18,9 +18,8 @@ import warnings
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.encoding import python_2_unicode_compatible
-from django.utils.six import StringIO
-from jsonfield import JSONField
+from io import StringIO
+from django.db.models import JSONField
 
 from multigtfs.models.base import models, Base
 
@@ -28,7 +27,6 @@ from multigtfs.models.base import models, Base
 logger = getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Stop(Base):
     """A stop or station
 
