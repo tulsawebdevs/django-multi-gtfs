@@ -97,7 +97,7 @@ class Feed(models.Model):
         try:
             for klass in gtfs_order:
                 for f in filelist:
-                    if f == klass._filename:
+                    if os.path.basename(f) == klass._filename:
                         start_time = time.time()
                         table = opener(f)
                         count = klass.import_txt(table, self) or 0
