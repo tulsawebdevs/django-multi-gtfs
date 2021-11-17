@@ -18,13 +18,11 @@ import warnings
 from django.contrib.gis.geos import LineString
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.encoding import python_2_unicode_compatible
 from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 
 
-@python_2_unicode_compatible
 class Shape(Base):
     """The path the vehicle takes along the route.
 
@@ -60,7 +58,6 @@ class Shape(Base):
     _rel_to_feed = 'feed'
 
 
-@python_2_unicode_compatible
 class ShapePoint(Base):
     """A point along the shape"""
     shape = models.ForeignKey(

@@ -21,7 +21,6 @@ import time
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.six import string_types
 from jsonfield import JSONField
 
@@ -43,7 +42,6 @@ from .trip import Trip
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Feed(models.Model):
     """Represents a single GTFS feed.
 

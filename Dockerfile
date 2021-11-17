@@ -3,7 +3,7 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update
 RUN apt-get install -y binutils libproj-dev gdal-bin postgresql-client
-RUN pip install "django>=1.11,<2.0" psycopg2
+RUN pip install "django>=2.0,<=2.2" "psycopg2==2.8.6"
 
 RUN mkdir /code
 RUN mkdir /feeds
