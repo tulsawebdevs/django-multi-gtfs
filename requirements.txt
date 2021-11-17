@@ -1,2 +1,2 @@
-Django>=1.8
-jsonfield==1.0.3
+Django>=2.0,<=2.2
+jsonfield==3.1.0

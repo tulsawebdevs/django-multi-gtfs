@@ -18,10 +18,8 @@
 from __future__ import unicode_literals
 
 from django.db.models import Field
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Seconds(object):
     '''A GTFS seconds value, formatted as HH:MM:SS in the GTFS feed'''
 

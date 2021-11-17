@@ -14,14 +14,12 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
 from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base
 from multigtfs.models.fields import SecondsField
 
 
-@python_2_unicode_compatible
 class Frequency(Base):
     """Description of a trip that repeats without fixed stop times"""
     trip = models.ForeignKey('Trip', on_delete=models.CASCADE)
