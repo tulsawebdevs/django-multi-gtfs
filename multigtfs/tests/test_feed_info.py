@@ -17,7 +17,7 @@ from __future__ import unicode_literals
 from datetime import date
 
 from django.test import TestCase
-from django.utils.six import StringIO
+from io import StringIO
 
 from multigtfs.models import Feed, FeedInfo
 

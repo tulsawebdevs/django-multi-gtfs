@@ -19,7 +19,7 @@ from json import loads
 
 from django.core.serializers import serialize
 from django.test import TestCase
-from django.utils.six import StringIO
+from io import StringIO
 
 from multigtfs.models import Feed, Frequency, Route, Service, Trip
 from multigtfs.models.fields import Seconds

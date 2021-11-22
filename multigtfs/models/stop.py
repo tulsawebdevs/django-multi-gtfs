@@ -18,7 +18,7 @@ import warnings
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.six import StringIO
+from io import StringIO
 from jsonfield import JSONField
 
 from multigtfs.models.base import models, Base

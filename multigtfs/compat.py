@@ -7,7 +7,6 @@ from distutils.version import LooseVersion
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from django import get_version
-from django.utils.six import PY3, binary_type, text_type
 
 DJ_VERSION = LooseVersion(get_version())
 
@@ -47,15 +46,12 @@ def bom_prefix_csv(text):
     - Python 2 returns a UTF-8 encoded bytestring
     - Python 3 returns unicode text
     """
-    if PY3:
-        return BOM_UTF8.decode('utf-8') + text
-    else:
-        return BOM_UTF8 + text.encode('utf-8')
+    return BOM_UTF8.decode('utf-8') + text
 
 
 def force_utf8(text):
     """Encode as UTF-8 bytestring if it isn't already."""
-    if isinstance(text, binary_type):
+    if isinstance(text, bytes):
         return text
     else:
         return text.encode('utf-8')
@@ -79,11 +75,8 @@ def opener_from_zipfile(zipfile):
 
     def opener(filename):
         inner_file = zipfile.open(filename)
-        if PY3:
-            from io import TextIOWrapper
-            return TextIOWrapper(inner_file)
-        else:
-            return inner_file
+        from io import TextIOWrapper
+        return TextIOWrapper(inner_file)
 
     return opener
 
@@ -97,7 +90,7 @@ def write_text_rows(writer, rows):
             # Python 2 csv does badly with unicode outside of ASCII
             new_row = []
             for item in row:
-                if isinstance(item, text_type):
+                if isinstance(item, str):
                     new_row.append(item.encode('utf-8'))
                 else:
                     new_row.append(item)
