@@ -21,7 +21,6 @@ import time
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
-from django.utils.six import string_types
 from jsonfield import JSONField
 
 from multigtfs.compat import open_writable_zipfile, opener_from_zipfile
@@ -76,7 +75,7 @@ class Feed(models.Model):
         # Determine the type of gtfs_obj
         opener = None
         filelist = None
-        if isinstance(gtfs_obj, string_types) and os.path.isdir(gtfs_obj):
+        if isinstance(gtfs_obj, str) and os.path.isdir(gtfs_obj):
             opener = open
             filelist = []
             for dirpath, dirnames, filenames in os.walk(gtfs_obj):

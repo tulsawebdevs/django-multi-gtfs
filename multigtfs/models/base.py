@@ -22,7 +22,7 @@ import re
 
 from django.contrib.gis.db import models
 from django.db.models.fields.related import ManyToManyField
-from django.utils.six import StringIO, text_type, PY3
+from io import StringIO
 
 from multigtfs.compat import (
     get_blank_value, write_text_rows, Manager, QuerySet)
@@ -30,7 +30,7 @@ from multigtfs.compat import (
 logger = getLogger(__name__)
 re_point = re.compile(r'(?P<name>point)\[(?P<index>\d)\]')
 batch_size = 1000
-CSV_BOM = BOM_UTF8.decode('utf-8') if PY3 else BOM_UTF8
+CSV_BOM = BOM_UTF8.decode('utf-8')
 
 
 class BaseQuerySet(QuerySet):
@@ -142,14 +142,14 @@ class Base(models.Model):
                 if value.strip():
                     related = field.related_model
                     key1 = "{}:{}".format(related.__name__, rel_name)
-                    key2 = text_type(value)
+                    key2 = str(value)
 
                     # Load existing objects
                     if key1 not in cache:
                         pairs = related.objects.filter(
                             **{related._rel_to_feed: feed}).values_list(
                             rel_name, 'id')
-                        cache[key1] = dict((text_type(x), i) for x, i in pairs)
+                        cache[key1] = dict((str(x), i) for x, i in pairs)
 
                     # Create new?
                     if key2 not in cache[key1]:
@@ -333,7 +333,7 @@ class Base(models.Model):
         csv_writer = writer(out, lineterminator='\n')
 
         # Write header row
-        header_row = [text_type(c) for c in columns]
+        header_row = [str(c) for c in columns]
         header_row.extend(extra_columns)
         write_text_rows(csv_writer, [header_row])
 
@@ -360,7 +360,7 @@ class Base(models.Model):
                     pairs = field_type.objects.in_feed(
                         feed).values_list('id', subfield_name)
                     cache[field_name] = dict(
-                        (i, text_type(x)) for i, x in pairs)
+                        (i, str(x)) for i, x in pairs)
                     cache[field_name][None] = u''
                     model_to_field_name[model_name] = field_name
 
@@ -387,13 +387,13 @@ class Base(models.Model):
                     field = getattr(obj, field_name) if obj else ''
                     if isinstance(field, date):
                         formatted = field.strftime(u'%Y%m%d')
-                        row.append(text_type(formatted))
+                        row.append(str(formatted))
                     elif isinstance(field, bool):
                         row.append(1 if field else 0)
                     elif field is None:
                         row.append(u'')
                     else:
-                        row.append(text_type(field))
+                        row.append(str(field))
             for col in extra_columns:
                 row.append(obj.extra_data.get(col, u''))
             rows.append(row)
