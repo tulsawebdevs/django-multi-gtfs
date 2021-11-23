@@ -14,8 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -47,7 +45,7 @@ class Fare(Base):
     transfer_duration = models.IntegerField(
         null=True, blank=True,
         help_text="Time in seconds until a ticket or transfer expires")
-    extra_data = JSONField(default={}, blank=True,  null=True)
+    extra_data = models.JSONField(default=dict, blank=True,  null=True)
 
     def __str__(self):
         return u"%d-%s(%s %s)" % (

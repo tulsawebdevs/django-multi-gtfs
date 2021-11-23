@@ -14,8 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 from multigtfs.models.stop import Stop
 from multigtfs.models.trip import Trip
@@ -57,7 +55,7 @@ class StopTime(Base):
         "shape distance traveled",
         null=True, blank=True,
         help_text='Distance of stop from start of shape')
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return "%s-%s-%s" % (self.trip, self.stop.stop_id, self.stop_sequence)

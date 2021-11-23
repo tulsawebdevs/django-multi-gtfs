@@ -21,8 +21,6 @@ import time
 
 from django.contrib.gis.db import models
 from django.db.models.signals import post_save
-from jsonfield import JSONField
-
 from multigtfs.compat import open_writable_zipfile, opener_from_zipfile
 from .agency import Agency
 from .fare import Fare
@@ -49,7 +47,7 @@ class Feed(models.Model):
     """
     name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    meta = JSONField(default={}, blank=True, null=True)
+    meta = models.JSONField(default=dict, blank=True, null=True)
 
     class Meta:
         db_table = 'feed'

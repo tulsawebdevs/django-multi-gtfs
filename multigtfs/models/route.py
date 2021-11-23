@@ -15,8 +15,6 @@
 from __future__ import unicode_literals
 
 from django.contrib.gis.geos import MultiLineString
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -65,7 +63,7 @@ class Route(Base):
     geometry = models.MultiLineStringField(
         null=True, blank=True,
         help_text='Geometry cache of Trips')
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def update_geometry(self):
         """Update the geometry from the Trips"""

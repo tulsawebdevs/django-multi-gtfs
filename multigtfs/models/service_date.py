@@ -14,8 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -30,7 +28,7 @@ class ServiceDate(Base):
     exception_type = models.IntegerField(
         default=1, choices=((1, 'Added'), (2, 'Removed')),
         help_text="Is service added or removed on this date?")
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return (

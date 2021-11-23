@@ -18,8 +18,6 @@ import warnings
 from django.contrib.gis.geos import LineString
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -68,7 +66,7 @@ class ShapePoint(Base):
     traveled = models.FloatField(
         null=True, blank=True,
         help_text='Distance of point from start of shape')
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return "%s-%d" % (self.shape, self.sequence)

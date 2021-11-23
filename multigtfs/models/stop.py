@@ -19,8 +19,6 @@ import warnings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from io import StringIO
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -69,7 +67,7 @@ class Stop(Base):
             ('1', 'Some wheelchair boarding'),
             ('2', 'No wheelchair boarding')),
         help_text='Is wheelchair boarding possible?')
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return "%d-%s" % (self.feed_id, self.stop_id)

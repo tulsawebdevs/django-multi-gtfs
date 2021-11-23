@@ -14,8 +14,6 @@
 # limitations under the License.
 from __future__ import unicode_literals
 
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
@@ -37,7 +35,7 @@ class FareRule(Base):
         'Zone', null=True, blank=True, on_delete=models.SET_NULL,
         related_name='fare_contains',
         help_text="Fare class is valid for travel withing this zone.")
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         u = "%d-%s" % (self.fare.feed.id, self.fare.fare_id)
