@@ -67,7 +67,7 @@ class SecondsField(Field):
 
     description = 'Seconds since start of the day'
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         '''Handle data loaded from database.'''
         if value is None:
             return value
