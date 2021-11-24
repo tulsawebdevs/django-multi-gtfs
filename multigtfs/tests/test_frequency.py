@@ -130,14 +130,14 @@ STBA,05:00:00,25:00:00,1800
             headway_secs=1800)
         actual = loads(serialize('json', Frequency.objects.all()))
         expected = [{
-            u"pk": f.id,
-            u"model": u"multigtfs.frequency",
-            u"fields": {
-                u"exact_times": u"",
-                u"extra_data": u"{}",
-                u"start_time": u"05:00:00",
-                u"headway_secs": 1800,
-                u"trip": self.trip.id,
-                u"end_time": u"25:00:00"}}]
+            "pk": f.id,
+            "model": "multigtfs.frequency",
+            "fields": {
+                "exact_times": "",
+                "extra_data": {},
+                "start_time": "05:00:00",
+                "headway_secs": 1800,
+                "trip": self.trip.id,
+                "end_time": "25:00:00"}}]
         self.maxDiff = None
         self.assertEqual(expected, actual)
