@@ -153,13 +153,46 @@ class Stop(Base):
             '''Does the row represent a stop?'''
             for name, val in pairs:
                 if name == 'location_type':
-                    return val != '1'
+                    return val == '0'
             return True
 
         logger.info("Importing non-station stops")
         stops = super(Stop, cls).import_txt(StringIO(txt), feed, is_stop)
         logger.info("Imported %d non-station stops", stops)
-        return stations + stops
+
+        def is_exit(pairs):
+            '''Does the row represent an entrance/exit?'''
+            for name, val in pairs:
+                if name == 'location_type':
+                    return val == '2'
+            return False
+
+        logger.info("Importing exits")
+        exits = super(Stop, cls).import_txt(StringIO(txt), feed, is_exit)
+        logger.info("Imported %d exits", exits)
+
+        def is_generic(pairs):
+            '''Does the row represent a generic node?'''
+            for name, val in pairs:
+                if name == 'location_type':
+                    return val == '3'
+            return False
+
+        logger.info("Importing generic nodes")
+        generic_nodes = super(Stop, cls).import_txt(StringIO(txt), feed, is_generic)
+        logger.info("Imported %d generic nodes", generic_nodes)
+
+        def is_boardingarea(pairs):
+            '''Does the row represent a boarding area?'''
+            for name, val in pairs:
+                if name == 'location_type':
+                    return val == '4'
+            return False
+
+        logger.info("Importing boarding area points")
+        boarding_areas = super(Stop, cls).import_txt(StringIO(txt), feed, is_boardingarea)
+        logger.info("Imported %d boarding area points", boarding_areas)
+        return stations + stops + exits + generic_nodes + boarding_areas
 
 
 @receiver(post_save, sender=Stop, dispatch_uid="post_save_stop")
