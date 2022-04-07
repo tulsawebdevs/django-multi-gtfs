@@ -58,13 +58,7 @@ http://multigtfs.readthedocs.io/en/latest/changelog.html
     return long_description
 
 
-# Handle Py2/Py3 issue
-if sys.version_info > (3, 0):
-    # In Py3, package data is dict w/ text key
-    package_data = {'multigtfs': ['tests/fixtures/*.zip']}
-else:
-    # In Py2, package data is dict w/ binary string
-    package_data = {b'multigtfs': ['tests/fixtures/*.zip']}
+package_data = {'multigtfs': ['tests/fixtures/*.zip']}
 
 
 setup(
@@ -77,7 +71,7 @@ setup(
     license='Apache License 2.0',
     url='https://github.com/tulsawebdevs/django-multi-gtfs',
     packages=find_packages(),
-    install_requires=['Django>=2.2', 'jsonfield>=0.9.20'],
+    install_requires=['Django>=3.2,<4.0'],
     keywords=['django', 'gtfs'],
     test_suite="run_tests",  # Ignored, but makes pyroma happy
     cmdclass={'test': my_test},
@@ -86,24 +80,14 @@ setup(
         "Development Status :: 5 - Production/Stable",
         "Environment :: Web Environment",
         "Framework :: Django",
-        "Framework :: Django :: 1.8",
-        "Framework :: Django :: 1.9",
-        "Framework :: Django :: 1.10",
-        "Framework :: Django :: 1.11",
-        "Framework :: Django :: 2.0",
-        "Framework :: Django :: 2.1",
-        "Framework :: Django :: 2.2",
+        "Framework :: Django :: 3.2",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: Apache Software License",
         "Operating System :: OS Independent",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.4",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
     include_package_data=True,
