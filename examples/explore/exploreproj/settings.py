@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY', default=_default_secret_key, cast=str)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost', cast=Csv())
 
 # Application definition
 INSTALLED_APPS = [
@@ -37,7 +37,7 @@ LOCAL_INSTALLED_APPS = list(config('LOCAL_INSTALLED_APPS',
                                    default='', cast=Csv()))
 INSTALLED_APPS.extend(LOCAL_INSTALLED_APPS)
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

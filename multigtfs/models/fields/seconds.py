@@ -18,10 +18,8 @@
 from __future__ import unicode_literals
 
 from django.db.models import Field
-from django.utils.encoding import python_2_unicode_compatible
 
 
-@python_2_unicode_compatible
 class Seconds(object):
     '''A GTFS seconds value, formatted as HH:MM:SS in the GTFS feed'''
 
@@ -69,7 +67,7 @@ class SecondsField(Field):
 
     description = 'Seconds since start of the day'
 
-    def from_db_value(self, value, expression, connection, context):
+    def from_db_value(self, value, expression, connection):
         '''Handle data loaded from database.'''
         if value is None:
             return value

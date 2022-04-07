@@ -21,7 +21,6 @@ import tempfile
 import zipfile
 
 from django.test import TestCase
-from django.utils.six import text_type
 
 from multigtfs.models import (
     Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency,
@@ -463,8 +462,8 @@ p,1.25,USD,0,0,
         # Sometimes 5.2500, sometimes 5.25
         fare_a = Fare.objects.get(fare_id='a')
         fare_p = Fare.objects.get(fare_id='p')
-        s_fare_a = text_type(fare_a.price).encode('utf-8')
-        s_fare_p = text_type(fare_p.price).encode('utf-8')
+        s_fare_a = str(fare_a.price).encode('utf-8')
+        s_fare_p = str(fare_p.price).encode('utf-8')
         fare_out = z_out.read('fare_attributes.txt')
         self.assertEqual(fare_out, b'''\
 fare_id,price,currency_type,payment_method,transfers
@@ -735,7 +734,7 @@ adult,1.5000,USD,0,,7200
 ''')
         # Sometimes 1.5000, sometimes 1.5
         fare_a = Fare.objects.get(fare_id='adult')
-        s_fare_a = text_type(fare_a.price).encode('utf-8')
+        s_fare_a = str(fare_a.price).encode('utf-8')
         fare_out = z_out.read('fare_attributes.txt')
         self.assertEqual(fare_out, b'''\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration
@@ -832,7 +831,7 @@ B,2.5,USD,0,,7200
 ''')
         # Sometimes 2.5000, sometimes 2.5
         fare_b = Fare.objects.get(fare_id='B')
-        s_fare_b = text_type(fare_b.price).encode('utf-8')
+        s_fare_b = str(fare_b.price).encode('utf-8')
         fare_out = z_out.read('fare_attributes.txt')
         self.assertEqual(fare_out, b'''\
 fare_id,price,currency_type,payment_method,transfers,transfer_duration

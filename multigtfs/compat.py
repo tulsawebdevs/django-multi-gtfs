@@ -4,10 +4,10 @@ Handle compatibility between Python versions, Django versions, etc.
 """
 from codecs import BOM_UTF8
 from distutils.version import LooseVersion
+from io import TextIOWrapper
 from zipfile import ZipFile, ZIP_DEFLATED
 
 from django import get_version
-from django.utils.six import PY3, binary_type, text_type
 
 DJ_VERSION = LooseVersion(get_version())
 
@@ -47,15 +47,12 @@ def bom_prefix_csv(text):
     - Python 2 returns a UTF-8 encoded bytestring
     - Python 3 returns unicode text
     """
-    if PY3:
-        return BOM_UTF8.decode('utf-8') + text
-    else:
-        return BOM_UTF8 + text.encode('utf-8')
+    return BOM_UTF8.decode('utf-8') + text
 
 
 def force_utf8(text):
     """Encode as UTF-8 bytestring if it isn't already."""
-    if isinstance(text, binary_type):
+    if isinstance(text, bytes):
         return text
     else:
         return text.encode('utf-8')
@@ -79,11 +76,7 @@ def opener_from_zipfile(zipfile):
 
     def opener(filename):
         inner_file = zipfile.open(filename)
-        if PY3:
-            from io import TextIOWrapper
-            return TextIOWrapper(inner_file)
-        else:
-            return inner_file
+        return TextIOWrapper(inner_file)
 
     return opener
 
@@ -97,23 +90,13 @@ def write_text_rows(writer, rows):
             # Python 2 csv does badly with unicode outside of ASCII
             new_row = []
             for item in row:
-                if isinstance(item, text_type):
+                if isinstance(item, str):
                     new_row.append(item.encode('utf-8'))
                 else:
                     new_row.append(item)
             writer.writerow(new_row)
 
 
-# The GeoQuerySet is deprecated in Django 1.8
-# https://docs.djangoproject.com/en/dev/releases/1.9/#django-contrib-gis
-# The GeoManager is deprecated in Django 1.9
-# https://docs.djangoproject.com/en/dev/releases/1.9/#geomanager-and-geoqueryset-custom-methods
-# They are removed in Django 2.0
-# https://docs.djangoproject.com/en/dev/releases/2.0/#features-removed-in-2-0
-if DJ_VERSION >= LooseVersion('2.0'):
-    from django.db.models import Manager, QuerySet
-else:
-    from django.contrib.gis.db.models import GeoManager as Manager
-    from django.contrib.gis.db.models.query import GeoQuerySet as QuerySet
+from django.db.models import Manager, QuerySet
 assert Manager
 assert QuerySet

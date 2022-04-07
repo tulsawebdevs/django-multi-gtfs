@@ -15,13 +15,9 @@
 
 from __future__ import unicode_literals
 
-from django.utils.encoding import python_2_unicode_compatible
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
-@python_2_unicode_compatible
 class Agency(Base):
     """One or more transit agencies that provide the data in this feed.
 
@@ -47,7 +43,7 @@ class Agency(Base):
         help_text="Voice telephone number")
     fare_url = models.URLField(
         blank=True, help_text="URL for purchasing tickets online")
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def __str__(self):
         return u"%d-%s" % (self.feed.id, self.agency_id)

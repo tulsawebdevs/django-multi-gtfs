@@ -15,13 +15,9 @@
 from __future__ import unicode_literals
 
 from django.contrib.gis.geos import LineString
-from django.utils.encoding import python_2_unicode_compatible
-from jsonfield import JSONField
-
 from multigtfs.models.base import models, Base
 
 
-@python_2_unicode_compatible
 class Trip(Base):
     """A trip along a route
 
@@ -67,7 +63,7 @@ class Trip(Base):
             ('1', 'Some bicycle accommodation'),
             ('2', 'No bicycles allowed')),
         help_text='Are bicycles allowed?')
-    extra_data = JSONField(default={}, blank=True, null=True)
+    extra_data = models.JSONField(default=dict, blank=True, null=True)
 
     def update_geometry(self, update_parent=True):
         """Update the geometry from the Shape or Stops"""
