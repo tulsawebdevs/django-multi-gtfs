@@ -9,7 +9,7 @@ twine==1.11.0
 
 # tox
 virtualenv==16.0.0
-py==1.5.4
+py==1.10.0
 tox==3.2.1
 
 # Sphinx
