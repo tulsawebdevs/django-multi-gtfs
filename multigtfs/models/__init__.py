@@ -22,6 +22,7 @@ from .feed import Feed
 from .feed_info import FeedInfo
 from .frequency import Frequency
 from .route import Route
+from .route_direction import RouteDirection
 from .service import Service
 from .service_date import ServiceDate
 from .shape import Shape, ShapePoint
@@ -33,5 +34,6 @@ from .zone import Zone
 
 # pyflakes be quiet
 __models = (
-    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency, Route, Service,
-    ServiceDate, Shape, ShapePoint, Stop, StopTime, Transfer, Trip, Zone)
+    Agency, Block, Fare, FareRule, Feed, FeedInfo, Frequency, Route,
+    RouteDirection, Service, ServiceDate, Shape, ShapePoint, Stop,
+    StopTime, Transfer, Trip, Zone)
