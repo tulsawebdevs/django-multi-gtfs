@@ -1,0 +1,24 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Trips{% endblock %}
+{% block page_title %}Trips{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Trip</strong> is a single run of a Route
+{% endblock %}
+{% block page_middle_content %}
+{% if route %}
+<p>Trips for <a href="{% url 'route_detail' feed_id=feed_id pk=route.pk %}">Route {{route}}</a></p>
+{% elif service %}
+<p>Trips for <a href="{% url 'service_detail' feed_id=feed_id pk=service.pk %}">Service {{service}}</a></p>
+{% elif shape %}
+<p>Trips for <a href="{% url 'shape_detail' feed_id=feed_id pk=shape.pk %}">Shape {{shape}}</a></p>
+{% elif the_block %}
+<p>Trips for <a href="{% url 'block_detail' feed_id=feed_id pk=the_block.pk %}">Block {{the_block}}</a></p>
+{% endif %}
+{% for trip in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'trip_detail' feed_id=feed_id pk=trip.pk %}">Trip {{ trip }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No trips yet.</em></p>
+{% endfor %}
+{% endblock %}

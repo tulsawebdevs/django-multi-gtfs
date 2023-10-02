@@ -1,0 +1,40 @@
+{% extends "multigtfs/base.html" %}
+{% load staticfiles %}
+{% block head_title %}{{ block.super }} - Stop {{object}}{% endblock %}
+{% block head_extra %}
+<script src="http://openlayers.org/api/OpenLayers.js"></script>
+<script src="{% static 'js/explore.js' %}"></script>
+{% endblock %}
+{% block page_title %}Stop {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Stop</strong> is a stop or station in the schedule.
+{% endblock %}
+{% block page_middle_content %}
+<div class="row" style="height:300px" id="map"></div>
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>stop_id</dt><dd>{{object.stop_id|default:'<em>Not set</em>'}}</dd>
+    <dt>code</dt><dd>{{object.code|default:'<em>Not set</em>'}}</dd>
+    <dt>name</dt><dd>{{object.name}}</dd>
+    <dt>desc</dt><dd>{{object.desc|default:'<em>Not set</em>'}}</dd>
+    <dt>point</dt><dd>{{object.point}}</dd>
+    <dt>zone</dt><dd>{% if object.zone_id %}<a href="{% url 'zone_detail' feed_id=object.id pk=object.zone_id %}">Zone {{object.zone}}</a>{% else %}<em>No Zone</em>{% endif %}</dd>
+    <dt>url</dt><dd>{% if object.url %}<a href="{{object.url}}">{{object.url}}</a>{% else %}<em>Not set</em>{% endif %}</dd>
+    <dt>location_type</dt><dd>{{object.get_location_type_display|default:'<em>Not set</em>'}}</dd>
+    <dt>parent_station</dt><dd>{% if object.parent_station_id %}<a href="{% url 'stop_detail' feed_id=object.id pk=object.parent_station_id %}">Parent Station {{object.name}}</a>{% else %}<em>No Parent Station</em>{% endif %}</dd>
+    <dt>timezone</dt><dd>{{object.timezone|default:'<em>Not set</em>'}}</dd>
+    <dt>wheelchair_boarding</dt><dd>{{object.get_wheelchair_boarding_type_display|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'stoptime_by_stop_list' feed_id=object.id stop_id=object.id %}">{{object.stoptime_set.count}} StopTime{{ object.stoptime_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}
+{% block body_script %}
+<script defer="defer" type="text/javascript">
+  explore.mapPoint('map', {{object.point.x}}, {{object.point.y}}, 16);
+</script>
+{% endblock %}

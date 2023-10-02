@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - FeedInfos{% endblock %}
+{% block page_title %}FeedInfos{% endblock %}
+{% block page_top_content_elem %}
+<strong>FeedInfo</strong> contains information about the feed.
+{% endblock %}
+{% block page_middle_content %}
+{% for feedinfo in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'feedinfo_detail' feed_id=feedinfo.feed_id pk=feedinfo.pk %}">FeedInfo {{ feedinfo }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No feedinfos yet.</em></p>
+{% endfor %}
+{% endblock %}

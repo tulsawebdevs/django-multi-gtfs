@@ -1,0 +1,29 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Service {{object}}{% endblock %}
+{% block page_title %}Service {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Service</strong> is one or more days with the same schedule.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>service_id</dt><dd>{{object.service_id|default:'<em>Not set</em>'}}</dd>
+    <dt>monday</dt><dd>{{object.monday}}</dd>
+    <dt>tuesday</dt><dd>{{object.tuesday}}</dd>
+    <dt>wednesday</dt><dd>{{object.wednesday}}</dd>
+    <dt>thursday</dt><dd>{{object.thursday}}</dd>
+    <dt>friday</dt><dd>{{object.friday}}</dd>
+    <dt>saturday</dt><dd>{{object.saturday}}</dd>
+    <dt>sunday</dt><dd>{{object.sunday}}</dd>
+    <dt>start_date</dt><dd>{{object.start_date}}</dd>
+    <dt>end_date</dt><dd>{{object.end_date}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'servicedate_by_service_list' feed_id=object.id service_id=object.id %}">{{object.servicedate_set.count}} ServiceDate{{ object.servicedate_set.count|pluralize }}</a></li>
+    <li><a href="{% url 'trip_by_service_list' feed_id=object.id service_id=object.id %}">{{object.trip_set.count}} Trip{{ object.trip_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Services{% endblock %}
+{% block page_title %}Services{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Service</strong> is one or more days of the week that a scheduled
+route runs.
+{% endblock %}
+{% block page_middle_content %}
+{% for service in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'service_detail' feed_id=service.feed_id pk=service.pk %}">Service {{ service }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No services yet.</em></p>
+{% endfor %}
+{% endblock %}

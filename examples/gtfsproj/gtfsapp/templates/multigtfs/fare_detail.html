@@ -1,0 +1,24 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Fare {{object}}{% endblock %}
+{% block page_title %}Fare {{object}}{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Fare</strong> describes how passengers pay for service.
+{% endblock %}
+{% block page_middle_content %}
+<h2>Attributes</h2>
+<dl>
+    <dt>feed</dt><dd><a href="{% url 'feed_detail' pk=object.feed_id %}">Feed {{object.feed}}</a></dd>
+    <dt>id</dt><dd>{{object.id}}</dd>
+    <dt>fare_id</dt><dd>{{object.fare_id}}</dd>
+    <dt>price</dt><dd>{{object.price}}</dd>
+    <dt>currency_type</dt><dd>{{object.currency_type}}</dd>
+    <dt>payment_method</dt>{{object.get_payment_method_display|default:'<em>Not set</em>'}}</dd>
+    <dt>transfers</dt>{{object.get_transfers_display|default:'<em>Not set</em>'}}</dd>
+    <dt>transfer_duration</dt><dd>{{object.transfer_duration|default:'<em>Not set</em>'}}</dd>
+</dl>
+{% include "multigtfs/extra_data.html" %}
+<h2>Related Objects</h2>
+<ul>
+    <li><a href="{% url 'farerule_by_fare_list' feed_id=object.id fare_id=object.id %}">{{object.farerule_set.count}} FareRule{{ object.farerule_set.count|pluralize }}</a></li>
+</ul>
+{% endblock %}

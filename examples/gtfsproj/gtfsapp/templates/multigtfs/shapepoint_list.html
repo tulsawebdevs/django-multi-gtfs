@@ -1,0 +1,18 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - ShapePoints{% endblock %}
+{% block page_title %}ShapePoints{% endblock %}
+{% block page_top_content_elem %}
+A <strong>ShapePoint</strong> is a point of a shape
+{% endblock %}
+{% block page_middle_content %}
+{% if shape %}
+<p>ShapePoints for <a href="{% url 'shape_detail' feed_id=feed_id pk=shape.pk %}">Shape {{shape}}</a></p>
+{% endif %}
+{% for shapepoint in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'shapepoint_detail' feed_id=feed_id pk=shapepoint.pk %}">ShapePoint {{ shapepoint }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No shapepoints yet.</em></p>
+{% endfor %}
+{% endblock %}

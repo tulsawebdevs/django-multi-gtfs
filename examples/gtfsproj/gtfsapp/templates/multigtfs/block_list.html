@@ -1,0 +1,15 @@
+{% extends "multigtfs/base.html" %}
+{% block head_title %}{{ block.super }} - Blocks{% endblock %}
+{% block page_title %}Blocks{% endblock %}
+{% block page_top_content_elem %}
+A <strong>Block</strong> represents a fare zone for a trip.
+{% endblock %}
+{% block page_middle_content %}
+{% for blocks in object_list %}
+  {% if forloop.first %}<ul>{% endif %}
+    <li><a href="{% url 'blocks_detail' feed_id=blocks.feed_id pk=blocks.pk %}">Block {{ blocks }}</a></li>
+  {% if forloop.last %}</ul>{% endif %}
+{% empty %}
+  <p><em>No blockss yet.</em></p>
+{% endfor %}
+{% endblock %}

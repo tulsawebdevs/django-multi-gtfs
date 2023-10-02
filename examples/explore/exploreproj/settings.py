@@ -21,7 +21,11 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='', cast=Csv())
 
 # Application definition
+# NB new apps need to be placed first for their templates
+# to override subsequent apps
 INSTALLED_APPS = [
+    'exploreapp',
+    'multigtfs',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,8 +33,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
-    'exploreapp',
-    'multigtfs',
 ]
 
 LOCAL_INSTALLED_APPS = list(config('LOCAL_INSTALLED_APPS',
